@@ -1,0 +1,84 @@
+syntax = "proto3";
+package core;
+option go_package = "api";
+
+service videoModel_protoBuf{
+  rpc CreateVideo(video_model_create_video_request) returns (video_model_create_video_response);
+  rpc QueryAuthorWorkCount(video_model_query_author_work_count_request) returns(video_model_query_author_work_count_response);
+  rpc QueryAuthorVideoList(video_model_query_author_video_list_request) returns(video_model_query_author_video_list_response);
+  rpc QueryVideoList(video_model_query_video_list_request)  returns(video_model_query_video_list_response);
+  rpc QueryVideo(video_model_query_video_request) returns(video_model_query_video_response);
+  rpc QueryVideoFeed(video_model_query_video_feed_request)  returns(video_model_query_video_feed_response);
+}
+
+message video_model_create_video_request{
+  uint64 author_id = 1;
+  string play_url = 2;
+  string cover_url = 3;
+  string Title = 4;
+}
+
+message video_model_create_video_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+}
+
+message video_model_query_author_work_count_request{
+  uint64 author_id = 1;
+}
+
+message video_model_query_author_work_count_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  uint32 work_count = 3;
+}
+
+message video_model_query_author_video_list_request{
+  uint64 author_id = 1;
+}
+
+message video_model_query_author_video_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated VideoBaseInfo video_base_info = 3;
+}
+
+
+message video_model_query_video_list_request{
+  repeated uint64 video_id_list = 1;
+}
+
+message video_model_query_video_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated VideoBaseInfo video_base_info_list = 3;
+}
+
+message video_model_query_video_request{
+  uint64 video_id = 1;
+}
+
+message video_model_query_video_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  VideoBaseInfo video_base_info = 3;
+}
+
+message video_model_query_video_feed_request{
+  int64 next_time = 1;
+}
+message video_model_query_video_feed_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated VideoBaseInfo video_base_info_list = 3;
+}
+
+
+
+message VideoBaseInfo {
+  uint64 video_id = 1; // 视频唯一标识
+  uint64 author_id = 2; // 视频作者信息
+  string play_url = 3; // 视频播放地址
+  string cover_url = 4; // 视频封面地址
+  string title = 5; // 视频标题
+}
