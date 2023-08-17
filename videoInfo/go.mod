@@ -1,4 +1,4 @@
-module videoModel
+module videoInfo
 
 go 1.19
 
@@ -7,8 +7,6 @@ require (
 	github.com/cloudwego/kitex v0.7.0
 	github.com/kitex-contrib/registry-etcd v0.1.1
 	google.golang.org/protobuf v1.31.0
-	gorm.io/driver/mysql v1.5.1
-	gorm.io/gorm v1.25.3
 )
 
 require (
@@ -28,14 +26,11 @@ require (
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
-	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/pprof v0.0.0-20220608213341-c488b8fa1db3 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/jhump/protoreflect v1.8.2 // indirect
-	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
