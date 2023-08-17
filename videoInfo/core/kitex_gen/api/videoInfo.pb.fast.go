@@ -38,15 +38,15 @@ ReadFieldError:
 }
 
 func (x *VideoInfoGetVideoInfoListRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.UserId, offset, err = fastpb.ReadUint64(buf, _type)
+	x.UserId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
 func (x *VideoInfoGetVideoInfoListRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	offset, err = fastpb.ReadList(buf, _type,
 		func(buf []byte, _type int8) (n int, err error) {
-			var v uint64
-			v, offset, err = fastpb.ReadUint64(buf, _type)
+			var v int64
+			v, offset, err = fastpb.ReadInt64(buf, _type)
 			if err != nil {
 				return offset, err
 			}
@@ -133,12 +133,12 @@ ReadFieldError:
 }
 
 func (x *VideoInfoGetVideoInfoRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.UserId, offset, err = fastpb.ReadUint64(buf, _type)
+	x.UserId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
 func (x *VideoInfoGetVideoInfoRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
-	x.VideoId, offset, err = fastpb.ReadUint64(buf, _type)
+	x.VideoId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
@@ -214,7 +214,7 @@ ReadFieldError:
 }
 
 func (x *VideoInfoGetFeedRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.UserId, offset, err = fastpb.ReadUint64(buf, _type)
+	x.UserId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
@@ -295,12 +295,12 @@ ReadFieldError:
 }
 
 func (x *VideoInfoGetAuthorVideoInfoListRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
-	x.UserId, offset, err = fastpb.ReadUint64(buf, _type)
+	x.UserId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
 func (x *VideoInfoGetAuthorVideoInfoListRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
-	x.AuthorId, offset, err = fastpb.ReadUint64(buf, _type)
+	x.AuthorId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
@@ -601,7 +601,7 @@ func (x *VideoInfoGetVideoInfoListRequest) fastWriteField1(buf []byte) (offset i
 	if x.UserId == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint64(buf[offset:], 1, x.GetUserId())
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetUserId())
 	return offset
 }
 
@@ -612,7 +612,7 @@ func (x *VideoInfoGetVideoInfoListRequest) fastWriteField2(buf []byte) (offset i
 	offset += fastpb.WriteListPacked(buf[offset:], 2, len(x.GetVideoIdList()),
 		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
 			offset := 0
-			offset += fastpb.WriteUint64(buf[offset:], numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
+			offset += fastpb.WriteInt64(buf[offset:], numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
 			return offset
 		})
 	return offset
@@ -667,7 +667,7 @@ func (x *VideoInfoGetVideoInfoRequest) fastWriteField1(buf []byte) (offset int) 
 	if x.UserId == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint64(buf[offset:], 1, x.GetUserId())
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetUserId())
 	return offset
 }
 
@@ -675,7 +675,7 @@ func (x *VideoInfoGetVideoInfoRequest) fastWriteField2(buf []byte) (offset int) 
 	if x.VideoId == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint64(buf[offset:], 2, x.GetVideoId())
+	offset += fastpb.WriteInt64(buf[offset:], 2, x.GetVideoId())
 	return offset
 }
 
@@ -725,7 +725,7 @@ func (x *VideoInfoGetFeedRequest) fastWriteField1(buf []byte) (offset int) {
 	if x.UserId == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint64(buf[offset:], 1, x.GetUserId())
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetUserId())
 	return offset
 }
 
@@ -778,7 +778,7 @@ func (x *VideoInfoGetAuthorVideoInfoListRequest) fastWriteField1(buf []byte) (of
 	if x.UserId == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint64(buf[offset:], 1, x.GetUserId())
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetUserId())
 	return offset
 }
 
@@ -786,7 +786,7 @@ func (x *VideoInfoGetAuthorVideoInfoListRequest) fastWriteField2(buf []byte) (of
 	if x.AuthorId == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint64(buf[offset:], 2, x.GetAuthorId())
+	offset += fastpb.WriteInt64(buf[offset:], 2, x.GetAuthorId())
 	return offset
 }
 
@@ -1024,7 +1024,7 @@ func (x *VideoInfoGetVideoInfoListRequest) sizeField1() (n int) {
 	if x.UserId == 0 {
 		return n
 	}
-	n += fastpb.SizeUint64(1, x.GetUserId())
+	n += fastpb.SizeInt64(1, x.GetUserId())
 	return n
 }
 
@@ -1035,7 +1035,7 @@ func (x *VideoInfoGetVideoInfoListRequest) sizeField2() (n int) {
 	n += fastpb.SizeListPacked(2, len(x.GetVideoIdList()),
 		func(numTagOrKey, numIdxOrVal int32) int {
 			n := 0
-			n += fastpb.SizeUint64(numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
+			n += fastpb.SizeInt64(numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
 			return n
 		})
 	return n
@@ -1090,7 +1090,7 @@ func (x *VideoInfoGetVideoInfoRequest) sizeField1() (n int) {
 	if x.UserId == 0 {
 		return n
 	}
-	n += fastpb.SizeUint64(1, x.GetUserId())
+	n += fastpb.SizeInt64(1, x.GetUserId())
 	return n
 }
 
@@ -1098,7 +1098,7 @@ func (x *VideoInfoGetVideoInfoRequest) sizeField2() (n int) {
 	if x.VideoId == 0 {
 		return n
 	}
-	n += fastpb.SizeUint64(2, x.GetVideoId())
+	n += fastpb.SizeInt64(2, x.GetVideoId())
 	return n
 }
 
@@ -1148,7 +1148,7 @@ func (x *VideoInfoGetFeedRequest) sizeField1() (n int) {
 	if x.UserId == 0 {
 		return n
 	}
-	n += fastpb.SizeUint64(1, x.GetUserId())
+	n += fastpb.SizeInt64(1, x.GetUserId())
 	return n
 }
 
@@ -1201,7 +1201,7 @@ func (x *VideoInfoGetAuthorVideoInfoListRequest) sizeField1() (n int) {
 	if x.UserId == 0 {
 		return n
 	}
-	n += fastpb.SizeUint64(1, x.GetUserId())
+	n += fastpb.SizeInt64(1, x.GetUserId())
 	return n
 }
 
@@ -1209,7 +1209,7 @@ func (x *VideoInfoGetAuthorVideoInfoListRequest) sizeField2() (n int) {
 	if x.AuthorId == 0 {
 		return n
 	}
-	n += fastpb.SizeUint64(2, x.GetAuthorId())
+	n += fastpb.SizeInt64(2, x.GetAuthorId())
 	return n
 }
 

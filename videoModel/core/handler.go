@@ -14,12 +14,14 @@ type VideoModelProtoBufImpl struct{}
 func (s *VideoModelProtoBufImpl) CreateVideo(ctx context.Context, req *api.VideoModelCreateVideoRequest) (resp *api.VideoModelCreateVideoResponse, err error) {
 	// TODO: Your code here...
 	//写入数据库
+	t := time.Now()
 	video := &model.Video{
 		AuthorID:    req.AuthorId,
 		PlayUrl:     req.PlayUrl,
 		CoverUrl:    req.CoverUrl,
 		Title:       req.Title,
-		CreatedTime: time.Now(),
+		CreatedTime: &t,
+		UpdatedTime: &t,
 	}
 	err = model.CreateVideo(video)
 

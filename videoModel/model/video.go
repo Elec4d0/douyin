@@ -5,12 +5,12 @@ import (
 )
 
 type Video struct {
-	VideoID     uint64    `gorm:"primary_key"`
-	AuthorID    uint64    `gorm:"not null"`
-	PlayUrl     string    `gorm:"not null"`
-	CoverUrl    string    `gorm:"not null"`
-	Title       string    `gorm:"not null"`
-	CreatedTime time.Time `gorm:"not null"`
+	VideoID     int64  `gorm:"primary_key"`
+	AuthorID    int64  `gorm:"not null"`
+	PlayUrl     string `gorm:"not null"`
+	CoverUrl    string `gorm:"not null"`
+	Title       string `gorm:"not null"`
+	CreatedTime *time.Time
 	DeletedTime *time.Time
 	UpdatedTime *time.Time
 }
@@ -27,7 +27,7 @@ func CreateVideo(video *Video) error {
 	return result.Error
 }
 
-func QuerySingleVideo(videoId uint64) (*Video, error) {
+func QuerySingleVideo(videoId int64) (*Video, error) {
 	video := new(Video)
 	err := DB.First(&video, "video_id = ?", videoId).Error
 	if err != nil {
@@ -36,7 +36,7 @@ func QuerySingleVideo(videoId uint64) (*Video, error) {
 	return video, nil
 }
 
-func QueryAuthorVideoList(authorId uint64) ([]*Video, error) {
+func QueryAuthorVideoList(authorId int64) ([]*Video, error) {
 	var videos []*Video
 	err := DB.Where("author_id = ?", authorId).Find(&videos).Error
 	if err != nil {
@@ -47,7 +47,7 @@ func QueryAuthorVideoList(authorId uint64) ([]*Video, error) {
 
 }
 
-func GetVideosByIds(videoIDs []uint64) ([]*Video, error) {
+func GetVideosByIds(videoIDs []int64) ([]*Video, error) {
 	var videos []*Video
 
 	err := DB.Where("video_id in (?)", videoIDs).Find(&videos).Error
@@ -70,7 +70,7 @@ func QueryVideoFeedByLastTimeAndLimit(lastTime *string, limit int) ([]*Video, er
 	return videos, nil
 }
 
-func QueryAuthorWorkCount(authorID uint64) (int64, error) {
+func QueryAuthorWorkCount(authorID int64) (int64, error) {
 	var videos []*Video
 	result := DB.Where("author_id = ?", authorID).Find(&videos)
 	err := result.Error

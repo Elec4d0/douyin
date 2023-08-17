@@ -1,17 +1,19 @@
 syntax = "proto3";
-//package services;
+package core;
 option go_package = "api";
 
-service videoInfo_protoBuf{
-  rpc getVideoInfoList(video_info_get_video_info_list_request)  returns (video_info_get_author_video_info_list_response);
+service videoInfoService{
+  rpc getVideoInfoList(video_info_get_video_info_list_request)  returns (video_info_get_video_info_list_response);
   rpc getVideoInfo(video_info_get_video_info_request) returns (video_info_get_video_info_response);
   rpc getFeed(video_info_get_feed_request)  returns (video_info_get_feed_response);
   rpc getAuthorVideoInfoList(video_info_get_author_video_info_list_request) returns (video_info_get_author_video_info_list_response);
 }
 
+
+
 message video_info_get_video_info_list_request{
-  uint64 user_id = 1;
-  repeated uint64 video_id_list = 2;
+  int64 user_id = 1;
+  repeated int64 video_id_list = 2;
 }
 
 message video_info_get_video_info_list_response{
@@ -21,8 +23,8 @@ message video_info_get_video_info_list_response{
 }
 
 message video_info_get_video_info_request{
-  uint64 user_id = 1;
-  uint64 video_id = 2;
+  int64 user_id = 1;
+  int64 video_id = 2;
 }
 
 message video_info_get_video_info_response{
@@ -32,7 +34,8 @@ message video_info_get_video_info_response{
 }
 
 message video_info_get_feed_request{
-  uint64 user_id = 1;
+  int64 user_id = 1;
+  int64 next_time = 2;
 }
 
 message video_info_get_feed_response{
@@ -43,8 +46,8 @@ message video_info_get_feed_response{
 
 
 message video_info_get_author_video_info_list_request{
-  uint64 user_id = 1;
-  uint64 author_id = 2;
+  int64 user_id = 1;
+  int64 author_id = 2;
 }
 message video_info_get_author_video_info_list_response{
   int32 status_code = 1; // 状态码，0-成功，其他值-失败

@@ -26,7 +26,7 @@ func TestCreateVideo(t *testing.T) {
 func TestQuerySingleVideo(t *testing.T) {
 	Init()
 	fmt.Println("开始测试——————TestQuerySingleVideo——————————————————")
-	var videoId uint64 = 3
+	var videoId int64 = 3
 	video, err := QuerySingleVideo(videoId)
 	if err != nil {
 		fmt.Println("查询失败")
@@ -39,8 +39,8 @@ func TestQuerySingleVideo(t *testing.T) {
 
 func TestGetVideosByIds(t *testing.T) {
 	fmt.Println("开始测试——————GetVideosByIds——————————————————")
-	//var videoIds []uint64 := {1, 2, 3, 4}
-	videoIds := []uint64{1, 2, 3, 4}
+	//var videoIds []int64 := {1, 2, 3, 4}
+	videoIds := []int64{1, 2, 3, 4}
 	videos, err := GetVideosByIds(videoIds)
 
 	if err != nil {
@@ -75,7 +75,7 @@ func TestQueryVideoFeedByLastTimeAndLimit(t *testing.T) {
 func TestQueryAuthorWorkCount(t *testing.T) {
 	fmt.Println("开始测试——————TestQueryAuthorWorkCount———————————————")
 
-	var authorID uint64 = 1
+	var authorID int64 = 1
 	count, _ := QueryAuthorWorkCount(authorID)
 
 	fmt.Println(count)

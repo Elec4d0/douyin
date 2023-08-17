@@ -1,12 +1,12 @@
-package main
+package core
 
 import (
 	"log"
-	api "videoInfo/kitex_gen/api/videoinfoprotobuf"
+	api "videoInfo/core/kitex_gen/api/videoinfoservice"
 )
 
 func main() {
-	svr := api.NewServer(new(VideoInfoProtoBufImpl))
+	svr := api.NewServer(new(VideoInfoServiceImpl))
 
 	err := svr.Run()
 
