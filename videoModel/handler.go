@@ -48,7 +48,7 @@ func (s *VideoModelProtoBufImpl) QueryAuthorWorkCount(ctx context.Context, req *
 	if err != nil {
 		errStr := "查询作者作品数失败"
 		resp = &api.VideoModelQueryAuthorWorkCountResponse{
-			WorkCount:  uint32(count),
+			WorkCount:  0,
 			StatusMsg:  &errStr,
 			StatusCode: -1,
 		}

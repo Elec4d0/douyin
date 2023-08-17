@@ -12,6 +12,95 @@ var (
 	_ = fastpb.Skip
 )
 
+func (x *VideoModelQueryAuthorWorkCountListRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModelQueryAuthorWorkCountListRequest[number], err)
+}
+
+func (x *VideoModelQueryAuthorWorkCountListRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	offset, err = fastpb.ReadList(buf, _type,
+		func(buf []byte, _type int8) (n int, err error) {
+			var v int64
+			v, offset, err = fastpb.ReadInt64(buf, _type)
+			if err != nil {
+				return offset, err
+			}
+			x.AuthorIdList = append(x.AuthorIdList, v)
+			return offset, err
+		})
+	return offset, err
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModelQueryAuthorWorkCountListResponse[number], err)
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
+	return offset, err
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	tmp, offset, err := fastpb.ReadString(buf, _type)
+	x.StatusMsg = &tmp
+	return offset, err
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	offset, err = fastpb.ReadList(buf, _type,
+		func(buf []byte, _type int8) (n int, err error) {
+			var v int32
+			v, offset, err = fastpb.ReadInt32(buf, _type)
+			if err != nil {
+				return offset, err
+			}
+			x.WorkCountList = append(x.WorkCountList, v)
+			return offset, err
+		})
+	return offset, err
+}
+
 func (x *VideoModelCreateVideoRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
@@ -170,7 +259,7 @@ func (x *VideoModelQueryAuthorWorkCountResponse) fastReadField2(buf []byte, _typ
 }
 
 func (x *VideoModelQueryAuthorWorkCountResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	x.WorkCount, offset, err = fastpb.ReadUint32(buf, _type)
+	x.WorkCount, offset, err = fastpb.ReadInt32(buf, _type)
 	return offset, err
 }
 
@@ -552,6 +641,66 @@ func (x *VideoBaseInfo) fastReadField5(buf []byte, _type int8) (offset int, err 
 	return offset, err
 }
 
+func (x *VideoModelQueryAuthorWorkCountListRequest) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *VideoModelQueryAuthorWorkCountListRequest) fastWriteField1(buf []byte) (offset int) {
+	if len(x.AuthorIdList) == 0 {
+		return offset
+	}
+	offset += fastpb.WriteListPacked(buf[offset:], 1, len(x.GetAuthorIdList()),
+		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
+			offset := 0
+			offset += fastpb.WriteInt64(buf[offset:], numTagOrKey, x.GetAuthorIdList()[numIdxOrVal])
+			return offset
+		})
+	return offset
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
+	return offset
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) fastWriteField1(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt32(buf[offset:], 1, x.GetStatusCode())
+	return offset
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) fastWriteField2(buf []byte) (offset int) {
+	if x.StatusMsg == nil {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetStatusMsg())
+	return offset
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) fastWriteField3(buf []byte) (offset int) {
+	if len(x.WorkCountList) == 0 {
+		return offset
+	}
+	offset += fastpb.WriteListPacked(buf[offset:], 3, len(x.GetWorkCountList()),
+		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
+			offset := 0
+			offset += fastpb.WriteInt32(buf[offset:], numTagOrKey, x.GetWorkCountList()[numIdxOrVal])
+			return offset
+		})
+	return offset
+}
+
 func (x *VideoModelCreateVideoRequest) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
@@ -666,7 +815,7 @@ func (x *VideoModelQueryAuthorWorkCountResponse) fastWriteField3(buf []byte) (of
 	if x.WorkCount == 0 {
 		return offset
 	}
-	offset += fastpb.WriteUint32(buf[offset:], 3, x.GetWorkCount())
+	offset += fastpb.WriteInt32(buf[offset:], 3, x.GetWorkCount())
 	return offset
 }
 
@@ -933,6 +1082,66 @@ func (x *VideoBaseInfo) fastWriteField5(buf []byte) (offset int) {
 	return offset
 }
 
+func (x *VideoModelQueryAuthorWorkCountListRequest) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *VideoModelQueryAuthorWorkCountListRequest) sizeField1() (n int) {
+	if len(x.AuthorIdList) == 0 {
+		return n
+	}
+	n += fastpb.SizeListPacked(1, len(x.GetAuthorIdList()),
+		func(numTagOrKey, numIdxOrVal int32) int {
+			n := 0
+			n += fastpb.SizeInt64(numTagOrKey, x.GetAuthorIdList()[numIdxOrVal])
+			return n
+		})
+	return n
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	n += x.sizeField3()
+	return n
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) sizeField1() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt32(1, x.GetStatusCode())
+	return n
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) sizeField2() (n int) {
+	if x.StatusMsg == nil {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetStatusMsg())
+	return n
+}
+
+func (x *VideoModelQueryAuthorWorkCountListResponse) sizeField3() (n int) {
+	if len(x.WorkCountList) == 0 {
+		return n
+	}
+	n += fastpb.SizeListPacked(3, len(x.GetWorkCountList()),
+		func(numTagOrKey, numIdxOrVal int32) int {
+			n := 0
+			n += fastpb.SizeInt32(numTagOrKey, x.GetWorkCountList()[numIdxOrVal])
+			return n
+		})
+	return n
+}
+
 func (x *VideoModelCreateVideoRequest) Size() (n int) {
 	if x == nil {
 		return n
@@ -1047,7 +1256,7 @@ func (x *VideoModelQueryAuthorWorkCountResponse) sizeField3() (n int) {
 	if x.WorkCount == 0 {
 		return n
 	}
-	n += fastpb.SizeUint32(3, x.GetWorkCount())
+	n += fastpb.SizeInt32(3, x.GetWorkCount())
 	return n
 }
 
@@ -1312,6 +1521,16 @@ func (x *VideoBaseInfo) sizeField5() (n int) {
 	}
 	n += fastpb.SizeString(5, x.GetTitle())
 	return n
+}
+
+var fieldIDToName_VideoModelQueryAuthorWorkCountListRequest = map[int32]string{
+	1: "AuthorIdList",
+}
+
+var fieldIDToName_VideoModelQueryAuthorWorkCountListResponse = map[int32]string{
+	1: "StatusCode",
+	2: "StatusMsg",
+	3: "WorkCountList",
 }
 
 var fieldIDToName_VideoModelCreateVideoRequest = map[int32]string{

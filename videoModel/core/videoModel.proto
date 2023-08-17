@@ -9,7 +9,19 @@ service videoModelService{
   rpc QueryVideoList(video_model_query_video_list_request)  returns(video_model_query_video_list_response);
   rpc QueryVideo(video_model_query_video_request) returns(video_model_query_video_response);
   rpc QueryVideoFeed(video_model_query_video_feed_request)  returns(video_model_query_video_feed_response);
+  rpc QueryAuthorWorkCountList(video_model_query_author_work_count_list_request) returns(video_model_query_author_work_count_list_response);
 }
+
+message video_model_query_author_work_count_list_request{
+  repeated int64 author_id_list = 1;
+}
+
+message video_model_query_author_work_count_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated int32 work_count_list = 3;
+}
+
 
 message video_model_create_video_request{
   int64 author_id = 1;
@@ -30,7 +42,7 @@ message video_model_query_author_work_count_request{
 message video_model_query_author_work_count_response{
   int32 status_code = 1; // 状态码，0-成功，其他值-失败
   optional string status_msg = 2; // 返回状态描述
-  uint32 work_count = 3;
+  int32 work_count = 3;
 }
 
 message video_model_query_author_video_list_request{
