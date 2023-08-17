@@ -17,6 +17,7 @@ type Client interface {
 	QueryVideoList(ctx context.Context, Req *api.VideoModelQueryVideoListRequest, callOptions ...callopt.Option) (r *api.VideoModelQueryVideoListResponse, err error)
 	QueryVideo(ctx context.Context, Req *api.VideoModelQueryVideoRequest, callOptions ...callopt.Option) (r *api.VideoModelQueryVideoResponse, err error)
 	QueryVideoFeed(ctx context.Context, Req *api.VideoModelQueryVideoFeedRequest, callOptions ...callopt.Option) (r *api.VideoModelQueryVideoFeedResponse, err error)
+	QueryAuthorWorkCountList(ctx context.Context, Req *api.VideoModelQueryAuthorWorkCountListRequest, callOptions ...callopt.Option) (r *api.VideoModelQueryAuthorWorkCountListResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -76,4 +77,9 @@ func (p *kVideoModelServiceClient) QueryVideo(ctx context.Context, Req *api.Vide
 func (p *kVideoModelServiceClient) QueryVideoFeed(ctx context.Context, Req *api.VideoModelQueryVideoFeedRequest, callOptions ...callopt.Option) (r *api.VideoModelQueryVideoFeedResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.QueryVideoFeed(ctx, Req)
+}
+
+func (p *kVideoModelServiceClient) QueryAuthorWorkCountList(ctx context.Context, Req *api.VideoModelQueryAuthorWorkCountListRequest, callOptions ...callopt.Option) (r *api.VideoModelQueryAuthorWorkCountListResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.QueryAuthorWorkCountList(ctx, Req)
 }

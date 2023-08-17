@@ -46,7 +46,7 @@ func CreateVideo(AuthorId int64, PlayUrl string, CoverUrl string, Title string) 
 	return nil
 }
 
-func QueryAuthorWorkCount(AuthorId int64) (int64, error) {
+func QueryAuthorWorkCount(AuthorId int64) (int32, error) {
 	rpcReq := &api.VideoModelQueryAuthorWorkCountRequest{
 		AuthorId: AuthorId,
 	}
@@ -58,7 +58,7 @@ func QueryAuthorWorkCount(AuthorId int64) (int64, error) {
 		return 0, err
 	}
 
-	return int64(resp.WorkCount), nil
+	return resp.WorkCount, nil
 }
 
 func QueryAuthorVideoList(AuthorId int64) ([]*api.VideoBaseInfo, error) {
@@ -119,4 +119,19 @@ func QueryVideoFeed(nextTime int64) ([]*api.VideoBaseInfo, error) {
 	}
 
 	return resp.VideoBaseInfoList, nil
+}
+
+func QueryAuthorWorkCountList(authorIDList []int64) ([]int32, error) {
+	rpcReq := &api.VideoModelQueryAuthorWorkCountListRequest{
+		AuthorIdList: authorIDList,
+	}
+
+	resp, err := videoModelRpcClient.QueryAuthorWorkCountList(context.Background(), rpcReq)
+
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	return resp.WorkCountList, nil
 }
