@@ -6,8 +6,8 @@ import (
 	"github.com/cloudwego/kitex/client"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"log"
-	"videoInfo/rpcApi/videoModel/api"
-	"videoInfo/rpcApi/videoModel/api/videomodelservice"
+	"rpcApi/videoModel/api"
+	"rpcApi/videoModel/api/videomodelservice"
 )
 
 var videoModelRpcClient videomodelservice.Client

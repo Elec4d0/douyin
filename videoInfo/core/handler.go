@@ -126,22 +126,22 @@ func getIsFavortite(userID int64, authorID int64) bool {
 // GetFeed implements the VideoInfoServiceImpl interface.
 func (s *VideoInfoServiceImpl) GetFeed(ctx context.Context, req *api.VideoInfoGetFeedRequest) (resp *api.VideoInfoGetFeedResponse, err error) {
 	// TODO: Your code here...
-	req.UserId
-	req.NextTime
-
 	//获取视频基本模型
 	videoBaseInfoList, _ := videoModel.QueryVideoFeed(req.NextTime)
 
-	video
+	var videoIdList []int64
+	for _, videoBaseInfo := range videoBaseInfoList {
+		videoIdList = append(videoIdList, videoBaseInfo.VideoId)
+	}
 
 	//获取用户与视频的喜好关系
-	isFavoriteList := getIsFavoriteList(req.UserId, req.VideoIdList)
+	isFavoriteList := getIsFavoriteList(req.UserId, videoIdList)
 
 	//获取视频点赞数
-	FavoriteCountList := getFavouriteCountList(req.VideoIdList)
+	FavoriteCountList := getFavouriteCountList(videoIdList)
 
 	//获取视频评论数
-	CommentCountList := getCommentCountList(req.VideoIdList)
+	CommentCountList := getCommentCountList(videoIdList)
 
 	//非异步项，异步后同步项：获取video作者UserInfo
 	var authorIDList []int64
@@ -150,7 +150,7 @@ func (s *VideoInfoServiceImpl) GetFeed(ctx context.Context, req *api.VideoInfoGe
 	}
 	authorList := getAuthorList(req.UserId, authorIDList)
 
-	resp = &api.VideoInfoGetVideoInfoListResponse{
+	resp = &api.VideoInfoGetFeedResponse{
 		VideoList: buildVideoList(videoBaseInfoList, authorList, isFavoriteList, FavoriteCountList, CommentCountList),
 	}
 	return
@@ -159,5 +159,32 @@ func (s *VideoInfoServiceImpl) GetFeed(ctx context.Context, req *api.VideoInfoGe
 // GetAuthorVideoInfoList implements the VideoInfoServiceImpl interface.
 func (s *VideoInfoServiceImpl) GetAuthorVideoInfoList(ctx context.Context, req *api.VideoInfoGetAuthorVideoInfoListRequest) (resp *api.VideoInfoGetAuthorVideoInfoListResponse, err error) {
 	// TODO: Your code here...
+	//获取视频基本模型
+	videoBaseInfoList, _ := videoModel.QueryAuthorVideoList(req.AuthorId)
+
+	var videoIdList []int64
+	for _, videoBaseInfo := range videoBaseInfoList {
+		videoIdList = append(videoIdList, videoBaseInfo.VideoId)
+	}
+
+	//获取用户与视频的喜好关系
+	isFavoriteList := getIsFavoriteList(req.UserId, videoIdList)
+
+	//获取视频点赞数
+	FavoriteCountList := getFavouriteCountList(videoIdList)
+
+	//获取视频评论数
+	CommentCountList := getCommentCountList(videoIdList)
+
+	//非异步项，异步后同步项：获取video作者UserInfo
+	var authorIDList []int64
+	for _, video := range videoBaseInfoList {
+		authorIDList = append(authorIDList, video.AuthorId)
+	}
+	authorList := getAuthorList(req.UserId, authorIDList)
+
+	resp = &api.VideoInfoGetAuthorVideoInfoListResponse{
+		VideoList: buildVideoList(videoBaseInfoList, authorList, isFavoriteList, FavoriteCountList, CommentCountList),
+	}
 	return
 }
