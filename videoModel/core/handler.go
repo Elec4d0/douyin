@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"time"
 	api "videoModel/core/kitex_gen/api"
 	"videoModel/model"
@@ -87,10 +86,10 @@ func BuildApiBaseVideoInfoList(ormVideos []*model.Video) []*api.VideoBaseInfo {
 
 	//遍历model中的video结构体数组，批量扩孔ApiVideoList
 	for i, video := range ormVideos {
-		fmt.Println(video)
+		//fmt.Println(video)
 		apiVideos[i] = BuildApiBaseInfoVideo(video)
 	}
-	fmt.Println(apiVideos)
+	//fmt.Println(apiVideos)
 	return apiVideos
 }
 

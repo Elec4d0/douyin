@@ -15,13 +15,13 @@ var videoModelRpcClient videomodelservice.Client
 func InitVideoModelRpcClient() videomodelservice.Client {
 	r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	videoModelRpcClient, err = videomodelservice.NewClient("videoModel", client.WithResolver(r))
 
 	if err != nil {
-		log.Fatal("网关层Video 微服务初始化链接失败")
-		log.Fatal(err)
+		log.Println("网关层Video 微服务初始化链接失败")
+		log.Println(err)
 		return nil
 	}
 	fmt.Println("Video 微服务：初始化链接User微服务成功")
@@ -39,8 +39,8 @@ func CreateVideo(AuthorId int64, PlayUrl string, CoverUrl string, Title string) 
 	resp, err := videoModelRpcClient.CreateVideo(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
-		log.Fatal(resp)
+		log.Println(err)
+		log.Println(resp)
 		return err
 	}
 	return nil
@@ -54,7 +54,7 @@ func QueryAuthorWorkCount(AuthorId int64) (int32, error) {
 	resp, err := videoModelRpcClient.QueryAuthorWorkCount(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return 0, err
 	}
 
@@ -69,7 +69,7 @@ func QueryAuthorVideoList(AuthorId int64) ([]*api.VideoBaseInfo, error) {
 	resp, err := videoModelRpcClient.QueryAuthorVideoList(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -84,7 +84,7 @@ func QueryVideoList(videoIDs []int64) ([]*api.VideoBaseInfo, error) {
 	resp, err := videoModelRpcClient.QueryVideoList(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -99,7 +99,7 @@ func QueryVideo(videoID int64) (*api.VideoBaseInfo, error) {
 	resp, err := videoModelRpcClient.QueryVideo(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -114,7 +114,7 @@ func QueryVideoFeed(nextTime int64) ([]*api.VideoBaseInfo, error) {
 	resp, err := videoModelRpcClient.QueryVideoFeed(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -129,7 +129,7 @@ func QueryAuthorWorkCountList(authorIDList []int64) ([]int32, error) {
 	resp, err := videoModelRpcClient.QueryAuthorWorkCountList(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
