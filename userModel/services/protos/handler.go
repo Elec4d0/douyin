@@ -65,7 +65,7 @@ func (s *UserModelServiceImpl) FindBaseUserByName(ctx context.Context, req *api.
 
 		resp.BaseUser = nil
 
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 	resp.StatusCode = 0
@@ -93,7 +93,7 @@ func (s *UserModelServiceImpl) FindBaseUserById(ctx context.Context, req *api.Do
 
 		resp.BaseUser = nil
 
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 	resp.StatusCode = 0
@@ -128,7 +128,7 @@ func (s *UserModelServiceImpl) FindBaseUserList(ctx context.Context, req *api.Do
 
 		resp.BaseUser = users
 
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 	resp.StatusCode = 0
