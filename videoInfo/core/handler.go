@@ -28,7 +28,7 @@ func (s *VideoInfoServiceImpl) GetVideoInfoList(ctx context.Context, req *api.Vi
 	FavoriteCountList := getFavouriteCountList(req.VideoIdList)
 
 	//获取视频评论数
-	CommentCountList := getCommentCountList(req.VideoIdList)
+	CommentCountList := getCommentCountList(req.VideoIdList)afsfai?
 
 	//非异步项，异步后同步项：获取video作者UserInfo
 	var authorIDList []int64
