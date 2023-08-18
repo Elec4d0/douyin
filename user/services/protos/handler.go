@@ -3,9 +3,8 @@ package protos
 import (
 	"context"
 	"log"
-	"time"
-	"user/model"
 	api "user/services/protos/kitex_gen/api"
+	userModelServices "user/userModelAPI"
 	"user/utils"
 	"user/utils/jwt"
 )
@@ -15,6 +14,7 @@ type UserServiceImpl struct{}
 
 // UserLogin implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserLogin(ctx context.Context, req *api.DouyinUserLoginRequest) (resp *api.DouyinUserLoginResponse, err error) {
+	// TODO: Your code here...
 	resp = new(api.DouyinUserLoginResponse)
 
 	name := req.Username
@@ -32,7 +32,7 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *api.DouyinUserLogi
 	}
 
 	// find id
-	user, err := model.FindUserByName(name)
+	id, err := userModelServices.FindIDByName(name)
 	if err != nil {
 		resp.StatusCode = 1
 
@@ -45,7 +45,8 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *api.DouyinUserLogi
 	}
 
 	// check password
-	if user.Password != utils.SHA256(password) {
+	psd, err := userModelServices.FindBaseUserPassword(id)
+	if psd != utils.SHA256(password) {
 		resp.StatusCode = 1
 
 		statusMsg := "用户名或密码错误！"
@@ -56,27 +57,32 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *api.DouyinUserLogi
 		return
 	}
 
-	//生成Token
-	resp.Token, err = jwt.GenerateToken(user.ID, user.Name)
+	// get token
+	token, err := jwt.GenerateToken(id, name)
 	if err != nil {
 		resp.StatusCode = 1
-		statusMsg := "Token生成失败！"
+
+		statusMsg := "token签发错误！"
 		resp.StatusMsg = &statusMsg
+
 		resp.UserId = -1
 		resp.Token = ""
 		return
 	}
 
 	resp.StatusCode = 0
+
 	statusMsg := "登录成功！"
 	resp.StatusMsg = &statusMsg
-	resp.UserId = user.ID
 
+	resp.UserId = id
+	resp.Token = token
 	return
 }
 
 // UserRegister implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserRegister(ctx context.Context, req *api.DouyinUserRegisterRequest) (resp *api.DouyinUserRegisterResponse, err error) {
+	// TODO: Your code here...
 	resp = new(api.DouyinUserRegisterResponse)
 
 	name := req.Username
@@ -94,7 +100,7 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *api.DouyinUserR
 	}
 
 	// if there has the same name in database
-	err = model.FindName(name)
+	_, err = userModelServices.FindIDByName(name)
 	if err == nil {
 		resp.StatusCode = 1
 
@@ -106,20 +112,7 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *api.DouyinUserR
 		return
 	}
 
-	// create user model
-	user := &model.User{Name: name,
-		Password:       utils.SHA256(password),
-		FollowCount:    0,
-		FollowerCount:  0,
-		WorkCount:      0,
-		TotalFavorited: 0,
-		FavoriteCount:  0,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
-		Token:          "",
-	}
-
-	id, err := model.CreateUser(user)
+	id, err := userModelServices.CreateBaseUser(name, password)
 	if err != nil {
 		resp.StatusCode = 1
 
@@ -128,64 +121,27 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *api.DouyinUserR
 
 		resp.UserId = -1
 		resp.Token = ""
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
 
-	//登录验证成功，生成Token
-	resp.Token, err = jwt.GenerateToken(user.ID, user.Name)
+	token, err := jwt.GenerateToken(id, name)
 	if err != nil {
 		resp.StatusCode = 1
-		statusMsg := "Token生成失败！"
+
+		statusMsg := "token签发错误！"
 		resp.StatusMsg = &statusMsg
+
 		resp.UserId = -1
 		resp.Token = ""
 		return
 	}
-
 	resp.StatusCode = 0
 
 	statusMsg := "注册成功！"
 	resp.StatusMsg = &statusMsg
 
 	resp.UserId = id
-
-	return
-}
-
-// UserInfo implements the UserServiceImpl interface.
-func (s *UserServiceImpl) UserInfo(ctx context.Context, req *api.DouyinUserRequest) (resp *api.DouyinUserResponse, err error) {
-	// id that need to be searched
-	searchID := req.UserId
-	// token is belonged to user who need to search
-	resp = new(api.DouyinUserResponse)
-
-	// through token find id
-	// need more----------------------
-	// ownerID := 100010
-
-	// find user info
-	user, err := model.FindUserByID(searchID)
-	if err != nil {
-		resp.StatusCode = 1
-
-		statusMsg := "用户信息错误！"
-		resp.StatusMsg = &statusMsg
-
-		resp.User = nil
-		return
-	}
-
-	// get isFollow -----------------------------
-	var isFollow bool
-	isFollow = false
-
-	resp.StatusCode = 0
-
-	statusMsg := "查询成功！"
-	resp.StatusMsg = &statusMsg
-
-	resp.User = convertUserTable(user, isFollow)
-
+	resp.Token = token
 	return
 }

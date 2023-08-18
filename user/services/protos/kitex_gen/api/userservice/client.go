@@ -13,7 +13,6 @@ import (
 type Client interface {
 	UserLogin(ctx context.Context, Req *api.DouyinUserLoginRequest, callOptions ...callopt.Option) (r *api.DouyinUserLoginResponse, err error)
 	UserRegister(ctx context.Context, Req *api.DouyinUserRegisterRequest, callOptions ...callopt.Option) (r *api.DouyinUserRegisterResponse, err error)
-	UserInfo(ctx context.Context, Req *api.DouyinUserRequest, callOptions ...callopt.Option) (r *api.DouyinUserResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -53,9 +52,4 @@ func (p *kUserServiceClient) UserLogin(ctx context.Context, Req *api.DouyinUserL
 func (p *kUserServiceClient) UserRegister(ctx context.Context, Req *api.DouyinUserRegisterRequest, callOptions ...callopt.Option) (r *api.DouyinUserRegisterResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.UserRegister(ctx, Req)
-}
-
-func (p *kUserServiceClient) UserInfo(ctx context.Context, Req *api.DouyinUserRequest, callOptions ...callopt.Option) (r *api.DouyinUserResponse, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.UserInfo(ctx, Req)
 }

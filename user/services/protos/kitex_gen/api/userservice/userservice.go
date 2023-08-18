@@ -24,7 +24,6 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	methods := map[string]kitex.MethodInfo{
 		"UserLogin":    kitex.NewMethodInfo(userLoginHandler, newUserLoginArgs, newUserLoginResult, false),
 		"UserRegister": kitex.NewMethodInfo(userRegisterHandler, newUserRegisterArgs, newUserRegisterResult, false),
-		"UserInfo":     kitex.NewMethodInfo(userInfoHandler, newUserInfoArgs, newUserInfoResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "services",
@@ -346,159 +345,6 @@ func (p *UserRegisterResult) GetResult() interface{} {
 	return p.Success
 }
 
-func userInfoHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(api.DouyinUserRequest)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(api.UserService).UserInfo(ctx, req)
-		if err != nil {
-			return err
-		}
-		if err := st.SendMsg(resp); err != nil {
-			return err
-		}
-	case *UserInfoArgs:
-		success, err := handler.(api.UserService).UserInfo(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*UserInfoResult)
-		realResult.Success = success
-	}
-	return nil
-}
-func newUserInfoArgs() interface{} {
-	return &UserInfoArgs{}
-}
-
-func newUserInfoResult() interface{} {
-	return &UserInfoResult{}
-}
-
-type UserInfoArgs struct {
-	Req *api.DouyinUserRequest
-}
-
-func (p *UserInfoArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
-	if !p.IsSetReq() {
-		p.Req = new(api.DouyinUserRequest)
-	}
-	return p.Req.FastRead(buf, _type, number)
-}
-
-func (p *UserInfoArgs) FastWrite(buf []byte) (n int) {
-	if !p.IsSetReq() {
-		return 0
-	}
-	return p.Req.FastWrite(buf)
-}
-
-func (p *UserInfoArgs) Size() (n int) {
-	if !p.IsSetReq() {
-		return 0
-	}
-	return p.Req.Size()
-}
-
-func (p *UserInfoArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, fmt.Errorf("No req in UserInfoArgs")
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *UserInfoArgs) Unmarshal(in []byte) error {
-	msg := new(api.DouyinUserRequest)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Req = msg
-	return nil
-}
-
-var UserInfoArgs_Req_DEFAULT *api.DouyinUserRequest
-
-func (p *UserInfoArgs) GetReq() *api.DouyinUserRequest {
-	if !p.IsSetReq() {
-		return UserInfoArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-func (p *UserInfoArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *UserInfoArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type UserInfoResult struct {
-	Success *api.DouyinUserResponse
-}
-
-var UserInfoResult_Success_DEFAULT *api.DouyinUserResponse
-
-func (p *UserInfoResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
-	if !p.IsSetSuccess() {
-		p.Success = new(api.DouyinUserResponse)
-	}
-	return p.Success.FastRead(buf, _type, number)
-}
-
-func (p *UserInfoResult) FastWrite(buf []byte) (n int) {
-	if !p.IsSetSuccess() {
-		return 0
-	}
-	return p.Success.FastWrite(buf)
-}
-
-func (p *UserInfoResult) Size() (n int) {
-	if !p.IsSetSuccess() {
-		return 0
-	}
-	return p.Success.Size()
-}
-
-func (p *UserInfoResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, fmt.Errorf("No req in UserInfoResult")
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *UserInfoResult) Unmarshal(in []byte) error {
-	msg := new(api.DouyinUserResponse)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *UserInfoResult) GetSuccess() *api.DouyinUserResponse {
-	if !p.IsSetSuccess() {
-		return UserInfoResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *UserInfoResult) SetSuccess(x interface{}) {
-	p.Success = x.(*api.DouyinUserResponse)
-}
-
-func (p *UserInfoResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *UserInfoResult) GetResult() interface{} {
-	return p.Success
-}
-
 type kClient struct {
 	c client.Client
 }
@@ -524,16 +370,6 @@ func (p *kClient) UserRegister(ctx context.Context, Req *api.DouyinUserRegisterR
 	_args.Req = Req
 	var _result UserRegisterResult
 	if err = p.c.Call(ctx, "UserRegister", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) UserInfo(ctx context.Context, Req *api.DouyinUserRequest) (r *api.DouyinUserResponse, err error) {
-	var _args UserInfoArgs
-	_args.Req = Req
-	var _result UserInfoResult
-	if err = p.c.Call(ctx, "UserInfo", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
