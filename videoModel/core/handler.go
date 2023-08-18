@@ -93,6 +93,9 @@ func BuildApiBaseVideoInfoList(videos []*model.Video) []*api.VideoBaseInfo {
 func BuildApiBaseInfoVideo(video *model.Video) *api.VideoBaseInfo {
 	//uid, _ := strconv.ParseInt(strconv.FormatUint(video.AuthorID, 10), 10, 64)
 	//author := BuildApiUser(uid)
+	if video == nil {
+		return nil
+	}
 	return &api.VideoBaseInfo{
 		VideoId:  video.VideoID,
 		AuthorId: video.AuthorID,
