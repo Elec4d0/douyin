@@ -13,5 +13,6 @@ func TestQueryVideo(t *testing.T) {
 }
 
 func TestQueryAuthorWorkCount(t *testing.T) {
-
+	count, _ := QueryAuthorWorkCount(1000006)
+	fmt.Println(count)
 }

@@ -88,8 +88,8 @@ func QueryVideoFeedByLastTimeAndLimit(lastTime *string, limit int) ([]*Video, er
 }
 
 func QueryAuthorWorkCount(authorID int64) (int32, error) {
-	//var videos []*Video
-	result := DB.Where("author_id = ?", authorID)
+	var videos []*Video
+	result := DB.Where("author_id = ?", authorID).Find(&videos)
 	err := result.Error
 
 	if err != nil {
