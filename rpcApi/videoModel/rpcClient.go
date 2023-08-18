@@ -129,8 +129,9 @@ func QueryAuthorWorkCountList(authorIDList []int64) ([]int32, error) {
 	resp, err := videoModelRpcClient.QueryAuthorWorkCountList(context.Background(), rpcReq)
 
 	if err != nil {
+		n := len(authorIDList)
 		log.Println(err)
-		return nil, err
+		return make([]int32, n, n), err
 	}
 
 	return resp.WorkCountList, nil

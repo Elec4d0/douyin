@@ -11,3 +11,7 @@ func TestQueryVideo(t *testing.T) {
 	video, _ := QueryVideo(1)
 	fmt.Println(video)
 }
+
+func TestQueryAuthorWorkCount(t *testing.T) {
+
+}

@@ -151,10 +151,12 @@ func (s *VideoModelServiceImpl) QueryAuthorWorkCountList(ctx context.Context, re
 	// TODO: Your code here...
 	authorIDlist := req.AuthorIdList
 
-	var workCountList []int32
-	for _, authorID := range authorIDlist {
+	n := len(authorIDlist)
+	var workCountList = make([]int32, n, n)
+
+	for i, authorID := range authorIDlist {
 		count, _ := model.QueryAuthorWorkCount(authorID)
-		workCountList = append(workCountList, count)
+		workCountList[i] = count
 	}
 
 	resp = &api.VideoModelQueryAuthorWorkCountListResponse{
