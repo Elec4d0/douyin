@@ -4,7 +4,7 @@ package userinfoservice
 
 import (
 	server "github.com/cloudwego/kitex/server"
-	api "rpcApi/userInfoAPI/api"
+	api 	"rpcApi/userInfoAPI/api"
 )
 
 // NewInvoker creates a server.Invoker with the given handler and options.
