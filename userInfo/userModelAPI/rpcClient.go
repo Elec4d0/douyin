@@ -17,10 +17,10 @@ func InitUserModelRpcClient() usermodelservice.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-	userModelRpcClient, err = usermodelservice.NewClient("videoModel", client.WithResolver(r))
+	userModelRpcClient, err = usermodelservice.NewClient("UserModelService", client.WithResolver(r))
 
 	if err != nil {
-		log.Fatal("网关层userModel 微服务初始化链接失败")
+		log.Println("网关层userModel 微服务初始化链接失败")
 		log.Fatal(err)
 		return nil
 	}
@@ -37,7 +37,7 @@ func CreateBaseUser(username string, password string) (int64, error) {
 	resp, err := userModelRpcClient.CreateBaseUser(context.Background(), rpcReq)
 	if err != nil {
 		log.Println(resp)
-		log.Fatal(err)
+		log.Println(err)
 		return 0, err
 	}
 
@@ -53,7 +53,7 @@ func FindBaseUserByName(username string) (*api.BaseUser, error) {
 
 	if err != nil {
 		log.Println(resp)
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return resp.BaseUser, nil
@@ -68,7 +68,7 @@ func FindBaseUserById(user_id int64) (*api.BaseUser, error) {
 
 	if err != nil {
 		log.Println(resp)
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return resp.BaseUser, nil
@@ -83,7 +83,7 @@ func FindBaseUserList(author_id []int64) ([]*api.BaseUser, error) {
 
 	if err != nil {
 		log.Println(resp)
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return resp.BaseUser, nil

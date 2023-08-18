@@ -1,4 +1,4 @@
-package userInfo
+package main
 
 import (
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -22,7 +22,7 @@ func main() {
 	}
 
 	//指定IP，对外服务并在ETCD注册
-	addr, _ := net.ResolveTCPAddr("tpc", "127.0.0.1:15100")
+	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:15100")
 	server := api.NewServer(new(protos.UserInfoServiceImpl), server.WithServiceAddr(addr), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "userInfoService"}), server.WithRegistry(r))
 
 	err = server.Run()

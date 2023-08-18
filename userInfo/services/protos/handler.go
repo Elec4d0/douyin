@@ -2,6 +2,7 @@ package protos
 
 import (
 	"context"
+	"fmt"
 	api "userInfo/services/protos/kitex_gen/api"
 	userModelServices "userInfo/userModelAPI"
 )
@@ -50,13 +51,29 @@ func (s *UserInfoServiceImpl) GetFullUserInfo(ctx context.Context, req *api.Douy
 
 	//获取视频点赞数
 	workCount := GetWorkCount(searchId)
+	id := int64(0)
+	name := ""
+	var avatar *string
+	avatar = nil
+	var backgroundImage *string
+	backgroundImage = nil
+	var signature *string
+	signature = nil
+
+	if baseUser != nil {
+		id = baseUser.Id
+		name = baseUser.Name
+		avatar = baseUser.Avatar
+		backgroundImage = baseUser.BackgroundImage
+		signature = baseUser.Signature
+	}
 
 	fullUser := &api.FullUser{
-		Id:              baseUser.Id,
-		Name:            baseUser.Name,
-		Avatar:          baseUser.Avatar,
-		BackgroundImage: baseUser.BackgroundImage,
-		Signature:       baseUser.Signature,
+		Id:              id,
+		Name:            name,
+		Avatar:          avatar,
+		BackgroundImage: backgroundImage,
+		Signature:       signature,
 		WorkCount:       &workCount,
 		TotalFavorited:  &totalFavorited,
 		FavoriteCount:   &favoriteCount,
@@ -77,35 +94,57 @@ func (s *UserInfoServiceImpl) GetFullUserInfoList(ctx context.Context, req *api.
 	resp = new(api.DouyinUserGetFullUserInfoListResponse)
 
 	userId := req.UserId
+	fmt.Println("find list user_id:", userId)
 
 	searchId := req.SearchId
 
 	baseUser, _ := userModelServices.FindBaseUserList(searchId)
 
-	followCount, followerCount, isFollow := GetRelationInfoList(userId, searchId)
+	// followCount, followerCount, isFollow := GetRelationInfoList(userId, searchId)
+	followCount1 := int64(0)
+	followerCount1 := int64(0)
 
 	//获取用户与视频的喜好关系
-	totalFavorited, favoriteCount := GetFavoriteInfoList(searchId)
+	// totalFavorited, favoriteCount := GetFavoriteInfoList(searchId)
+	totalFavorited1 := int64(0)
+	favoriteCount1 := int64(0)
 
 	//获取视频点赞数
-	workCount := GetWorkCountList(searchId)
+	// workCount := GetWorkCountList(searchId)
+	workCount1 := int64(0)
 
 	var fullUser []*api.FullUser
 
+	id := int64(0)
+	name := ""
+	var avatar *string
+	avatar = nil
+	var backgroundImage *string
+	backgroundImage = nil
+	var signature *string
+	signature = nil
+
 	for i := 0; i < len(searchId); i++ {
+		if baseUser[i] != nil {
+			id = baseUser[i].Id
+			name = baseUser[i].Name
+			avatar = baseUser[i].Avatar
+			backgroundImage = baseUser[i].BackgroundImage
+			signature = baseUser[i].Signature
+		}
 		fullUser = append(fullUser,
 			&api.FullUser{
-				Id:              baseUser[i].Id,
-				Name:            baseUser[i].Name,
-				Avatar:          baseUser[i].Avatar,
-				BackgroundImage: baseUser[i].BackgroundImage,
-				Signature:       baseUser[i].Signature,
-				WorkCount:       &workCount[i],
-				TotalFavorited:  &totalFavorited[i],
-				FavoriteCount:   &favoriteCount[i],
-				FollowerCount:   &followerCount[i],
-				FollowCount:     &followCount[i],
-				IsFollow:        isFollow[i],
+				Id:              id,
+				Name:            name,
+				Avatar:          avatar,
+				BackgroundImage: backgroundImage,
+				Signature:       signature,
+				WorkCount:       &workCount1,
+				TotalFavorited:  &totalFavorited1,
+				FavoriteCount:   &favoriteCount1,
+				FollowerCount:   &followerCount1,
+				FollowCount:     &followCount1,
+				IsFollow:        false,
 			})
 	}
 	resp.StatusCode = 0
