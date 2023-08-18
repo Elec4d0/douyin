@@ -3,7 +3,7 @@ package userinfoservice
 
 import (
 	server "github.com/cloudwego/kitex/server"
-	api "rpcApi/userInfoAPI/api"
+	api 	"rpcApi/userInfoAPI/api""
 )
 
 // NewServer creates a server.Server with the given handler and options.

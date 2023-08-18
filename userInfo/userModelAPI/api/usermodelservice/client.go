@@ -15,6 +15,8 @@ type Client interface {
 	FindBaseUserByName(ctx context.Context, Req *api.DouyinUserFindBaseUserByNameRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindBaseUserByNameResponse, err error)
 	FindBaseUserById(ctx context.Context, Req *api.DouyinUserFindBaseUserByIdRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindBaseUserByIdResponse, err error)
 	FindBaseUserList(ctx context.Context, Req *api.DouyinUserFindBaseUserListRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindBaseUserListResponse, err error)
+	FindBaseUserPassword(ctx context.Context, Req *api.DouyinUserFindBaseUserPasswordRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindBaseUserPasswordResponse, err error)
+	FindIDByName(ctx context.Context, Req *api.DouyinUserFindIdByNameRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindIdByNameResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -64,4 +66,14 @@ func (p *kUserModelServiceClient) FindBaseUserById(ctx context.Context, Req *api
 func (p *kUserModelServiceClient) FindBaseUserList(ctx context.Context, Req *api.DouyinUserFindBaseUserListRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindBaseUserListResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.FindBaseUserList(ctx, Req)
+}
+
+func (p *kUserModelServiceClient) FindBaseUserPassword(ctx context.Context, Req *api.DouyinUserFindBaseUserPasswordRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindBaseUserPasswordResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.FindBaseUserPassword(ctx, Req)
+}
+
+func (p *kUserModelServiceClient) FindIDByName(ctx context.Context, Req *api.DouyinUserFindIdByNameRequest, callOptions ...callopt.Option) (r *api.DouyinUserFindIdByNameResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.FindIDByName(ctx, Req)
 }

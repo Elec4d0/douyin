@@ -22,10 +22,12 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "UserModelService"
 	handlerType := (*api.UserModelService)(nil)
 	methods := map[string]kitex.MethodInfo{
-		"CreateBaseUser":     kitex.NewMethodInfo(createBaseUserHandler, newCreateBaseUserArgs, newCreateBaseUserResult, false),
-		"FindBaseUserByName": kitex.NewMethodInfo(findBaseUserByNameHandler, newFindBaseUserByNameArgs, newFindBaseUserByNameResult, false),
-		"FindBaseUserById":   kitex.NewMethodInfo(findBaseUserByIdHandler, newFindBaseUserByIdArgs, newFindBaseUserByIdResult, false),
-		"FindBaseUserList":   kitex.NewMethodInfo(findBaseUserListHandler, newFindBaseUserListArgs, newFindBaseUserListResult, false),
+		"CreateBaseUser":       kitex.NewMethodInfo(createBaseUserHandler, newCreateBaseUserArgs, newCreateBaseUserResult, false),
+		"FindBaseUserByName":   kitex.NewMethodInfo(findBaseUserByNameHandler, newFindBaseUserByNameArgs, newFindBaseUserByNameResult, false),
+		"FindBaseUserById":     kitex.NewMethodInfo(findBaseUserByIdHandler, newFindBaseUserByIdArgs, newFindBaseUserByIdResult, false),
+		"FindBaseUserList":     kitex.NewMethodInfo(findBaseUserListHandler, newFindBaseUserListArgs, newFindBaseUserListResult, false),
+		"FindBaseUserPassword": kitex.NewMethodInfo(findBaseUserPasswordHandler, newFindBaseUserPasswordArgs, newFindBaseUserPasswordResult, false),
+		"FindIDByName":         kitex.NewMethodInfo(findIDByNameHandler, newFindIDByNameArgs, newFindIDByNameResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "services",
@@ -653,6 +655,312 @@ func (p *FindBaseUserListResult) GetResult() interface{} {
 	return p.Success
 }
 
+func findBaseUserPasswordHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(api.DouyinUserFindBaseUserPasswordRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(api.UserModelService).FindBaseUserPassword(ctx, req)
+		if err != nil {
+			return err
+		}
+		if err := st.SendMsg(resp); err != nil {
+			return err
+		}
+	case *FindBaseUserPasswordArgs:
+		success, err := handler.(api.UserModelService).FindBaseUserPassword(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*FindBaseUserPasswordResult)
+		realResult.Success = success
+	}
+	return nil
+}
+func newFindBaseUserPasswordArgs() interface{} {
+	return &FindBaseUserPasswordArgs{}
+}
+
+func newFindBaseUserPasswordResult() interface{} {
+	return &FindBaseUserPasswordResult{}
+}
+
+type FindBaseUserPasswordArgs struct {
+	Req *api.DouyinUserFindBaseUserPasswordRequest
+}
+
+func (p *FindBaseUserPasswordArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(api.DouyinUserFindBaseUserPasswordRequest)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *FindBaseUserPasswordArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *FindBaseUserPasswordArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *FindBaseUserPasswordArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, fmt.Errorf("No req in FindBaseUserPasswordArgs")
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *FindBaseUserPasswordArgs) Unmarshal(in []byte) error {
+	msg := new(api.DouyinUserFindBaseUserPasswordRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var FindBaseUserPasswordArgs_Req_DEFAULT *api.DouyinUserFindBaseUserPasswordRequest
+
+func (p *FindBaseUserPasswordArgs) GetReq() *api.DouyinUserFindBaseUserPasswordRequest {
+	if !p.IsSetReq() {
+		return FindBaseUserPasswordArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *FindBaseUserPasswordArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *FindBaseUserPasswordArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type FindBaseUserPasswordResult struct {
+	Success *api.DouyinUserFindBaseUserPasswordResponse
+}
+
+var FindBaseUserPasswordResult_Success_DEFAULT *api.DouyinUserFindBaseUserPasswordResponse
+
+func (p *FindBaseUserPasswordResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(api.DouyinUserFindBaseUserPasswordResponse)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *FindBaseUserPasswordResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *FindBaseUserPasswordResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *FindBaseUserPasswordResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, fmt.Errorf("No req in FindBaseUserPasswordResult")
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *FindBaseUserPasswordResult) Unmarshal(in []byte) error {
+	msg := new(api.DouyinUserFindBaseUserPasswordResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *FindBaseUserPasswordResult) GetSuccess() *api.DouyinUserFindBaseUserPasswordResponse {
+	if !p.IsSetSuccess() {
+		return FindBaseUserPasswordResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *FindBaseUserPasswordResult) SetSuccess(x interface{}) {
+	p.Success = x.(*api.DouyinUserFindBaseUserPasswordResponse)
+}
+
+func (p *FindBaseUserPasswordResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *FindBaseUserPasswordResult) GetResult() interface{} {
+	return p.Success
+}
+
+func findIDByNameHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(api.DouyinUserFindIdByNameRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(api.UserModelService).FindIDByName(ctx, req)
+		if err != nil {
+			return err
+		}
+		if err := st.SendMsg(resp); err != nil {
+			return err
+		}
+	case *FindIDByNameArgs:
+		success, err := handler.(api.UserModelService).FindIDByName(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*FindIDByNameResult)
+		realResult.Success = success
+	}
+	return nil
+}
+func newFindIDByNameArgs() interface{} {
+	return &FindIDByNameArgs{}
+}
+
+func newFindIDByNameResult() interface{} {
+	return &FindIDByNameResult{}
+}
+
+type FindIDByNameArgs struct {
+	Req *api.DouyinUserFindIdByNameRequest
+}
+
+func (p *FindIDByNameArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(api.DouyinUserFindIdByNameRequest)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *FindIDByNameArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *FindIDByNameArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *FindIDByNameArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, fmt.Errorf("No req in FindIDByNameArgs")
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *FindIDByNameArgs) Unmarshal(in []byte) error {
+	msg := new(api.DouyinUserFindIdByNameRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var FindIDByNameArgs_Req_DEFAULT *api.DouyinUserFindIdByNameRequest
+
+func (p *FindIDByNameArgs) GetReq() *api.DouyinUserFindIdByNameRequest {
+	if !p.IsSetReq() {
+		return FindIDByNameArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *FindIDByNameArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *FindIDByNameArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type FindIDByNameResult struct {
+	Success *api.DouyinUserFindIdByNameResponse
+}
+
+var FindIDByNameResult_Success_DEFAULT *api.DouyinUserFindIdByNameResponse
+
+func (p *FindIDByNameResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(api.DouyinUserFindIdByNameResponse)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *FindIDByNameResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *FindIDByNameResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *FindIDByNameResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, fmt.Errorf("No req in FindIDByNameResult")
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *FindIDByNameResult) Unmarshal(in []byte) error {
+	msg := new(api.DouyinUserFindIdByNameResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *FindIDByNameResult) GetSuccess() *api.DouyinUserFindIdByNameResponse {
+	if !p.IsSetSuccess() {
+		return FindIDByNameResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *FindIDByNameResult) SetSuccess(x interface{}) {
+	p.Success = x.(*api.DouyinUserFindIdByNameResponse)
+}
+
+func (p *FindIDByNameResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *FindIDByNameResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -698,6 +1006,26 @@ func (p *kClient) FindBaseUserList(ctx context.Context, Req *api.DouyinUserFindB
 	_args.Req = Req
 	var _result FindBaseUserListResult
 	if err = p.c.Call(ctx, "FindBaseUserList", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) FindBaseUserPassword(ctx context.Context, Req *api.DouyinUserFindBaseUserPasswordRequest) (r *api.DouyinUserFindBaseUserPasswordResponse, err error) {
+	var _args FindBaseUserPasswordArgs
+	_args.Req = Req
+	var _result FindBaseUserPasswordResult
+	if err = p.c.Call(ctx, "FindBaseUserPassword", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) FindIDByName(ctx context.Context, Req *api.DouyinUserFindIdByNameRequest) (r *api.DouyinUserFindIdByNameResponse, err error) {
+	var _args FindIDByNameArgs
+	_args.Req = Req
+	var _result FindIDByNameResult
+	if err = p.c.Call(ctx, "FindIDByName", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
