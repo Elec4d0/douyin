@@ -5,13 +5,19 @@ import (
 	"fmt"
 	api "userInfo/services/protos/kitex_gen/api"
 	userModelServices "userInfo/userModelAPI"
+	videoModelServices "userInfo/videoModel"
 )
 
 // UserInfoServiceImpl implements the last service interface defined in the IDL.
 type UserInfoServiceImpl struct{}
 
 func GetWorkCount(user_id int64) int64 {
-	return 0
+	count, err := videoModelServices.QueryAuthorWorkCount(user_id)
+	if err != nil {
+
+		return 0
+	}
+	return int64(count)
 }
 
 func GetFavoriteInfo(user_id int64) (int64, int64) {
@@ -23,7 +29,18 @@ func GetRelationInfo(user_id int64, search_id int64) (int64, int64, bool) {
 }
 
 func GetWorkCountList(user_id []int64) []int64 {
-	return nil
+	count, _ := videoModelServices.QueryAuthorWorkCountList(user_id)
+	//var workCount = make([]int64, len(user_id))
+	//if count != nil {
+	//	for i := 0; i < len(count); i++ {
+	//		workCount = append(workCount, int64(count[i]))
+	//	}
+	//}
+	var workCount []int64
+	for i := 0; i < len(count); i++ {
+		workCount = append(workCount, int64(count[i]))
+	}
+	return workCount
 }
 
 func GetFavoriteInfoList(user_id []int64) ([]int64, []int64) {
@@ -51,6 +68,7 @@ func (s *UserInfoServiceImpl) GetFullUserInfo(ctx context.Context, req *api.Douy
 
 	//获取视频点赞数
 	workCount := GetWorkCount(searchId)
+
 	id := int64(0)
 	name := ""
 	var avatar *string
@@ -110,8 +128,7 @@ func (s *UserInfoServiceImpl) GetFullUserInfoList(ctx context.Context, req *api.
 	favoriteCount1 := int64(0)
 
 	//获取视频点赞数
-	// workCount := GetWorkCountList(searchId)
-	workCount1 := int64(0)
+	workCount := GetWorkCountList(searchId)
 
 	var fullUser []*api.FullUser
 
@@ -139,7 +156,7 @@ func (s *UserInfoServiceImpl) GetFullUserInfoList(ctx context.Context, req *api.
 				Avatar:          avatar,
 				BackgroundImage: backgroundImage,
 				Signature:       signature,
-				WorkCount:       &workCount1,
+				WorkCount:       &workCount[i],
 				TotalFavorited:  &totalFavorited1,
 				FavoriteCount:   &favoriteCount1,
 				FollowerCount:   &followerCount1,

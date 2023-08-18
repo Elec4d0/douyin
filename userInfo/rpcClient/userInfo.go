@@ -55,7 +55,7 @@ func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, err
 	if err != nil {
 		log.Println(resp)
 		log.Println(err)
-		return nil, err
+		return make([]*api.FullUser, len(search_id)), err
 	}
 	return resp.FullUser, nil
 }

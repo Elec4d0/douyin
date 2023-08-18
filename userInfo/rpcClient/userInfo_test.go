@@ -4,22 +4,25 @@ import (
 	"fmt"
 	"testing"
 	userModelServices "userInfo/userModelAPI"
+	videoModelServices "userInfo/videoModel"
 )
 
 /*
 func TestGetFullUserInfo(t *testing.T) {
 	userModelServices.InitUserModelRpcClient()
+	videoModelServices.InitVideoModelRpcClient()
 	InitUserInfoRpcClient()
-	fullUser, _ := GetFullUserInfo(1000008, 1000005)
+	fullUser, _ := GetFullUserInfo(1000008, 1000006)
 
 	fmt.Println(fullUser)
 }*/
 
 func TestGetFullUserInfoList(t *testing.T) {
 	userModelServices.InitUserModelRpcClient()
+	videoModelServices.InitVideoModelRpcClient()
 	InitUserInfoRpcClient()
 	var search_id []int64
-	search_id = append(search_id, 1000009, 1000008, 100008, 1000015)
+	search_id = append(search_id, 1000009, 1000006, 100008, 1000015)
 	user, _ := GetFullUserInfoList(1000008, search_id)
 
 	for i := 0; i < len(user); i++ {
