@@ -20,7 +20,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := api.NewServer(new(protos.VideoModelProtoBufImpl), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "videoModel"}), server.WithRegistry(r))
+	server := api.NewServer(new(protos.VideoModelServiceImpl), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "videoModel"}), server.WithRegistry(r))
 
 	err = server.Run()
 	if err != nil {

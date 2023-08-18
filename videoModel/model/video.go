@@ -50,10 +50,25 @@ func QueryAuthorVideoList(authorId int64) ([]*Video, error) {
 func GetVideosByIds(videoIDs []int64) ([]*Video, error) {
 	var videos []*Video
 
-	err := DB.Where("video_id in (?)", videoIDs).Find(&videos).Error
+	var DBVideosSet []*Video
+	err := DB.Where("video_id in (?)", videoIDs).Find(&DBVideosSet).Error
 	if err != nil {
 		return nil, err
 	}
+
+	var m map[int64]*Video
+	for _, video := range DBVideosSet {
+		m[video.VideoID] = video
+	}
+
+	for _, ID := range videoIDs {
+		if video, ok := m[ID]; ok {
+			videos = append(videos, video)
+		} else {
+			videos = append(videos, nil)
+		}
+	}
+
 	return videos, err
 }
 
@@ -71,8 +86,8 @@ func QueryVideoFeedByLastTimeAndLimit(lastTime *string, limit int) ([]*Video, er
 }
 
 func QueryAuthorWorkCount(authorID int64) (int32, error) {
-	var videos []*Video
-	result := DB.Where("author_id = ?", authorID).Find(&videos)
+	//var videos []*Video
+	result := DB.Where("author_id = ?", authorID)
 	err := result.Error
 
 	if err != nil {
