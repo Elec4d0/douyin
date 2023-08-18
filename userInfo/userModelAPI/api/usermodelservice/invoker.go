@@ -4,7 +4,7 @@ package usermodelservice
 
 import (
 	server "github.com/cloudwego/kitex/server"
-	api "userModel/services/protos/kitex_gen/api"
+	api "userInfo/userModelAPI/api"
 )
 
 // NewInvoker creates a server.Invoker with the given handler and options.

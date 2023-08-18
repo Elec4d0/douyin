@@ -12,7 +12,7 @@ import (
 
 var userInfoRpcClient userinfoservice.Client
 
-func InitUserModelRpcClient() userinfoservice.Client {
+func InitUserInfoRpcClient() userinfoservice.Client {
 	r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
 	if err != nil {
 		log.Fatal(err)
@@ -20,7 +20,7 @@ func InitUserModelRpcClient() userinfoservice.Client {
 	userInfoRpcClient, err = userinfoservice.NewClient("userInfoService", client.WithResolver(r))
 
 	if err != nil {
-		log.Fatal("网关层userInfo 微服务初始化链接失败")
+		log.Println("网关层userInfo 微服务初始化链接失败")
 		log.Fatal(err)
 		return nil
 	}
@@ -38,7 +38,7 @@ func GetFullUserInfo(user_id int64, search_id int64) (*api.FullUser, error) {
 
 	if err != nil {
 		log.Println(resp)
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return resp.FullUser, nil
@@ -54,7 +54,7 @@ func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, err
 
 	if err != nil {
 		log.Println(resp)
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 	return resp.FullUser, nil

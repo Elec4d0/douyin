@@ -3,7 +3,7 @@ package usermodelservice
 
 import (
 	server "github.com/cloudwego/kitex/server"
-	api "userModel/services/protos/kitex_gen/api"
+	api "userInfo/userModelAPI/api"
 )
 
 // NewServer creates a server.Server with the given handler and options.
