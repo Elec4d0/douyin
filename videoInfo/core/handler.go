@@ -28,7 +28,7 @@ func (s *VideoInfoServiceImpl) GetVideoInfoList(ctx context.Context, req *api.Vi
 	FavoriteCountList := getFavouriteCountList(req.VideoIdList)
 
 	//获取视频评论数
-	CommentCountList := getCommentCountList(req.VideoIdList)afsfai?
+	CommentCountList := getCommentCountList(req.VideoIdList)
 
 	//非异步项，异步后同步项：获取video作者UserInfo
 	var authorIDList []int64
@@ -47,15 +47,21 @@ func buildVideoList(videoBaseInfoList []*videoModelApi.VideoBaseInfo, AuthorList
 	var videoList []*api.Video
 
 	for i, videoBaseInfo := range videoBaseInfoList {
-		video := &api.Video{
-			Id:            videoBaseInfo.VideoId,
-			Author:        AuthorList[i],
-			PlayUrl:       videoBaseInfo.PlayUrl,
-			CoverUrl:      videoBaseInfo.PlayUrl,
-			Title:         videoBaseInfo.Title,
-			FavoriteCount: favoriteCountList[i],
-			CommentCount:  commentCountList[i],
-			IsFavorite:    isFavoriteList[i],
+		var video *api.Video
+		//如果基本信息没查到，那么视频也就播放不了，其他信息就没有意义，直接返回nil
+		if videoBaseInfo != nil {
+			video = &api.Video{
+				Id:            videoBaseInfo.VideoId,
+				Author:        AuthorList[i],
+				PlayUrl:       videoBaseInfo.PlayUrl,
+				CoverUrl:      videoBaseInfo.CoverUrl,
+				Title:         videoBaseInfo.Title,
+				FavoriteCount: favoriteCountList[i],
+				CommentCount:  commentCountList[i],
+				IsFavorite:    isFavoriteList[i],
+			}
+		} else {
+			video = nil
 		}
 
 		videoList = append(videoList, video)
