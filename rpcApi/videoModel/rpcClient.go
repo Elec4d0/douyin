@@ -20,11 +20,11 @@ func InitVideoModelRpcClient() videomodelservice.Client {
 	videoModelRpcClient, err = videomodelservice.NewClient("videoModel", client.WithResolver(r))
 
 	if err != nil {
-		log.Println("网关层Video 微服务初始化链接失败")
+		log.Println("videoModel微服务rpcClient初始化链接失败")
 		log.Println(err)
 		return nil
 	}
-	fmt.Println("Video 微服务：初始化链接User微服务成功")
+	fmt.Println("videoModel微服务rpcClient初始化链接成功")
 	return videoModelRpcClient
 }
 
@@ -35,11 +35,12 @@ func CreateVideo(AuthorId int64, PlayUrl string, CoverUrl string, Title string) 
 		CoverUrl: CoverUrl,
 		Title:    Title,
 	}
-	fmt.Println(rpcReq)
+
 	resp, err := videoModelRpcClient.CreateVideo(context.Background(), rpcReq)
 
 	if err != nil {
 		log.Println(err)
+		log.Println(rpcReq)
 		log.Println(resp)
 		return err
 	}
@@ -85,7 +86,7 @@ func QueryVideoList(videoIDs []int64) ([]*api.VideoBaseInfo, error) {
 
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return make([]*api.VideoBaseInfo, len(videoIDs)), err
 	}
 
 	return resp.VideoBaseInfoList, nil
@@ -127,10 +128,9 @@ func QueryAuthorWorkCountList(authorIDList []int64) ([]int32, error) {
 	}
 
 	resp, err := videoModelRpcClient.QueryAuthorWorkCountList(context.Background(), rpcReq)
-
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return make([]int32, len(authorIDList)), err
 	}
 
 	return resp.WorkCountList, nil
