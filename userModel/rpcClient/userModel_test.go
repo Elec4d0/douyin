@@ -7,27 +7,28 @@ import (
 )
 
 /*
-func TestCreateBaseUser(t *testing.T) {
-	InitUserModelRpcClient()
+	func TestCreateBaseUser(t *testing.T) {
+		InitUserModelRpcClient()
 
-	id, _ := CreateBaseUser("hello_user", "123456")
+		id, _ := CreateBaseUser("hello_user", "123456")
 
-	fmt.Println(id)
-}
+		fmt.Println(id)
+	}
 
-func TestFindBaseUserByName(t *testing.T) {
-	InitUserModelRpcClient()
-	user, _ := FindBaseUserByName("测试注册")
+	func TestFindBaseUserByName(t *testing.T) {
+		InitUserModelRpcClient()
+		user, _ := FindBaseUserByName("测试注册")
 
-	fmt.Println(user.Id)
-}
-
+		fmt.Println(user.Id)
+	}
+*/
 func TestFindBaseUserById(t *testing.T) {
+	model.Init()
 	InitUserModelRpcClient()
-	user, _ := FindBaseUserById(1000008)
+	user, _ := FindBaseUserById(100000)
 
 	fmt.Println(user)
-}*/
+}
 
 func TestFindBaseUserList(t *testing.T) {
 	model.Init()
