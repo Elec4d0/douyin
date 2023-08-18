@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 	"time"
 	api "videoModel/core/kitex_gen/api"
 	"videoModel/model"
@@ -80,14 +81,17 @@ func (s *VideoModelServiceImpl) QueryAuthorVideoList(ctx context.Context, req *a
 	return
 }
 
-func BuildApiBaseVideoInfoList(videos []*model.Video) []*api.VideoBaseInfo {
-	var videoList []*api.VideoBaseInfo
+func BuildApiBaseVideoInfoList(ormVideos []*model.Video) []*api.VideoBaseInfo {
+	n := len(ormVideos)
+	apiVideos := make([]*api.VideoBaseInfo, n, n)
 
 	//遍历model中的video结构体数组，批量扩孔ApiVideoList
-	for _, video := range videos {
-		videoList = append(videoList, BuildApiBaseInfoVideo(video))
+	for i, video := range ormVideos {
+		fmt.Println(video)
+		apiVideos[i] = BuildApiBaseInfoVideo(video)
 	}
-	return videoList
+	fmt.Println(apiVideos)
+	return apiVideos
 }
 
 func BuildApiBaseInfoVideo(video *model.Video) *api.VideoBaseInfo {

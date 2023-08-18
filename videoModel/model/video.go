@@ -48,19 +48,21 @@ func QueryAuthorVideoList(authorId int64) ([]*Video, error) {
 }
 
 func GetVideosByIds(videoIDs []int64) ([]*Video, error) {
-	var videos []*Video
-
-	var DBVideosSet []*Video
-	err := DB.Where("video_id in (?)", videoIDs).Find(&DBVideosSet).Error
+	//IDs 送入gorm查询得到videoSet
+	var VideosSet []*Video
+	err := DB.Where("video_id in (?)", videoIDs).Find(&VideosSet).Error
 	if err != nil {
 		return nil, err
 	}
 
-	var m map[int64]*Video
-	for _, video := range DBVideosSet {
+	//videoSet 送入哈希表做映射
+	m := make(map[int64]*Video)
+	for _, video := range VideosSet {
 		m[video.VideoID] = video
 	}
 
+	//利用hash表，将查询结果按原数组的ID顺序返回
+	var videos []*Video
 	for _, ID := range videoIDs {
 		if video, ok := m[ID]; ok {
 			videos = append(videos, video)
