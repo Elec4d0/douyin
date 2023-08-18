@@ -5,7 +5,7 @@
       <paths name="远程userModel">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/lsh/douyin/userModel" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/rain/douyin/userModel/" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

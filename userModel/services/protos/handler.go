@@ -16,7 +16,7 @@ type UserModelServiceImpl struct{}
 func (s *UserModelServiceImpl) CreateBaseUser(ctx context.Context, req *api.DouyinUserCreateBaseUserRequest) (resp *api.DouyinUserCreateBaseUserResponse, err error) {
 	// TODO: Your code here...
 	resp = new(api.DouyinUserCreateBaseUserResponse)
-
+	log.Println("handler: ", resp)
 	name := req.Username
 	password := req.Password
 
@@ -73,7 +73,7 @@ func (s *UserModelServiceImpl) FindBaseUserByName(ctx context.Context, req *api.
 	statusMsg := "model层：通过name的用户查找成功！"
 	resp.StatusMsg = &statusMsg
 
-	resp.BaseUser = utils.ConvertUserTableToBaseUser(user)
+	resp.BaseUser = utils.ConvertUserTableToBaseUser(&user)
 	return
 }
 
@@ -101,7 +101,7 @@ func (s *UserModelServiceImpl) FindBaseUserById(ctx context.Context, req *api.Do
 	statusMsg := "model层：通过id的用户查找成功！"
 	resp.StatusMsg = &statusMsg
 
-	resp.BaseUser = utils.ConvertUserTableToBaseUser(user)
+	resp.BaseUser = utils.ConvertUserTableToBaseUser(&user)
 	return
 }
 
@@ -113,11 +113,11 @@ func (s *UserModelServiceImpl) FindBaseUserList(ctx context.Context, req *api.Do
 	authorId := req.AuthorId
 
 	var users []*api.BaseUser
-	var userList []*model.User
-	userList, err = model.FindUserByIDs(authorId)
+
+	userList, err := model.FindUserByIDs(authorId)
 
 	for i := 0; i < len(authorId); i++ {
-		users = append(users, utils.ConvertUserTableToBaseUser(*userList[i]))
+		users = append(users, utils.ConvertUserTableToBaseUser(userList[i]))
 	}
 
 	if err != nil {

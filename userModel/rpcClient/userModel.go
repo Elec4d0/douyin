@@ -35,7 +35,6 @@ func CreateBaseUser(username string, password string) (int64, error) {
 	}
 	fmt.Println(rpcReq)
 	resp, err := userModelRpcClient.CreateBaseUser(context.Background(), rpcReq)
-
 	if err != nil {
 		log.Println(resp)
 		log.Fatal(err)
@@ -78,9 +77,9 @@ func FindBaseUserList(author_id []int64) ([]*api.BaseUser, error) {
 	rpcReq := &api.DouyinUserFindBaseUserListRequest{
 		AuthorId: author_id,
 	}
-	fmt.Println(rpcReq)
-	resp, err := userModelRpcClient.FindBaseUserList(context.Background(), rpcReq)
+	log.Println(rpcReq)
 
+	resp, err := userModelRpcClient.FindBaseUserList(context.Background(), rpcReq)
 	if err != nil {
 		log.Println(resp)
 		log.Fatal(err)

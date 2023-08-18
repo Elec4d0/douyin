@@ -1,4 +1,4 @@
-package userModel
+package main
 
 import (
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	addr, _ := net.ResolveTCPAddr("tpc", "127.0.0.1:15099")
+	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:15099")
 	server := api.NewServer(new(protos.UserModelServiceImpl), server.WithServiceAddr(addr), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "UserModelService"}), server.WithRegistry(r))
 
 	err = server.Run()

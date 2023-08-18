@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SshConfigs">
     <configs>
-      <sshConfig authType="PASSWORD" host="lsh.g324.asia" id="1450596c-208a-47a5-9e6d-ed833f472953" port="22" nameFormat="DESCRIPTIVE" username="lsh" useOpenSSHConfig="true" />
+      <sshConfig authType="PASSWORD" host="douyin.g324.asia" id="1450596c-208a-47a5-9e6d-ed833f472953" port="22" nameFormat="DESCRIPTIVE" username="rain" useOpenSSHConfig="true" />
     </configs>
   </component>
 </project>
