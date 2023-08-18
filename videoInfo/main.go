@@ -8,12 +8,12 @@ import (
 	"net"
 	"videoInfo/core"
 	api "videoInfo/core/kitex_gen/api/videoinfoservice"
-	videoModel "videoInfo/rpcApi/videoModel"
+	"videoInfo/rpcApi"
 )
 
 func main() {
 	//初始化rpcApi链接
-	videoModel.InitVideoModelRpcClient()
+	rpcApi.InitRpcClient()
 
 	//etcd 链接
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"}) // r should not be reused.
