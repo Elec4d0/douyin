@@ -8,6 +8,8 @@ service UserModelService {
   rpc FindBaseUserByName(douyin_user_find_base_user_by_name_request) returns (douyin_user_find_base_user_by_name_response) {};
   rpc FindBaseUserById(douyin_user_find_base_user_by_id_request) returns (douyin_user_find_base_user_by_id_response) {};
   rpc FindBaseUserList(douyin_user_find_base_user_list_request) returns (douyin_user_find_base_user_list_response) {};
+  rpc FindBaseUserPassword(douyin_user_find_base_user_password_request) returns (douyin_user_find_base_user_password_response) {};
+  rpc FindIDByName(douyin_user_find_id_by_name_request) returns (douyin_user_find_id_by_name_response) {};
 }
 
 message douyin_user_create_base_user_request {
@@ -42,13 +44,33 @@ message douyin_user_find_base_user_by_id_response {
 }
 
 message douyin_user_find_base_user_list_request {
-  repeated int64 author_id = 2; //作者id
+  repeated int64 author_id = 1; //作者id
 }
 
 message douyin_user_find_base_user_list_response {
   int32 status_code = 1; // 状态码，0-成功，其他值-失败
   optional string status_msg = 2; // 返回状态描述
   repeated BaseUser base_user = 3; // 用户信息
+}
+
+message douyin_user_find_base_user_password_request {
+  int64 user_id = 1; //作者id
+}
+
+message douyin_user_find_base_user_password_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  string password = 3;
+}
+
+message douyin_user_find_id_by_name_request {
+  string name = 1; //作者id
+}
+
+message douyin_user_find_id_by_name_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  int64 user_id = 3;
 }
 
 message BaseUser {

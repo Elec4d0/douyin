@@ -87,3 +87,33 @@ func FindBaseUserList(author_id []int64) ([]*api.BaseUser, error) {
 	}
 	return resp.BaseUser, nil
 }
+
+func FindBaseUserPassword(user_id int64) (string, error) {
+	rpcReq := &api.DouyinUserFindBaseUserPasswordRequest{
+		UserId: user_id,
+	}
+	log.Println(rpcReq)
+
+	resp, err := userModelRpcClient.FindBaseUserPassword(context.Background(), rpcReq)
+	if err != nil {
+		log.Println(resp)
+		log.Println(err)
+		return "", err
+	}
+	return resp.Password, nil
+}
+
+func FindIDByName(name string) (int64, error) {
+	rpcReq := &api.DouyinUserFindIdByNameRequest{
+		Name: name,
+	}
+	log.Println(rpcReq)
+
+	resp, err := userModelRpcClient.FindIDByName(context.Background(), rpcReq)
+	if err != nil {
+		log.Println(resp)
+		log.Println(err)
+		return -1, err
+	}
+	return resp.UserId, nil
+}

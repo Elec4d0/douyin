@@ -56,3 +56,18 @@ func FindUserByIDs(ids []int64) ([]*User, error) {
 
 	return usersResult, result.Error
 }
+
+func FindPasswordByID(id int64) (string, error) {
+	user := User{ID: id}
+	result := DB.Where("id = ?", id).First(&user)
+	if result.Error != nil {
+		user.Password = ""
+	}
+	return user.Password, result.Error
+}
+
+func FindIDByName(name string) (int64, error) {
+	user := User{Name: name}
+	result := DB.Where("name = ?", name).First(&user)
+	return user.ID, result.Error
+}

@@ -140,3 +140,55 @@ func (s *UserModelServiceImpl) FindBaseUserList(ctx context.Context, req *api.Do
 
 	return
 }
+
+// FindBaseUserPassword implements the UserModelServiceImpl interface.
+func (s *UserModelServiceImpl) FindBaseUserPassword(ctx context.Context, req *api.DouyinUserFindBaseUserPasswordRequest) (resp *api.DouyinUserFindBaseUserPasswordResponse, err error) {
+	// TODO: Your code here...
+	resp = new(api.DouyinUserFindBaseUserPasswordResponse)
+	userId := req.UserId
+	var password string
+	password, err = model.FindPasswordByID(userId)
+	if err != nil {
+		resp.StatusCode = 1
+
+		statusMsg := "model层：通过id的用户密码查找失败！"
+		resp.StatusMsg = &statusMsg
+
+		resp.Password = ""
+		log.Println(err)
+		return
+	}
+	resp.StatusCode = 0
+
+	statusMsg := "model层：通过id的用户密码查找成功！"
+	resp.StatusMsg = &statusMsg
+
+	resp.Password = password
+	return
+}
+
+// FindIDByName implements the UserModelServiceImpl interface.
+func (s *UserModelServiceImpl) FindIDByName(ctx context.Context, req *api.DouyinUserFindIdByNameRequest) (resp *api.DouyinUserFindIdByNameResponse, err error) {
+	// TODO: Your code here...
+	resp = new(api.DouyinUserFindIdByNameResponse)
+	name := req.Name
+	var id int64
+	id, err = model.FindIDByName(name)
+	if err != nil {
+		resp.StatusCode = 1
+
+		statusMsg := "model层：通过name的用户id查找失败！"
+		resp.StatusMsg = &statusMsg
+
+		resp.UserId = -1
+		log.Println(err)
+		return
+	}
+	resp.StatusCode = 0
+
+	statusMsg := "model层：通过name的用户id查找成功！"
+	resp.StatusMsg = &statusMsg
+
+	resp.UserId = id
+	return
+}
