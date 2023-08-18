@@ -18,3 +18,11 @@ func TestQueryAuthorVideoList(t *testing.T) {
 	res, _ := QueryAuthorVideoList(1)
 	fmt.Println(res)
 }
+
+func TestQueryVideoList(t *testing.T) {
+
+	var list = []int64{1, 38, 3, 4, 5}
+
+	res, _ := QueryVideoList(list)
+	fmt.Println(res)
+}
