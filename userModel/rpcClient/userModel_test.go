@@ -21,15 +21,32 @@ import (
 
 		fmt.Println(user.Id)
 	}
-*/
+
 func TestFindBaseUserById(t *testing.T) {
 	model.Init()
 	InitUserModelRpcClient()
 	user, _ := FindBaseUserById(100000)
 
 	fmt.Println(user)
+}*/
+
+func TestFindBaseUserPassword(t *testing.T) {
+	model.Init()
+	InitUserModelRpcClient()
+	password, _ := FindBaseUserPassword(100000)
+
+	fmt.Println(password)
 }
 
+func TestFindIDByName(t *testing.T) {
+	model.Init()
+	InitUserModelRpcClient()
+	id, _ := FindIDByName("lyy")
+
+	fmt.Println(id)
+}
+
+/*
 func TestFindBaseUserList(t *testing.T) {
 	model.Init()
 	InitUserModelRpcClient()
@@ -44,4 +61,4 @@ func TestFindBaseUserList(t *testing.T) {
 	for _, value := range user {
 		fmt.Println("ID: ", value.Id, "  user: ", value)
 	}
-}
+}*/

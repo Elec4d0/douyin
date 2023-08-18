@@ -247,8 +247,8 @@ func (x *DouyinUserFindBaseUserByIdResponse) fastReadField3(buf []byte, _type in
 
 func (x *DouyinUserFindBaseUserListRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
-	case 2:
-		offset, err = x.fastReadField2(buf, _type)
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -265,7 +265,7 @@ ReadFieldError:
 	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinUserFindBaseUserListRequest[number], err)
 }
 
-func (x *DouyinUserFindBaseUserListRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+func (x *DouyinUserFindBaseUserListRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	offset, err = fastpb.ReadList(buf, _type,
 		func(buf []byte, _type int8) (n int, err error) {
 			var v int64
@@ -328,6 +328,148 @@ func (x *DouyinUserFindBaseUserListResponse) fastReadField3(buf []byte, _type in
 	}
 	x.BaseUser = append(x.BaseUser, &v)
 	return offset, nil
+}
+
+func (x *DouyinUserFindBaseUserPasswordRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinUserFindBaseUserPasswordRequest[number], err)
+}
+
+func (x *DouyinUserFindBaseUserPasswordRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.UserId, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinUserFindBaseUserPasswordResponse[number], err)
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
+	return offset, err
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	tmp, offset, err := fastpb.ReadString(buf, _type)
+	x.StatusMsg = &tmp
+	return offset, err
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.Password, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *DouyinUserFindIdByNameRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinUserFindIdByNameRequest[number], err)
+}
+
+func (x *DouyinUserFindIdByNameRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.Name, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *DouyinUserFindIdByNameResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+	switch number {
+	case 1:
+		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	default:
+		offset, err = fastpb.Skip(buf, _type, number)
+		if err != nil {
+			goto SkipFieldError
+		}
+	}
+	return offset, nil
+SkipFieldError:
+	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
+ReadFieldError:
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_DouyinUserFindIdByNameResponse[number], err)
+}
+
+func (x *DouyinUserFindIdByNameResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
+	return offset, err
+}
+
+func (x *DouyinUserFindIdByNameResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	tmp, offset, err := fastpb.ReadString(buf, _type)
+	x.StatusMsg = &tmp
+	return offset, err
+}
+
+func (x *DouyinUserFindIdByNameResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.UserId, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
 }
 
 func (x *BaseUser) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
@@ -561,15 +703,15 @@ func (x *DouyinUserFindBaseUserListRequest) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
-	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField1(buf[offset:])
 	return offset
 }
 
-func (x *DouyinUserFindBaseUserListRequest) fastWriteField2(buf []byte) (offset int) {
+func (x *DouyinUserFindBaseUserListRequest) fastWriteField1(buf []byte) (offset int) {
 	if len(x.AuthorId) == 0 {
 		return offset
 	}
-	offset += fastpb.WriteListPacked(buf[offset:], 2, len(x.GetAuthorId()),
+	offset += fastpb.WriteListPacked(buf[offset:], 1, len(x.GetAuthorId()),
 		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
 			offset := 0
 			offset += fastpb.WriteInt64(buf[offset:], numTagOrKey, x.GetAuthorId()[numIdxOrVal])
@@ -611,6 +753,106 @@ func (x *DouyinUserFindBaseUserListResponse) fastWriteField3(buf []byte) (offset
 	for i := range x.GetBaseUser() {
 		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetBaseUser()[i])
 	}
+	return offset
+}
+
+func (x *DouyinUserFindBaseUserPasswordRequest) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *DouyinUserFindBaseUserPasswordRequest) fastWriteField1(buf []byte) (offset int) {
+	if x.UserId == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 1, x.GetUserId())
+	return offset
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
+	return offset
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) fastWriteField1(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt32(buf[offset:], 1, x.GetStatusCode())
+	return offset
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) fastWriteField2(buf []byte) (offset int) {
+	if x.StatusMsg == nil {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetStatusMsg())
+	return offset
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) fastWriteField3(buf []byte) (offset int) {
+	if x.Password == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 3, x.GetPassword())
+	return offset
+}
+
+func (x *DouyinUserFindIdByNameRequest) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	return offset
+}
+
+func (x *DouyinUserFindIdByNameRequest) fastWriteField1(buf []byte) (offset int) {
+	if x.Name == "" {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 1, x.GetName())
+	return offset
+}
+
+func (x *DouyinUserFindIdByNameResponse) FastWrite(buf []byte) (offset int) {
+	if x == nil {
+		return offset
+	}
+	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
+	return offset
+}
+
+func (x *DouyinUserFindIdByNameResponse) fastWriteField1(buf []byte) (offset int) {
+	if x.StatusCode == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt32(buf[offset:], 1, x.GetStatusCode())
+	return offset
+}
+
+func (x *DouyinUserFindIdByNameResponse) fastWriteField2(buf []byte) (offset int) {
+	if x.StatusMsg == nil {
+		return offset
+	}
+	offset += fastpb.WriteString(buf[offset:], 2, x.GetStatusMsg())
+	return offset
+}
+
+func (x *DouyinUserFindIdByNameResponse) fastWriteField3(buf []byte) (offset int) {
+	if x.UserId == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 3, x.GetUserId())
 	return offset
 }
 
@@ -829,15 +1071,15 @@ func (x *DouyinUserFindBaseUserListRequest) Size() (n int) {
 	if x == nil {
 		return n
 	}
-	n += x.sizeField2()
+	n += x.sizeField1()
 	return n
 }
 
-func (x *DouyinUserFindBaseUserListRequest) sizeField2() (n int) {
+func (x *DouyinUserFindBaseUserListRequest) sizeField1() (n int) {
 	if len(x.AuthorId) == 0 {
 		return n
 	}
-	n += fastpb.SizeListPacked(2, len(x.GetAuthorId()),
+	n += fastpb.SizeListPacked(1, len(x.GetAuthorId()),
 		func(numTagOrKey, numIdxOrVal int32) int {
 			n := 0
 			n += fastpb.SizeInt64(numTagOrKey, x.GetAuthorId()[numIdxOrVal])
@@ -879,6 +1121,106 @@ func (x *DouyinUserFindBaseUserListResponse) sizeField3() (n int) {
 	for i := range x.GetBaseUser() {
 		n += fastpb.SizeMessage(3, x.GetBaseUser()[i])
 	}
+	return n
+}
+
+func (x *DouyinUserFindBaseUserPasswordRequest) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *DouyinUserFindBaseUserPasswordRequest) sizeField1() (n int) {
+	if x.UserId == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(1, x.GetUserId())
+	return n
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	n += x.sizeField3()
+	return n
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) sizeField1() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt32(1, x.GetStatusCode())
+	return n
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) sizeField2() (n int) {
+	if x.StatusMsg == nil {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetStatusMsg())
+	return n
+}
+
+func (x *DouyinUserFindBaseUserPasswordResponse) sizeField3() (n int) {
+	if x.Password == "" {
+		return n
+	}
+	n += fastpb.SizeString(3, x.GetPassword())
+	return n
+}
+
+func (x *DouyinUserFindIdByNameRequest) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	return n
+}
+
+func (x *DouyinUserFindIdByNameRequest) sizeField1() (n int) {
+	if x.Name == "" {
+		return n
+	}
+	n += fastpb.SizeString(1, x.GetName())
+	return n
+}
+
+func (x *DouyinUserFindIdByNameResponse) Size() (n int) {
+	if x == nil {
+		return n
+	}
+	n += x.sizeField1()
+	n += x.sizeField2()
+	n += x.sizeField3()
+	return n
+}
+
+func (x *DouyinUserFindIdByNameResponse) sizeField1() (n int) {
+	if x.StatusCode == 0 {
+		return n
+	}
+	n += fastpb.SizeInt32(1, x.GetStatusCode())
+	return n
+}
+
+func (x *DouyinUserFindIdByNameResponse) sizeField2() (n int) {
+	if x.StatusMsg == nil {
+		return n
+	}
+	n += fastpb.SizeString(2, x.GetStatusMsg())
+	return n
+}
+
+func (x *DouyinUserFindIdByNameResponse) sizeField3() (n int) {
+	if x.UserId == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(3, x.GetUserId())
 	return n
 }
 
@@ -966,13 +1308,33 @@ var fieldIDToName_DouyinUserFindBaseUserByIdResponse = map[int32]string{
 }
 
 var fieldIDToName_DouyinUserFindBaseUserListRequest = map[int32]string{
-	2: "AuthorId",
+	1: "AuthorId",
 }
 
 var fieldIDToName_DouyinUserFindBaseUserListResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
 	3: "BaseUser",
+}
+
+var fieldIDToName_DouyinUserFindBaseUserPasswordRequest = map[int32]string{
+	1: "UserId",
+}
+
+var fieldIDToName_DouyinUserFindBaseUserPasswordResponse = map[int32]string{
+	1: "StatusCode",
+	2: "StatusMsg",
+	3: "Password",
+}
+
+var fieldIDToName_DouyinUserFindIdByNameRequest = map[int32]string{
+	1: "Name",
+}
+
+var fieldIDToName_DouyinUserFindIdByNameResponse = map[int32]string{
+	1: "StatusCode",
+	2: "StatusMsg",
+	3: "UserId",
 }
 
 var fieldIDToName_BaseUser = map[int32]string{

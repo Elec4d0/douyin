@@ -1,13 +1,12 @@
-package services
+package protos
 
 import (
 	"log"
-	"userModel/services/protos"
 	api "userModel/services/protos/kitex_gen/api/usermodelservice"
 )
 
-func Init() {
-	svr := api.NewServer(new(protos.UserModelServiceImpl))
+func main() {
+	svr := api.NewServer(new(UserModelServiceImpl))
 
 	err := svr.Run()
 
