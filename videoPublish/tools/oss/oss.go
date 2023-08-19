@@ -27,7 +27,7 @@ func InitOss() {
 		log.Fatalln(err)
 	}
 
-	// Make a new bucket called mymusic.
+	// Make a new bucket called video
 	bucketName := "video"
 	location := "localServer"
 
@@ -42,6 +42,21 @@ func InitOss() {
 		}
 	} else {
 		log.Printf("Successfully created %s\n", bucketName)
+	}
+
+	// Make a new bucket called jepg
+	jepgbucketName := "jepg"
+	err = ossClient.MakeBucket(ctx, jepgbucketName, minio.MakeBucketOptions{Region: location})
+	if err != nil {
+		// Check to see if we already own this bucket (which happens if you run this twice)
+		exists, errBucketExists := ossClient.BucketExists(ctx, bucketName)
+		if errBucketExists == nil && exists {
+			log.Printf("We already own %s\n", jepgbucketName)
+		} else {
+			log.Fatalln(err)
+		}
+	} else {
+		log.Printf("Successfully created %s\n", jepgbucketName)
 	}
 }
 
@@ -60,6 +75,25 @@ func UploadVideo(videoByte []byte, objectName string) {
 
 	//上传视频流到OSS
 	info, err := ossClient.PutObject(ctx, bucketName, objectName, videoStream, int64(len(videoByte)), minio.PutObjectOptions{})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("成功上传视频至OSS %s of size %d\n", objectName, info.Size)
+}
+
+func UploadJepg(jepgByte []byte, objectName string) {
+	// Upload the zip file
+
+	//链接OSS的用具，桶名
+	ctx := context.Background()
+	bucketName := "jepg"
+
+	//接受到的byte数组包装为一组流，上传至OSS
+	videoStream := bytes.NewReader(jepgByte)
+
+	//上传视频流到OSS
+	info, err := ossClient.PutObject(ctx, bucketName, objectName, videoStream, int64(len(jepgByte)), minio.PutObjectOptions{})
 	if err != nil {
 		log.Fatalln(err)
 	}
