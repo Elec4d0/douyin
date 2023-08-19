@@ -26,7 +26,7 @@ func GetVideoFirstFrameBytes(videoUrl string) ([]byte, error) {
 
 	img, _, err := image.Decode(buf)
 	if err != nil {
-		log.Println("img解码ffpemg帧失败")
+		log.Println("img解码ffpemg视频帧失败")
 		log.Println(err)
 		return nil, err
 	}
@@ -34,6 +34,8 @@ func GetVideoFirstFrameBytes(videoUrl string) ([]byte, error) {
 	jpegBuf := new(bytes.Buffer)
 	err = jpeg.Encode(buf, img, nil)
 	if err != nil {
+		log.Println("jepg解码image对象失败")
+		log.Println(err)
 		return nil, err
 	}
 
