@@ -3,11 +3,11 @@
 package commentserver
 
 import (
-	api "comment/server/protos/kitex_gen/api"
+	api "comment/services/protos/kitex_gen/api"
 	server "github.com/cloudwego/kitex/server"
 )
 
-// NewInvoker creates a server.Invoker with the given handler and options.
+// NewInvoker creates a services.Invoker with the given handler and options.
 func NewInvoker(handler api.CommentServer, opts ...server.Option) server.Invoker {
 	var options []server.Option
 
