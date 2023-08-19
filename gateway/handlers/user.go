@@ -5,52 +5,55 @@ import (
 	"fmt"
 	"gateway/microService/user/api"
 	"gateway/microService/user/api/userservice"
+	userInfo "gateway/rpcApi/userInfoAPI"
+	userInfoApi "gateway/rpcApi/userInfoAPI/api"
 	"gateway/tools/jwt"
-	"github.com/cloudwego/kitex/client"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 var userRpcClient userservice.Client
 
-func InitUseruserRpcClient() userservice.Client {
-	var err error
-	userRpcClient, err = userservice.NewClient("user", client.WithHostPorts("0.0.0.0:8887"))
-	if err != nil {
-		fmt.Println("网关层Video 微服务初始化链接失败")
-		return nil
-	}
-	return userRpcClient
+func InitUseruserRpcClient() {
+	userInfo.InitUserInfoRpcClient()
 }
 
 func User(ginContext *gin.Context) {
 	//———————网关统一鉴权————————
 	Token := ginContext.Query("token")
-	if jwt.ParseToken(Token) == -1 {
+	userID := jwt.ParseToken(Token)
+	if userID == -1 {
 		str := "Token验证失败，请重新登录"
-		ginContext.JSON(http.StatusOK, &api.DouyinUserResponse{
+		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
 			StatusCode: -1,
 			StatusMsg:  &str,
-			User:       nil,
+			FullUser:   nil,
 		})
 	}
 
-	userId, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
+	searchID, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
 	if err != nil {
-		fmt.Println("网关层解析userId失败")
+		errStr := "网关层解析userId失败"
+		log.Println(errStr)
+
+		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			FullUser:   nil,
+		})
 	}
 
-	rpcReq := &api.DouyinUserRequest{
-		UserId: userId,
-		Token:  Token,
-	}
-
-	resp, err := userRpcClient.UserInfo(context.Background(), rpcReq)
-
+	resp, err := userInfo.GetFullUserInfo(userID, searchID)
 	if err != nil {
-		errStr := "Publish Action接口 RPC调用失败"
-		fmt.Println(errStr)
+		errStr := "UserInfo微服务 FullUser接口 RPC调用失败"
+		log.Println(errStr)
+		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			FullUser:   nil,
+		})
 	}
 	ginContext.JSON(http.StatusOK, resp)
 
