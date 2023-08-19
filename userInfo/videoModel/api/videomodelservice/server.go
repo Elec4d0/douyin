@@ -6,7 +6,7 @@ import (
 	api "userInfo/videoModel/api"
 )
 
-// NewServer creates a server.Server with the given handler and options.
+// NewServer creates a services.Server with the given handler and options.
 func NewServer(handler api.VideoModelService, opts ...server.Option) server.Server {
 	var options []server.Option
 

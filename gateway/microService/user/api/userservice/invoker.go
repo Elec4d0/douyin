@@ -3,11 +3,11 @@
 package userservice
 
 import (
-	server "github.com/cloudwego/kitex/server"
 	api "gateway/microService/user/api"
+	server "github.com/cloudwego/kitex/server"
 )
 
-// NewInvoker creates a server.Invoker with the given handler and options.
+// NewInvoker creates a services.Invoker with the given handler and options.
 func NewInvoker(handler api.UserService, opts ...server.Option) server.Invoker {
 	var options []server.Option
 

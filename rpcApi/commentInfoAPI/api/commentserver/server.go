@@ -2,11 +2,11 @@
 package commentserver
 
 import (
-	api "comment/server/protos/kitex_gen/api"
 	server "github.com/cloudwego/kitex/server"
+	api "rpcApi/commentInfoAPI/api"
 )
 
-// NewServer creates a server.Server with the given handler and options.
+// NewServer creates a services.Server with the given handler and options.
 func NewServer(handler api.CommentServer, opts ...server.Option) server.Server {
 	var options []server.Option
 

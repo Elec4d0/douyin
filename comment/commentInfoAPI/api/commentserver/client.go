@@ -3,7 +3,7 @@
 package commentserver
 
 import (
-	api "comment/server/protos/kitex_gen/api"
+	api "comment/services/protos/kitex_gen/api"
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"

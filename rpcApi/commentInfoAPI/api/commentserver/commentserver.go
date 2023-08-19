@@ -3,13 +3,13 @@
 package commentserver
 
 import (
-	api "comment/server/protos/kitex_gen/api"
 	"context"
 	"fmt"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
 	streaming "github.com/cloudwego/kitex/pkg/streaming"
 	proto "google.golang.org/protobuf/proto"
+	api "rpcApi/commentInfoAPI/api"
 )
 
 func serviceInfo() *kitex.ServiceInfo {

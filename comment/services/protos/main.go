@@ -2,7 +2,7 @@ package main
 
 import (
 	"comment/comment_deploy/comment_mysql"
-	api "comment/server/protos/kitex_gen/api/commentserver"
+	api "comment/services/protos/kitex_gen/api/commentserver"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 	etcd "github.com/kitex-contrib/registry-etcd"
