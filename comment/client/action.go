@@ -1,8 +1,8 @@
 package client
 
 import (
-	"comment/services/protos/kitex_gen/api"
-	"comment/services/protos/kitex_gen/api/commentserver"
+	"comment/server/protos/kitex_gen/api"
+	"comment/server/protos/kitex_gen/api/commentserver"
 	"context"
 	"github.com/cloudwego/kitex/client"
 	"github.com/gin-gonic/gin"

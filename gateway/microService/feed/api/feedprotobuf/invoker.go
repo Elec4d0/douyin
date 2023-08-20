@@ -3,11 +3,11 @@
 package feedprotobuf
 
 import (
-	api "gateway/microService/feed/api"
 	server "github.com/cloudwego/kitex/server"
+	api "gateway/microService/feed/api"
 )
 
-// NewInvoker creates a services.Invoker with the given handler and options.
+// NewInvoker creates a server.Invoker with the given handler and options.
 func NewInvoker(handler api.FeedProtoBuf, opts ...server.Option) server.Invoker {
 	var options []server.Option
 
