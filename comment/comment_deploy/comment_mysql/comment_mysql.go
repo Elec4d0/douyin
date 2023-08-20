@@ -1,9 +1,7 @@
 package comment_mysql
 
 import (
-	"fmt"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Comment struct {
@@ -13,12 +11,6 @@ type Comment struct {
 	Content     string `gorm:"not null"`
 	User_id     int64  `gorm:"not null"`
 	Create_date string
-}
-
-type CommentCount struct {
-	gorm.Model
-	Video_id int64 `gorm:"not null"`
-	Count    int64 `gorm:"not null"`
 }
 
 func CreatComment(comment *Comment) error {
@@ -49,53 +41,18 @@ func FindCommentAll(videoId int64) ([]*Comment, error) {
 	return commentList, nil
 }
 
-func FindCommentCount(videoId int64) (int64, error) {
-	var commentCount CommentCount
-
-	err := DB.First(&commentCount, "Video_id=?", videoId).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return 0, fmt.Errorf("not found for videoId: %d", videoId)
-		}
-		return 0, err
-	}
-	return commentCount.Count, nil
+func FindCommentCount(videoId int64) (CommentCount int64) {
+	var commentCount int64
+	DB.Model(&Comment{}).Where("video_id = ?", videoId).Count(&commentCount)
+	return commentCount
 }
 
-func FindCommentAllCount(videoIds []int64) ([]int64, error) {
-	var commentCounts []int64
-	for _, videoId := range videoIds {
-		var count CommentCount
-		err := DB.First(&count, "Video_id = ?", videoId).Error
-		if err != nil {
-			if err == gorm.ErrRecordNotFound {
-				commentCounts = append(commentCounts, 0)
-			} else {
-				return nil, err
-			}
-		} else {
-			commentCounts = append(commentCounts, count.Count)
-		}
+func FindCommentAllCount(videoIds []int64) (CommentCounts []int64) {
+	commentCounts := make([]int64, len(videoIds))
+	for num, videoId := range videoIds {
+		var count int64
+		DB.Model(&Comment{}).Where("video_id = ?", videoId).Count(&count)
+		commentCounts[num] = count
 	}
-	return commentCounts, nil
-}
-
-func CommentCountAdd(videoId int64) {
-	var commentcount CommentCount
-	if err := DB.FirstOrCreate(&commentcount, CommentCount{Video_id: videoId}).Error; err != nil {
-		log.Fatal(err)
-		return
-	}
-	DB.Model(&commentcount).UpdateColumn("Count", gorm.Expr("Count + ?", 1))
-}
-
-func CommentCountDel(videoId int64) {
-	var commentcount CommentCount
-	if err := DB.Where("Video_id=?", videoId).First(&commentcount).Error; err != nil {
-		log.Fatal(err)
-		return
-	}
-	if commentcount.Count > 0 {
-		DB.Model(&commentcount).UpdateColumn("Count", gorm.Expr("Count - ?", 1))
-	}
+	return commentCounts
 }

@@ -7,7 +7,7 @@ import (
 	api "userInfo/services/protos/kitex_gen/api"
 )
 
-// NewInvoker creates a services.Invoker with the given handler and options.
+// NewInvoker creates a server.Invoker with the given handler and options.
 func NewInvoker(handler api.UserInfoService, opts ...server.Option) server.Invoker {
 	var options []server.Option
 

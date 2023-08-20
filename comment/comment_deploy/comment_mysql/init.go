@@ -16,7 +16,7 @@ func Init() {
 		panic("failed to connect database")
 	}
 	//自动创建数据库表
-	err = db.AutoMigrate(&Comment{}, &CommentCount{})
+	err = db.AutoMigrate(&Comment{})
 	if err != nil {
 		panic("failed to auto migrate database")
 	}
