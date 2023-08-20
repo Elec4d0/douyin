@@ -3,7 +3,8 @@ package userInfo
 import (
 	"context"
 	"fmt"
-	"gateway/rpcApi/userInfoAPI/api"
+	api "gateway/rpcApi/userInfoAPI/api"
+	userInfo "gateway/rpcApi/userInfoAPI/api"
 	"gateway/rpcApi/userInfoAPI/api/userinfoservice"
 	"github.com/cloudwego/kitex/client"
 	etcd "github.com/kitex-contrib/registry-etcd"
@@ -28,7 +29,7 @@ func InitUserInfoRpcClient() userinfoservice.Client {
 	return userInfoRpcClient
 }
 
-func GetFullUserInfo(user_id int64, search_id int64) (*api.DouyinUserGetFullUserInfoResponse, error) {
+func GetFullUserInfo(user_id int64, search_id int64) (*userInfo.DouyinUserGetFullUserInfoResponse, error) {
 	rpcReq := &api.DouyinUserGetFullUserInfoRequest{
 		UserId:   user_id,
 		SearchId: search_id,
@@ -44,7 +45,7 @@ func GetFullUserInfo(user_id int64, search_id int64) (*api.DouyinUserGetFullUser
 	return resp, nil
 }
 
-func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, error) {
+func GetFullUserInfoList(user_id int64, search_id []int64) (*userInfo.DouyinUserGetFullUserInfoListResponse, error) {
 	rpcReq := &api.DouyinUserGetFullUserInfoListRequest{
 		UserId:   user_id,
 		SearchId: search_id,
@@ -57,5 +58,6 @@ func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, err
 		log.Println(err)
 		return nil, err
 	}
-	return resp.FullUser, nil
+
+	return resp, nil
 }

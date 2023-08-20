@@ -26,12 +26,12 @@ func (s *VideoPublishServiceImpl) PublishVideo(ctx context.Context, req *api.Vid
 	//上传视频
 	videoFileName := uuid + ".mp4"
 	oss.UploadVideo(req.Data, videoFileName)
-	videoUrl := "http://douyin.g324.asia:9000/video/"
-	ossVideoUrl := videoUrl + videoFileName
+	videoUrlPre := "http://douyin.g324.asia:9000/video/"
+	ossVideoUrl := videoUrlPre + videoFileName
 
 	//视频封面用ffmpeg截取第一帧后上传至OSS
 	//通过视频URL获取封面
-	jepgByte, err := ffmepg.GetVideoFirstFrameBytes(videoUrl)
+	jepgByte, err := ffmepg.GetVideoFirstFrameBytes(ossVideoUrl)
 	if err != nil {
 		log.Println("获取封面失败")
 	}

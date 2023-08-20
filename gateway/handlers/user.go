@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
-	"gateway/microService/user/api"
-	"gateway/microService/user/api/userservice"
+	userService "gateway/rpcApi/userAPI"
 	userInfo "gateway/rpcApi/userInfoAPI"
 	userInfoApi "gateway/rpcApi/userInfoAPI/api"
 	"gateway/tools/jwt"
@@ -14,10 +12,10 @@ import (
 	"strconv"
 )
 
-var userRpcClient userservice.Client
-
 func InitUseruserRpcClient() {
 	userInfo.InitUserInfoRpcClient()
+	userService.InitUserRpcClient()
+
 }
 
 func User(ginContext *gin.Context) {
@@ -29,8 +27,9 @@ func User(ginContext *gin.Context) {
 		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
 			StatusCode: -1,
 			StatusMsg:  &str,
-			FullUser:   nil,
+			User:       nil,
 		})
+		return
 	}
 
 	searchID, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
@@ -41,8 +40,9 @@ func User(ginContext *gin.Context) {
 		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
 			StatusCode: -1,
 			StatusMsg:  &errStr,
-			FullUser:   nil,
+			User:       nil,
 		})
+		return
 	}
 
 	resp, err := userInfo.GetFullUserInfo(userID, searchID)
@@ -52,21 +52,20 @@ func User(ginContext *gin.Context) {
 		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
 			StatusCode: -1,
 			StatusMsg:  &errStr,
-			FullUser:   nil,
+			User:       nil,
 		})
+		return
 	}
+	log.Println(resp)
 	ginContext.JSON(http.StatusOK, resp)
 
 }
 
 func Login(ginContext *gin.Context) {
-	rpcReq := &api.DouyinUserLoginRequest{
-		Username: ginContext.Query("username"),
-		Password: ginContext.Query("password"),
-	}
+	username := ginContext.Query("username")
+	password := ginContext.Query("password")
 
-	fmt.Println(rpcReq)
-	resp, err := userRpcClient.UserLogin(context.Background(), rpcReq)
+	resp, err := userService.UserLogin(username, password)
 	if err != nil {
 		errStr := "User Login接口 RPC调用失败"
 		fmt.Println(errStr)
@@ -77,12 +76,10 @@ func Login(ginContext *gin.Context) {
 }
 
 func Register(ginContext *gin.Context) {
-	rpcReq := &api.DouyinUserRegisterRequest{
-		Username: ginContext.Query("username"),
-		Password: ginContext.Query("password"),
-	}
+	userName := ginContext.Query("username")
+	passWord := ginContext.Query("password")
 
-	resp, err := userRpcClient.UserRegister(context.Background(), rpcReq)
+	resp, err := userService.UserRegister(userName, passWord)
 	if err != nil {
 		errStr := "User Register接口 RPC调用失败"
 		fmt.Println(errStr)
