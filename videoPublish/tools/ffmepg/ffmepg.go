@@ -14,7 +14,7 @@ func GetVideoFirstFrameBytes(videoUrl string) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 
 	err := ffmpeg_go.Input(videoUrl).Filter("select", ffmpeg_go.Args{fmt.Sprintf("gte(n, %d)", 1)}).
-		Output("pipe:", ffmpeg_go.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjepg"}).
+		Output("pipe:", ffmpeg_go.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).
 		WithOutput(buf, os.Stdout).
 		Run()
 
