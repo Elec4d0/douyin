@@ -1,10 +1,11 @@
-package main
+package protos
 
 import (
 	"comment/comment_deploy/comment_mysql"
 	api "comment/server/protos/kitex_gen/api"
 	"comment/server/user_info"
 	"context"
+	"log"
 	"time"
 )
 
@@ -45,15 +46,27 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 			}
 			return resp, nil
 		}
-		userInfo := user_info.UserInfo(userId)
-		user := ToApiUser(userInfo)
+		comment_mysql.CommentCountAdd(videoId)
+
+		userInfo, err := user_info.UserInfo(userId, userId)
+		if err != nil {
+			statusMsg := "Comment unsuccessful"
+			resp = &api.DouyinCommentActionResponse{
+				StatusCode: 1,
+				StatusMsg:  &statusMsg,
+			}
+			return resp, nil
+		}
+
 		commentData := &api.Comment{
 			Id:         videoId,
 			Content:    content,
 			CreateDate: currentDateString,
-			User:       user,
+			User:       userInfo,
 		}
+
 		statusMsg := "Comment successful"
+		log.Println(statusMsg)
 		resp = &api.DouyinCommentActionResponse{
 			StatusCode: int32(0),
 			StatusMsg:  &statusMsg,
@@ -78,6 +91,7 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 			StatusMsg:  &statusMsg,
 		}
 		comment_mysql.DeleteComment(comment)
+		comment_mysql.CommentCountDel(videoId)
 	}
 	return
 }
@@ -85,6 +99,7 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 // CommentList implements the CommentServerImpl interface.
 func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinCommentListRequest) (resp *api.DouyinCommentListResponse, err error) {
 	videoId := req.VideoId
+	userId := req.UserId
 	commentList, err := comment_mysql.FindCommentAll(videoId)
 	if err != nil {
 		statusMsg := "Get video comment list unsuccessful"
@@ -102,10 +117,15 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		}
 		return resp, nil
 	}
-	//转换为api.comment
-	var CommentList []*api.Comment
-	for _, comment := range commentList {
-		CommentList = append(CommentList, ToApiComment(comment))
+
+	CommentList, err := user_info.UserInfoList(userId, commentList)
+	if err != nil {
+		statusMsg := "Get video comment list unsuccessful"
+		resp = &api.DouyinCommentListResponse{
+			StatusCode: 1,
+			StatusMsg:  &statusMsg,
+		}
+		return resp, nil
 	}
 
 	statusMsg := "Get video comment list successful"
@@ -121,7 +141,11 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 // CommentCount implements the CommentServerImpl interface.
 func (s *CommentServerImpl) CommentCount(ctx context.Context, req *api.DouyinCommentserverCommentcountRequest) (resp *api.DouyinCommentserverCommentcountResponse, err error) {
 	videoId := req.VideoId
-	commentCount := comment_mysql.FindCommentCount(videoId)
+	commentCount, err := comment_mysql.FindCommentCount(videoId)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
 	resp = &api.DouyinCommentserverCommentcountResponse{
 		CommentCount: commentCount,
 	}
@@ -131,36 +155,13 @@ func (s *CommentServerImpl) CommentCount(ctx context.Context, req *api.DouyinCom
 // CommentAllCount implements the CommentServerImpl interface.
 func (s *CommentServerImpl) CommentAllCount(ctx context.Context, req *api.DouyinCommentserverCommentallcountRequest) (resp *api.DouyinCommentserverCommentallcountResponse, err error) {
 	videoIds := req.VideoIds
-	commentCounts := comment_mysql.FindCommentAllCount(videoIds)
+	commentCounts, err := comment_mysql.FindCommentAllCount(videoIds)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
 	resp = &api.DouyinCommentserverCommentallcountResponse{
 		CommentCounts: commentCounts,
 	}
 	return resp, nil
-}
-
-func ToApiComment(comment *comment_mysql.Comment) *api.Comment {
-	userInfo := user_info.UserInfo(comment.User_id)
-	user := ToApiUser(userInfo)
-	return &api.Comment{
-		Id:         comment.Id,
-		User:       user,
-		Content:    comment.Content,
-		CreateDate: comment.Create_date,
-	}
-}
-
-func ToApiUser(user user_info.User) *api.User {
-	return &api.User{
-		Id:              user.Id,
-		Name:            user.Name,
-		FollowCount:     &user.Follow_count,
-		FollowerCount:   &user.Follower_count,
-		IsFollow:        user.Is_follow,
-		Avatar:          &user.Avatar,
-		BackgroundImage: &user.Background_image,
-		Signature:       &user.Signature,
-		TotalFavorited:  &user.Total_favorited,
-		WorkCount:       &user.Work_count,
-		FavoriteCount:   &user.Favorite_count,
-	}
 }
