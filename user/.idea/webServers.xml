@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="e53cd6d1-9280-4afc-9cd6-6e372d79bf44" name="远程" url="http://lsh.g324.asia">
+        <fileTransfer accessType="SFTP" host="douyin.g324.asia" port="22" sshConfigId="aad8cdf4-ae47-48ad-a2d5-b2dbbda502e4" sshConfig="rain@douyin.g324.asia:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

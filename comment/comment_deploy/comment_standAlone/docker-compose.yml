@@ -1,0 +1,25 @@
+version: "3"
+services:
+  comment-redis:
+    image: redis:5.0.9-alpine
+    container_name: comment-redis
+    restart: always
+    volumes:
+      - ./data/redis/data:/data
+    ports:
+      - "6379:6379"
+  comment-mysql:
+    image: mysql:8.0
+    container_name: comment-mysql
+    restart: always
+    volumes:
+      - ./data/mysql/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=commentMysql
+      - MYSQL_ROOT_PASSWORD=enid123456
+      - TZ=Asia/Shanghai
+
+
+
