@@ -1,13 +1,12 @@
 package user_info
 
 import (
+	"comment/comment_deploy/comment_mysql"
 	"comment/server/protos/kitex_gen/api"
-	"comment/server/protos/kitex_gen/api/commentserver"
-	"context"
-	"github.com/cloudwego/kitex/client"
-	etcd "github.com/kitex-contrib/registry-etcd"
+	rpcClient "comment/userInfoAPI"
+	api2 "comment/userInfoAPI/api"
+	"comment/userInfoAPI/api/userinfoservice"
 	"log"
-	"time"
 )
 
 type User struct {
@@ -24,22 +23,59 @@ type User struct {
 	Favorite_count   int64
 }
 
-func UserInfo(userId int64) (user User) {
-	r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
-	if err != nil {
-		log.Fatal(err)
-	}
-	cli, err := commentserver.NewClient("CommentServer", client.WithResolver(r))
-	if err != nil {
-		log.Fatal(err)
-	}
+var userInfoRpcClient userinfoservice.Client
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
-	req := &api.DouyinCommentserverCommentallcountRequest{}
-	resp, err := cli.CommentAllCount(ctx, req)
-	cancel()
+func UserInfo(userId int64, searchId int64) (*api.User, error) {
+	rpcClient.InitUserInfoRpcClient()
+	userInfo, err := rpcClient.GetFullUserInfo(userId, searchId)
 	if err != nil {
 		log.Fatal(err)
+		return nil, err
 	}
-	return resp
+	user := ToApiFullUser(userInfo)
+	return user, nil
+}
+func UserInfoList(userId int64, comment []*comment_mysql.Comment) ([]*api.Comment, error) {
+	searchId := make([]int64, len(comment))
+	for _, commentInfo := range comment {
+		searchId = append(searchId, commentInfo.User_id)
+	}
+	rpcClient.InitUserInfoRpcClient()
+	userInfolist, err := rpcClient.GetFullUserInfoList(userId, searchId)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	var CommentList []*api.Comment
+	for _, user := range userInfolist {
+		userInfo := ToApiFullUser(user)
+		for _, comment := range comment {
+			CommentList = append(CommentList, ToApiComment(comment, userInfo))
+		}
+	}
+	return CommentList, nil
+}
+func ToApiFullUser(user *api2.FullUser) *api.User {
+	return &api.User{
+		Id:              user.Id,
+		Name:            user.Name,
+		FollowCount:     user.FollowCount,
+		FollowerCount:   user.FollowerCount,
+		IsFollow:        user.IsFollow,
+		Avatar:          user.Avatar,
+		BackgroundImage: user.BackgroundImage,
+		Signature:       user.Signature,
+		TotalFavorited:  user.TotalFavorited,
+		WorkCount:       user.WorkCount,
+		FavoriteCount:   user.FavoriteCount,
+	}
+}
+
+func ToApiComment(comment *comment_mysql.Comment, userInfo *api.User) *api.Comment {
+	return &api.Comment{
+		Id:         comment.Id,
+		User:       userInfo,
+		Content:    comment.Content,
+		CreateDate: comment.Create_date,
+	}
 }
