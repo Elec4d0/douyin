@@ -1,7 +1,7 @@
 package user_info
 
 import (
-	"comment/comment_deploy/comment_mysql"
+	"comment/comment_deploy/commentsql"
 	"comment/server/protos/kitex_gen/api"
 	rpcClient "comment/userInfoAPI"
 	api2 "comment/userInfoAPI/api"
@@ -35,7 +35,7 @@ func UserInfo(userId int64, searchId int64) (*api.User, error) {
 	user := ToApiFullUser(userInfo)
 	return user, nil
 }
-func UserInfoList(userId int64, comment []*comment_mysql.Comment) ([]*api.Comment, error) {
+func UserInfoList(userId int64, comment []*commentsql.Comment) ([]*api.Comment, error) {
 	searchId := make([]int64, len(comment))
 	for _, commentInfo := range comment {
 		searchId = append(searchId, commentInfo.User_id)
@@ -71,7 +71,7 @@ func ToApiFullUser(user *api2.FullUser) *api.User {
 	}
 }
 
-func ToApiComment(comment *comment_mysql.Comment, userInfo *api.User) *api.Comment {
+func ToApiComment(comment *commentsql.Comment, userInfo *api.User) *api.Comment {
 	return &api.Comment{
 		Id:         comment.Id,
 		User:       userInfo,
