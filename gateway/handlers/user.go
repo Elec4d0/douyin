@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	userService "gateway/rpcApi/userAPI"
+	userServiceApi "gateway/rpcApi/userAPI/api"
 	userInfo "gateway/rpcApi/userInfoAPI"
 	userInfoApi "gateway/rpcApi/userInfoAPI/api"
 	"gateway/tools/jwt"
@@ -69,6 +70,13 @@ func Login(ginContext *gin.Context) {
 	if err != nil {
 		errStr := "User Login接口 RPC调用失败"
 		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &userServiceApi.DouyinUserLoginResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			UserId:     0,
+			Token:      "",
+		})
+		return
 	}
 	fmt.Println(resp)
 	ginContext.JSON(http.StatusOK, resp)
@@ -83,6 +91,13 @@ func Register(ginContext *gin.Context) {
 	if err != nil {
 		errStr := "User Register接口 RPC调用失败"
 		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &userServiceApi.DouyinUserRegisterResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			UserId:     0,
+			Token:      "",
+		})
+		return
 	}
 	ginContext.JSON(http.StatusOK, resp)
 	return

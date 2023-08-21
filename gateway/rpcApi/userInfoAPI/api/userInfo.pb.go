@@ -81,9 +81,9 @@ type DouyinUserGetFullUserInfoResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	StatusCode int32     `protobuf:"varint,1,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`   // 状态码，0-成功，其他值-失败
-	StatusMsg  *string   `protobuf:"bytes,2,opt,name=status_msg,json=statusMsg,proto3,oneof" json:"status_msg,omitempty"` // 返回状态描述
-	User       *FullUser `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	StatusCode int32     `protobuf:"varint,1,opt,name=status_code,json=statusCode,proto3" json:"status_code"`   // 状态码，0-成功，其他值-失败
+	StatusMsg  *string   `protobuf:"bytes,2,opt,name=status_msg,json=statusMsg,proto3,oneof" json:"status_msg"` // 返回状态描述
+	User       *FullUser `protobuf:"bytes,3,opt,name=user,proto3" json:"user"`
 }
 
 func (x *DouyinUserGetFullUserInfoResponse) Reset() {

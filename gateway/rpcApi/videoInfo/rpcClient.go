@@ -20,11 +20,11 @@ func InitVideoInfoRpcClient() videoinfoservice.Client {
 	videoInfoRpcClient, err = videoinfoservice.NewClient("videoInfo", client.WithResolver(r))
 
 	if err != nil {
-		log.Fatal("网关层Video 微服务初始化链接失败")
+		log.Fatal("VideoInfo 微服务初始化链接失败")
 		log.Fatal(err)
 		return nil
 	}
-	fmt.Println("Video 微服务：初始化链接User微服务成功")
+	fmt.Println("VideoInfo 微服务：初始化链接成功")
 	return videoInfoRpcClient
 }
 
