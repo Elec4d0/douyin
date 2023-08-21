@@ -76,14 +76,14 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 		commentId := *req.CommentId
 		comment, err := commentsql.FindComment(videoId, commentId)
 		if err != nil {
-			statusMsg := "Delete comment unsuccessful"
+			statusMsg := "Delete commentsql unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
 				StatusCode: 1,
 				StatusMsg:  &statusMsg,
 			}
 			return resp, nil
 		}
-		statusMsg := "Delete comment successful"
+		statusMsg := "Delete commentsql successful"
 		statusCode := 0
 		resp = &api.DouyinCommentActionResponse{
 			StatusCode: int32(statusCode),
@@ -101,7 +101,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 	userId := req.UserId
 	commentList, err := commentsql.FindCommentAll(videoId)
 	if err != nil {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "Get video commentsql list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -109,7 +109,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		return resp, nil
 	}
 	if len(commentList) == 0 {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "Get video commentsql list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -119,7 +119,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 
 	CommentList, err := user_info.UserInfoList(userId, commentList)
 	if err != nil {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "Get video commentsql list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -127,7 +127,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		return resp, nil
 	}
 
-	statusMsg := "Get video comment list successful"
+	statusMsg := "Get video commentsql list successful"
 	statusCode := 0
 	resp = &api.DouyinCommentListResponse{
 		StatusCode:  int32(statusCode),
