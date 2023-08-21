@@ -107,7 +107,7 @@ type DouyinCommentActionResponse struct {
 
 	StatusCode int32    `protobuf:"varint,1,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`   // 状态码，0-成功，其他值-失败
 	StatusMsg  *string  `protobuf:"bytes,2,opt,name=status_msg,json=statusMsg,proto3,oneof" json:"status_msg,omitempty"` // 返回状态描述
-	Comment    *Comment `protobuf:"bytes,3,opt,name=comment,proto3,oneof" json:"comment,omitempty"`                      // 评论成功返回评论内容，不需要重新拉取整个列表
+	Comment    *Comment `protobuf:"bytes,3,opt,name=commentsql,proto3,oneof" json:"commentsql,omitempty"`                // 评论成功返回评论内容，不需要重新拉取整个列表
 }
 
 func (x *DouyinCommentActionResponse) Reset() {
@@ -822,29 +822,29 @@ func file_comment_proto_rawDescGZIP() []byte {
 
 var file_comment_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_comment_proto_goTypes = []interface{}{
-	(*DouyinCommentActionRequest)(nil),                 // 0: comment.douyin_comment_action_request
-	(*DouyinCommentActionResponse)(nil),                // 1: comment.douyin_comment_action_response
-	(*Comment)(nil),                                    // 2: comment.Comment
-	(*DouyinCommentListRequest)(nil),                   // 3: comment.douyin_comment_list_request
-	(*DouyinCommentListResponse)(nil),                  // 4: comment.douyin_comment_list_response
-	(*User)(nil),                                       // 5: comment.User
-	(*DouyinCommentserverCommentcountRequest)(nil),     // 6: comment.douyin_commentserver_commentcount_request
-	(*DouyinCommentserverCommentcountResponse)(nil),    // 7: comment.douyin_commentserver_commentcount_response
-	(*DouyinCommentserverCommentallcountRequest)(nil),  // 8: comment.douyin_commentserver_commentallcount_request
-	(*DouyinCommentserverCommentallcountResponse)(nil), // 9: comment.douyin_commentserver_commentallcount_response
+	(*DouyinCommentActionRequest)(nil),                 // 0: commentsql.douyin_comment_action_request
+	(*DouyinCommentActionResponse)(nil),                // 1: commentsql.douyin_comment_action_response
+	(*Comment)(nil),                                    // 2: commentsql.Comment
+	(*DouyinCommentListRequest)(nil),                   // 3: commentsql.douyin_comment_list_request
+	(*DouyinCommentListResponse)(nil),                  // 4: commentsql.douyin_comment_list_response
+	(*User)(nil),                                       // 5: commentsql.User
+	(*DouyinCommentserverCommentcountRequest)(nil),     // 6: commentsql.douyin_commentserver_commentcount_request
+	(*DouyinCommentserverCommentcountResponse)(nil),    // 7: commentsql.douyin_commentserver_commentcount_response
+	(*DouyinCommentserverCommentallcountRequest)(nil),  // 8: commentsql.douyin_commentserver_commentallcount_request
+	(*DouyinCommentserverCommentallcountResponse)(nil), // 9: commentsql.douyin_commentserver_commentallcount_response
 }
 var file_comment_proto_depIdxs = []int32{
-	2, // 0: comment.douyin_comment_action_response.comment:type_name -> comment.Comment
-	5, // 1: comment.Comment.user:type_name -> comment.User
-	2, // 2: comment.douyin_comment_list_response.comment_list:type_name -> comment.Comment
-	0, // 3: comment.CommentServer.CommentAction:input_type -> comment.douyin_comment_action_request
-	3, // 4: comment.CommentServer.CommentList:input_type -> comment.douyin_comment_list_request
-	6, // 5: comment.CommentServer.CommentCount:input_type -> comment.douyin_commentserver_commentcount_request
-	8, // 6: comment.CommentServer.CommentAllCount:input_type -> comment.douyin_commentserver_commentallcount_request
-	1, // 7: comment.CommentServer.CommentAction:output_type -> comment.douyin_comment_action_response
-	4, // 8: comment.CommentServer.CommentList:output_type -> comment.douyin_comment_list_response
-	7, // 9: comment.CommentServer.CommentCount:output_type -> comment.douyin_commentserver_commentcount_response
-	9, // 10: comment.CommentServer.CommentAllCount:output_type -> comment.douyin_commentserver_commentallcount_response
+	2, // 0: commentsql.douyin_comment_action_response.commentsql:type_name -> commentsql.Comment
+	5, // 1: commentsql.Comment.user:type_name -> commentsql.User
+	2, // 2: commentsql.douyin_comment_list_response.comment_list:type_name -> commentsql.Comment
+	0, // 3: commentsql.CommentServer.CommentAction:input_type -> commentsql.douyin_comment_action_request
+	3, // 4: commentsql.CommentServer.CommentList:input_type -> commentsql.douyin_comment_list_request
+	6, // 5: commentsql.CommentServer.CommentCount:input_type -> commentsql.douyin_commentserver_commentcount_request
+	8, // 6: commentsql.CommentServer.CommentAllCount:input_type -> commentsql.douyin_commentserver_commentallcount_request
+	1, // 7: commentsql.CommentServer.CommentAction:output_type -> commentsql.douyin_comment_action_response
+	4, // 8: commentsql.CommentServer.CommentList:output_type -> commentsql.douyin_comment_list_response
+	7, // 9: commentsql.CommentServer.CommentCount:output_type -> commentsql.douyin_commentserver_commentcount_response
+	9, // 10: commentsql.CommentServer.CommentAllCount:output_type -> commentsql.douyin_commentserver_commentallcount_response
 	7, // [7:11] is the sub-list for method output_type
 	3, // [3:7] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name

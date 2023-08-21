@@ -1,7 +1,7 @@
 package protos
 
 import (
-	"comment/comment_deploy/comment_mysql"
+	"comment/comment_deploy/commentsql"
 	api "comment/server/protos/kitex_gen/api"
 	"comment/server/user_info"
 	"context"
@@ -31,13 +31,13 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 			return resp, nil
 		}
 
-		comment := &comment_mysql.Comment{
+		comment := &commentsql.Comment{
 			Video_id:    videoId,
 			Content:     content,
 			Create_date: currentDateString,
 			User_id:     userId,
 		}
-		err := comment_mysql.CreatComment(comment)
+		err := commentsql.CreatComment(comment)
 		if err != nil {
 			statusMsg := "Comment unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
@@ -46,7 +46,7 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 			}
 			return resp, nil
 		}
-		comment_mysql.CommentCountAdd(videoId)
+		commentsql.CommentCountAdd(videoId)
 
 		userInfo, err := user_info.UserInfo(userId, userId)
 		if err != nil {
@@ -66,7 +66,6 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 		}
 
 		statusMsg := "Comment successful"
-		log.Println(statusMsg)
 		resp = &api.DouyinCommentActionResponse{
 			StatusCode: int32(0),
 			StatusMsg:  &statusMsg,
@@ -75,23 +74,23 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 		return resp, nil
 	} else if actionType == 2 {
 		commentId := *req.CommentId
-		comment, err := comment_mysql.FindComment(videoId, commentId)
+		comment, err := commentsql.FindComment(videoId, commentId)
 		if err != nil {
-			statusMsg := "Delete comment unsuccessful"
+			statusMsg := "Delete commentsql unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
 				StatusCode: 1,
 				StatusMsg:  &statusMsg,
 			}
 			return resp, nil
 		}
-		statusMsg := "Delete comment successful"
+		statusMsg := "Delete commentsql successful"
 		statusCode := 0
 		resp = &api.DouyinCommentActionResponse{
 			StatusCode: int32(statusCode),
 			StatusMsg:  &statusMsg,
 		}
-		comment_mysql.DeleteComment(comment)
-		comment_mysql.CommentCountDel(videoId)
+		commentsql.DeleteComment(comment)
+		commentsql.CommentCountDel(videoId)
 	}
 	return
 }
@@ -100,9 +99,9 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinCommentListRequest) (resp *api.DouyinCommentListResponse, err error) {
 	videoId := req.VideoId
 	userId := req.UserId
-	commentList, err := comment_mysql.FindCommentAll(videoId)
+	commentList, err := commentsql.FindCommentAll(videoId)
 	if err != nil {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "Get video commentsql list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -110,7 +109,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		return resp, nil
 	}
 	if len(commentList) == 0 {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "Get video commentsql list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -120,7 +119,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 
 	CommentList, err := user_info.UserInfoList(userId, commentList)
 	if err != nil {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "Get video commentsql list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -128,7 +127,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		return resp, nil
 	}
 
-	statusMsg := "Get video comment list successful"
+	statusMsg := "Get video commentsql list successful"
 	statusCode := 0
 	resp = &api.DouyinCommentListResponse{
 		StatusCode:  int32(statusCode),
@@ -141,7 +140,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 // CommentCount implements the CommentServerImpl interface.
 func (s *CommentServerImpl) CommentCount(ctx context.Context, req *api.DouyinCommentserverCommentcountRequest) (resp *api.DouyinCommentserverCommentcountResponse, err error) {
 	videoId := req.VideoId
-	commentCount, err := comment_mysql.FindCommentCount(videoId)
+	commentCount, err := commentsql.FindCommentCount(videoId)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -155,7 +154,7 @@ func (s *CommentServerImpl) CommentCount(ctx context.Context, req *api.DouyinCom
 // CommentAllCount implements the CommentServerImpl interface.
 func (s *CommentServerImpl) CommentAllCount(ctx context.Context, req *api.DouyinCommentserverCommentallcountRequest) (resp *api.DouyinCommentserverCommentallcountResponse, err error) {
 	videoIds := req.VideoIds
-	commentCounts, err := comment_mysql.FindCommentAllCount(videoIds)
+	commentCounts, err := commentsql.FindCommentAllCount(videoIds)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
