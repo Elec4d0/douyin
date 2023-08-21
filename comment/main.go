@@ -1,7 +1,7 @@
 package main
 
 import (
-	"comment/comment_deploy/comment_mysql"
+	"comment/comment_deploy/commentsql"
 	"comment/server/protos"
 	api "comment/server/protos/kitex_gen/api/commentserver"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	comment_mysql.Init()
+	commentsql.MysqlInit()
 
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"})
 	if err != nil {
