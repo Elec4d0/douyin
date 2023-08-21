@@ -11,11 +11,11 @@ import (
 )
 
 func GetVideoFirstFrameBytes(videoUrl string) ([]byte, error) {
-	buf := bytes.NewBuffer(nil)
+	ffmepgBuf := bytes.NewBuffer(nil)
 
 	err := ffmpeg_go.Input(videoUrl).Filter("select", ffmpeg_go.Args{fmt.Sprintf("gte(n, %d)", 1)}).
 		Output("pipe:", ffmpeg_go.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).
-		WithOutput(buf, os.Stdout).
+		WithOutput(ffmepgBuf, os.Stdout).
 		Run()
 
 	if err != nil {
@@ -24,7 +24,7 @@ func GetVideoFirstFrameBytes(videoUrl string) ([]byte, error) {
 		return nil, err
 	}
 
-	img, _, err := image.Decode(buf)
+	img, _, err := image.Decode(ffmepgBuf)
 	if err != nil {
 		log.Println("img解码ffpemg视频帧失败")
 		log.Println(err)
@@ -32,16 +32,16 @@ func GetVideoFirstFrameBytes(videoUrl string) ([]byte, error) {
 	}
 
 	jpegBuf := new(bytes.Buffer)
-	err = jpeg.Encode(buf, img, nil)
+	err = jpeg.Encode(jpegBuf, img, nil)
 	if err != nil {
-		log.Println("jepg解码image对象失败")
+		log.Println("jpeg解码image对象失败")
 		log.Println(err)
 		return nil, err
 	}
 
 	return jpegBuf.Bytes(), nil
 	/*
-		img, err := imaging.Decode(buf)
+		img, err := imaging.Decode(ffmepgBuf)
 		if err != nil {
 			log.Println("视频帧解码为img失败")
 			log.Println(err)
