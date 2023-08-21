@@ -69,7 +69,7 @@ func UploadVideo(videoByte []byte, objectName string) {
 	//链接OSS的用具，桶名
 	ctx := context.Background()
 	bucketName := "video"
-
+	log.Println("oss接收到的videoByte数组长度：", len(videoByte))
 	//接受到的byte数组包装为一组流，上传至OSS
 	videoStream := bytes.NewReader(videoByte)
 
@@ -82,18 +82,18 @@ func UploadVideo(videoByte []byte, objectName string) {
 	log.Printf("成功上传视频至OSS %s of size %d\n", objectName, info.Size)
 }
 
-func UploadJepg(jepgByte []byte, objectName string) {
+func UploadJpeg(jpegByte []byte, objectName string) {
 	// Upload the zip file
 
 	//链接OSS的用具，桶名
 	ctx := context.Background()
 	bucketName := "jepg"
-
+	log.Println("oss接收到的videoByte数组长度：", len(jpegByte))
 	//接受到的byte数组包装为一组流，上传至OSS
-	videoStream := bytes.NewReader(jepgByte)
+	videoStream := bytes.NewReader(jpegByte)
 
 	//上传视频流到OSS
-	info, err := ossClient.PutObject(ctx, bucketName, objectName, videoStream, int64(len(jepgByte)), minio.PutObjectOptions{})
+	info, err := ossClient.PutObject(ctx, bucketName, objectName, videoStream, int64(len(jpegByte)), minio.PutObjectOptions{})
 	if err != nil {
 		log.Fatalln(err)
 	}

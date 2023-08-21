@@ -31,14 +31,14 @@ func (s *VideoPublishServiceImpl) PublishVideo(ctx context.Context, req *api.Vid
 
 	//视频封面用ffmpeg截取第一帧后上传至OSS
 	//通过视频URL获取封面
-	jepgByte, err := ffmepg.GetVideoFirstFrameBytes(ossVideoUrl)
+	jpegByte, err := ffmepg.GetVideoFirstFrameBytes(ossVideoUrl)
 	if err != nil {
 		log.Println("获取封面失败")
 	}
 
 	//上传封面
 	coverFileName := uuid + ".jpg"
-	oss.UploadJepg(jepgByte, coverFileName)
+	oss.UploadJpeg(jpegByte, coverFileName)
 	coverUrl := "http://douyin.g324.asia:9000/jepg/"
 	ossCoverUrl := coverUrl + coverFileName
 
