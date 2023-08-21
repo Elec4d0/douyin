@@ -6,7 +6,7 @@ import (
 	"context"
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
-	api 	"rpcApi/userInfoAPI/api"
+	api "rpcApi/userInfoAPI/api"
 )
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
