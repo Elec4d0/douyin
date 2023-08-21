@@ -79,13 +79,13 @@ func GenerateToken(userId int64, userName string) (string, error) {
 	claim := Claims{
 		userId: userId,
 		RegisteredClaims: &jwt.RegisteredClaims{
-			Issuer:    "ApiGateWay",                                    // 签发者
-			Subject:   userName,                                        // 签发对象
-			Audience:  jwt.ClaimStrings{"Android_APP", "IOS_APP"},      //签发受众
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),   //过期时间
-			NotBefore: jwt.NewNumericDate(time.Now().Add(time.Second)), //最早使用时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),                  //签发时间
-			ID:        randStr(10),                                     // jwt ID, 类似于盐值
+			Issuer:    "ApiGateWay",                                  // 签发者
+			Subject:   userName,                                      // 签发对象
+			Audience:  jwt.ClaimStrings{"Android_APP", "IOS_APP"},    //签发受众
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)), //过期时间
+			NotBefore: jwt.NewNumericDate(time.Now()),                //最早使用时间
+			IssuedAt:  jwt.NewNumericDate(time.Now()),                //签发时间
+			ID:        randStr(10),                                   // jwt ID, 类似于盐值
 		},
 	}
 
