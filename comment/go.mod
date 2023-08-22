@@ -3,6 +3,7 @@ module comment
 go 1.20
 
 require (
+	github.com/Chain-Zhang/pinyin v0.1.3
 	github.com/cloudwego/fastpb v0.0.4
 	github.com/cloudwego/kitex v0.6.2
 	github.com/gogo/protobuf v1.3.2
