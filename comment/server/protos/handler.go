@@ -2,6 +2,7 @@ package protos
 
 import (
 	"comment/comment_deploy/commentsql"
+	"comment/sensitiveWord"
 	api "comment/server/protos/kitex_gen/api"
 	"comment/server/user_info"
 	"context"
@@ -21,6 +22,7 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 		//评论日期
 		currentDateString := time.Now().Format("01-02")
 		content := *req.CommentText
+		content = sensitiveWord.ToInsensitive(content)
 
 		if content == "" {
 			statusMsg := "Comment unsuccessful"
