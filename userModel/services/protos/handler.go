@@ -21,10 +21,13 @@ func (s *UserModelServiceImpl) CreateBaseUser(ctx context.Context, req *api.Douy
 	password := req.Password
 
 	user := &model.User{
-		Name:      name,
-		Password:  utils.SHA256(password),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Name:            name,
+		Password:        utils.SHA256(password),
+		Avatar:          "",
+		BackgroundImage: "",
+		Signature:       "",
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
 
 	id, err := model.CreateUser(user)
