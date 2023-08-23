@@ -9,11 +9,15 @@ import (
 	"videoInfo/core"
 	api "videoInfo/core/kitex_gen/api/videoinfoservice"
 	"videoInfo/rpcApi"
+	"videoInfo/tools/redis"
 )
 
 func main() {
 	//初始化rpcApi链接
 	rpcApi.InitRpcClient()
+
+	//初始化redis链接
+	redis.InitRedis()
 
 	//etcd 链接
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"}) // r should not be reused.

@@ -37,26 +37,12 @@ func QueryAuthorVideoList(AuthorId int64) []*videoModelApi.VideoBaseInfo {
 	return videos
 }
 
-func GetUserById(uid int64, aid int64) *api.User {
+func GetUserById(uid int64, aid int64) *userInfoApi.FullUser {
 	userInfo, _ := userInfo.GetFullUserInfo(uid, aid)
 	if userInfo == nil {
 		return nil
 	}
-
-	user := &api.User{
-		Id:              userInfo.Id,
-		Name:            userInfo.Name,
-		FollowCount:     userInfo.FollowCount,
-		FollowerCount:   userInfo.FollowerCount,
-		IsFollow:        userInfo.IsFollow,
-		Avatar:          userInfo.Avatar,
-		BackgroundImage: userInfo.BackgroundImage,
-		Signature:       userInfo.Signature,
-		TotalFavorited:  userInfo.TotalFavorited,
-		WorkCount:       userInfo.WorkCount,
-		FavoriteCount:   userInfo.FavoriteCount,
-	}
-	return user
+	return userInfo
 }
 
 func GetFavoriteCount(videoID int64) int64 {
@@ -122,22 +108,18 @@ func RpcUser2ApiUser(userInfo *userInfoApi.FullUser) *api.User {
 	return user
 }
 
-func GetAuthorList(userID int64, authorIDList []int64) []*api.User {
+func GetAuthorList(userID int64, authorIDList []int64) []*userInfoApi.FullUser {
 	n := len(authorIDList)
 	rpcAuthorList, err := userInfo.GetFullUserInfoList(userID, authorIDList)
 	if err != nil {
-		return make([]*api.User, n, n)
+		return make([]*userInfoApi.FullUser, n, n)
 	}
 	//防止从其他rpc拿到author 数组为 nil
 	if rpcAuthorList == nil {
-		return make([]*api.User, n, n)
-	}
-	apiAuthorList := RpcUserList2ApiUserList(rpcAuthorList)
-	if apiAuthorList == nil {
-		return make([]*api.User, n, n)
+		return make([]*userInfoApi.FullUser, n, n)
 	}
 
-	return apiAuthorList
+	return rpcAuthorList
 }
 
 func BuildVideoList(videoBaseInfoList []*videoModelApi.VideoBaseInfo, AuthorList []*api.User, isFavoriteList []bool, favoriteCountList []int64, commentCountList []int64) []*api.Video {
