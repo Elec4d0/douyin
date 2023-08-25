@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"log"
 	"time"
 	api "videoModel/core/kitex_gen/api"
 	"videoModel/model"
@@ -60,29 +61,34 @@ func (s *VideoModelServiceImpl) QueryAuthorWorkCount(ctx context.Context, req *a
 	return
 }
 
-// QueryAuthorVideoList implements the VideoModelServiceImpl interface.
-func (s *VideoModelServiceImpl) QueryAuthorVideoList(ctx context.Context, req *api.VideoModelQueryAuthorVideoListRequest) (resp *api.VideoModelQueryAuthorVideoListResponse, err error) {
+// QueryAuthorVideoIDList implements the VideoModelServiceImpl interface.
+func (s *VideoModelServiceImpl) QueryAuthorVideoIDList(ctx context.Context, req *api.VideoModelQueryAuthorVideoIdListRequest) (resp *api.VideoModelQueryAuthorVideoIdListResponse, err error) {
 	// TODO: Your code here...
 	ormVideos, err := model.QueryAuthorVideoList(req.AuthorId)
 	if err != nil {
 		errStr := "数据库查询失败"
-		resp = &api.VideoModelQueryAuthorVideoListResponse{
-			VideoBaseInfo: nil,
-			StatusMsg:     &errStr,
-			StatusCode:    -1,
+		resp = &api.VideoModelQueryAuthorVideoIdListResponse{
+			VideoIdList: nil,
+			StatusMsg:   &errStr,
+			StatusCode:  -1,
 		}
 		return
 	}
 
-	resp = &api.VideoModelQueryAuthorVideoListResponse{
-		VideoBaseInfo: BuildApiBaseVideoInfoList(ormVideos),
+	var videoIDList = make([]int64, len(ormVideos))
+
+	for i, ormVideo := range ormVideos {
+		videoIDList[i] = ormVideo.VideoID
+	}
+	resp = &api.VideoModelQueryAuthorVideoIdListResponse{
+		VideoIdList: videoIDList,
 	}
 	return
 }
 
-func BuildApiBaseVideoInfoList(ormVideos []*model.Video) []*api.VideoBaseInfo {
+func BuildApiBaseVideoInfoList(ormVideos []*model.Video) []*api.VideoModel {
 	n := len(ormVideos)
-	apiVideos := make([]*api.VideoBaseInfo, n, n)
+	apiVideos := make([]*api.VideoModel, n, n)
 
 	//遍历model中的video结构体数组，批量扩孔ApiVideoList
 	for i, video := range ormVideos {
@@ -93,13 +99,13 @@ func BuildApiBaseVideoInfoList(ormVideos []*model.Video) []*api.VideoBaseInfo {
 	return apiVideos
 }
 
-func BuildApiBaseInfoVideo(video *model.Video) *api.VideoBaseInfo {
+func BuildApiBaseInfoVideo(video *model.Video) *api.VideoModel {
 	//uid, _ := strconv.ParseInt(strconv.FormatUint(video.AuthorID, 10), 10, 64)
 	//author := BuildApiUser(uid)
 	if video == nil {
 		return nil
 	}
-	return &api.VideoBaseInfo{
+	return &api.VideoModel{
 		VideoId:  video.VideoID,
 		AuthorId: video.AuthorID,
 		PlayUrl:  video.PlayUrl,
@@ -114,7 +120,7 @@ func (s *VideoModelServiceImpl) QueryVideoList(ctx context.Context, req *api.Vid
 	ormVideos, _ := model.GetVideosByIds(req.VideoIdList)
 
 	resp = &api.VideoModelQueryVideoListResponse{
-		VideoBaseInfoList: BuildApiBaseVideoInfoList(ormVideos),
+		VideoModelList: BuildApiBaseVideoInfoList(ormVideos),
 	}
 	return
 }
@@ -125,7 +131,7 @@ func (s *VideoModelServiceImpl) QueryVideo(ctx context.Context, req *api.VideoMo
 	ormVideo, _ := model.QuerySingleVideo(req.VideoId)
 
 	resp = &api.VideoModelQueryVideoResponse{
-		VideoBaseInfo: BuildApiBaseInfoVideo(ormVideo),
+		VideoModel: BuildApiBaseInfoVideo(ormVideo),
 	}
 	return
 }
@@ -133,15 +139,23 @@ func (s *VideoModelServiceImpl) QueryVideo(ctx context.Context, req *api.VideoMo
 // QueryVideoFeed implements the VideoModelServiceImpl interface.
 func (s *VideoModelServiceImpl) QueryVideoFeed(ctx context.Context, req *api.VideoModelQueryVideoFeedRequest) (resp *api.VideoModelQueryVideoFeedResponse, err error) {
 	// TODO: Your code here...
-
+	log.Println("接收到时间戳:", req.NextTime)
 	//转换并格式化时间
 	t := time.Unix(req.NextTime/1000, 0)
 	format := "2006-01-02 15:04:05"
 	searchTime := t.Format(format)
-
-	ormVideos, _ := model.QueryVideoFeedByLastTimeAndLimit(&searchTime, 5)
+	log.Println("Feed流格式化时间：", searchTime)
+	ormVideoList, _ := model.QueryVideoFeedByLastTimeAndLimit(&searchTime, req.Limit)
+	log.Println(ormVideoList)
+	var videoIDList = make([]int64, len(ormVideoList))
+	var createTimeList = make([]int64, len(ormVideoList))
+	for i, ormVideo := range ormVideoList {
+		videoIDList[i] = ormVideo.VideoID
+		createTimeList[i] = ormVideo.CreatedTime.Unix() * 1000
+	}
 	resp = &api.VideoModelQueryVideoFeedResponse{
-		VideoBaseInfoList: BuildApiBaseVideoInfoList(ormVideos),
+		VideoIdList:    videoIDList,
+		CreateTimeList: createTimeList,
 	}
 	return
 }

@@ -7,7 +7,7 @@ import (
 	"videoInfo/tools/userconv"
 )
 
-func Rpc2Api(rpcVideoModel *videoModelApi.VideoBaseInfo, rpcUser *userApi.FullUser, favoriteCount int64, commentCount int64, isFavorite bool) *api.Video {
+func Rpc2Api(rpcVideoModel *videoModelApi.VideoModel, rpcUser *userApi.FullUser, favoriteCount int64, commentCount int64, isFavorite bool) *api.Video {
 	if rpcVideoModel == nil {
 		return nil
 	}
@@ -23,7 +23,7 @@ func Rpc2Api(rpcVideoModel *videoModelApi.VideoBaseInfo, rpcUser *userApi.FullUs
 	}
 }
 
-func BatchRpc2Api(rpcVideoModelList []*videoModelApi.VideoBaseInfo, rpcAuthorList []*userApi.FullUser, favoriteCountList []int64, commentCountList []int64, isFavoriteList []bool) []*api.Video {
+func BatchRpc2Api(rpcVideoModelList []*videoModelApi.VideoModel, rpcAuthorList []*userApi.FullUser, favoriteCountList []int64, commentCountList []int64, isFavoriteList []bool) []*api.Video {
 	var videoList = make([]*api.Video, len(rpcVideoModelList))
 	apiAuthorList := userconv.BatchRpc2Api(rpcAuthorList)
 
@@ -33,7 +33,7 @@ func BatchRpc2Api(rpcVideoModelList []*videoModelApi.VideoBaseInfo, rpcAuthorLis
 	return videoList
 }
 
-func buildApiVideo(rpcVideoModel *videoModelApi.VideoBaseInfo, apiUser *api.User, favoriteCount int64, commentCount int64, isFavorite bool) *api.Video {
+func buildApiVideo(rpcVideoModel *videoModelApi.VideoModel, apiUser *api.User, favoriteCount int64, commentCount int64, isFavorite bool) *api.Video {
 	//如果基本信息没查到，那么视频也就播放不了，其他信息就没有意义，直接赋予nil
 	if rpcVideoModel == nil {
 		return nil
@@ -48,4 +48,13 @@ func buildApiVideo(rpcVideoModel *videoModelApi.VideoBaseInfo, apiUser *api.User
 		CommentCount:  commentCount,
 		IsFavorite:    isFavorite,
 	}
+}
+
+func BatchWithAuthorRpc2Api(rpcVideoModelList []*videoModelApi.VideoModel, rpcAuthor *userApi.FullUser, favoriteCountList []int64, commentCountList []int64, isFavoriteList []bool) []*api.Video {
+	var videoList = make([]*api.Video, len(rpcVideoModelList))
+
+	for i, _ := range rpcVideoModelList {
+		videoList[i] = buildApiVideo(rpcVideoModelList[i], userconv.Rpc2Api(rpcAuthor), favoriteCountList[i], commentCountList[i], isFavoriteList[i])
+	}
+	return videoList
 }

@@ -263,7 +263,7 @@ func (x *VideoModelQueryAuthorWorkCountResponse) fastReadField3(buf []byte, _typ
 	return offset, err
 }
 
-func (x *VideoModelQueryAuthorVideoListRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *VideoModelQueryAuthorVideoIdListRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
@@ -280,15 +280,15 @@ func (x *VideoModelQueryAuthorVideoListRequest) FastRead(buf []byte, _type int8,
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModelQueryAuthorVideoListRequest[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModelQueryAuthorVideoIdListRequest[number], err)
 }
 
-func (x *VideoModelQueryAuthorVideoListRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModelQueryAuthorVideoIdListRequest) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.AuthorId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
@@ -315,28 +315,32 @@ func (x *VideoModelQueryAuthorVideoListResponse) FastRead(buf []byte, _type int8
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModelQueryAuthorVideoListResponse[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModelQueryAuthorVideoIdListResponse[number], err)
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.StatusCode, offset, err = fastpb.ReadInt32(buf, _type)
 	return offset, err
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	tmp, offset, err := fastpb.ReadString(buf, _type)
 	x.StatusMsg = &tmp
 	return offset, err
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	var v VideoBaseInfo
-	offset, err = fastpb.ReadMessage(buf, _type, &v)
-	if err != nil {
-		return offset, err
-	}
-	x.VideoBaseInfo = append(x.VideoBaseInfo, &v)
-	return offset, nil
+func (x *VideoModelQueryAuthorVideoIdListResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	offset, err = fastpb.ReadList(buf, _type,
+		func(buf []byte, _type int8) (n int, err error) {
+			var v int64
+			v, offset, err = fastpb.ReadInt64(buf, _type)
+			if err != nil {
+				return offset, err
+			}
+			x.VideoIdList = append(x.VideoIdList, v)
+			return offset, err
+		})
+	return offset, err
 }
 
 func (x *VideoModelQueryVideoListRequest) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
@@ -415,12 +419,12 @@ func (x *VideoModelQueryVideoListResponse) fastReadField2(buf []byte, _type int8
 }
 
 func (x *VideoModelQueryVideoListResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	var v VideoBaseInfo
+	var v VideoModel
 	offset, err = fastpb.ReadMessage(buf, _type, &v)
 	if err != nil {
 		return offset, err
 	}
-	x.VideoBaseInfoList = append(x.VideoBaseInfoList, &v)
+	x.VideoModelList = append(x.VideoModelList, &v)
 	return offset, nil
 }
 
@@ -491,12 +495,12 @@ func (x *VideoModelQueryVideoResponse) fastReadField2(buf []byte, _type int8) (o
 }
 
 func (x *VideoModelQueryVideoResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	var v VideoBaseInfo
+	var v VideoModel
 	offset, err = fastpb.ReadMessage(buf, _type, &v)
 	if err != nil {
 		return offset, err
 	}
-	x.VideoBaseInfo = &v
+	x.VideoModel = &v
 	return offset, nil
 }
 
@@ -504,6 +508,11 @@ func (x *VideoModelQueryVideoFeedRequest) FastRead(buf []byte, _type int8, numbe
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 2:
+		offset, err = x.fastReadField2(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -525,6 +534,11 @@ func (x *VideoModelQueryVideoFeedRequest) fastReadField1(buf []byte, _type int8)
 	return offset, err
 }
 
+func (x *VideoModelQueryVideoFeedRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+	x.Limit, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
 func (x *VideoModelQueryVideoFeedResponse) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
@@ -539,6 +553,11 @@ func (x *VideoModelQueryVideoFeedResponse) FastRead(buf []byte, _type int8, numb
 		}
 	case 3:
 		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 4:
+		offset, err = x.fastReadField4(buf, _type)
 		if err != nil {
 			goto ReadFieldError
 		}
@@ -567,16 +586,34 @@ func (x *VideoModelQueryVideoFeedResponse) fastReadField2(buf []byte, _type int8
 }
 
 func (x *VideoModelQueryVideoFeedResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
-	var v VideoBaseInfo
-	offset, err = fastpb.ReadMessage(buf, _type, &v)
-	if err != nil {
-		return offset, err
-	}
-	x.VideoBaseInfoList = append(x.VideoBaseInfoList, &v)
-	return offset, nil
+	offset, err = fastpb.ReadList(buf, _type,
+		func(buf []byte, _type int8) (n int, err error) {
+			var v int64
+			v, offset, err = fastpb.ReadInt64(buf, _type)
+			if err != nil {
+				return offset, err
+			}
+			x.VideoIdList = append(x.VideoIdList, v)
+			return offset, err
+		})
+	return offset, err
 }
 
-func (x *VideoBaseInfo) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
+func (x *VideoModelQueryVideoFeedResponse) fastReadField4(buf []byte, _type int8) (offset int, err error) {
+	offset, err = fastpb.ReadList(buf, _type,
+		func(buf []byte, _type int8) (n int, err error) {
+			var v int64
+			v, offset, err = fastpb.ReadInt64(buf, _type)
+			if err != nil {
+				return offset, err
+			}
+			x.CreateTimeList = append(x.CreateTimeList, v)
+			return offset, err
+		})
+	return offset, err
+}
+
+func (x *VideoModel) FastRead(buf []byte, _type int8, number int32) (offset int, err error) {
 	switch number {
 	case 1:
 		offset, err = x.fastReadField1(buf, _type)
@@ -613,30 +650,30 @@ func (x *VideoBaseInfo) FastRead(buf []byte, _type int8, number int32) (offset i
 SkipFieldError:
 	return offset, fmt.Errorf("%T cannot parse invalid wire-format data, error: %s", x, err)
 ReadFieldError:
-	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoBaseInfo[number], err)
+	return offset, fmt.Errorf("%T read field %d '%s' error: %s", x, number, fieldIDToName_VideoModel[number], err)
 }
 
-func (x *VideoBaseInfo) fastReadField1(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModel) fastReadField1(buf []byte, _type int8) (offset int, err error) {
 	x.VideoId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
-func (x *VideoBaseInfo) fastReadField2(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModel) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	x.AuthorId, offset, err = fastpb.ReadInt64(buf, _type)
 	return offset, err
 }
 
-func (x *VideoBaseInfo) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModel) fastReadField3(buf []byte, _type int8) (offset int, err error) {
 	x.PlayUrl, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *VideoBaseInfo) fastReadField4(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModel) fastReadField4(buf []byte, _type int8) (offset int, err error) {
 	x.CoverUrl, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
 
-func (x *VideoBaseInfo) fastReadField5(buf []byte, _type int8) (offset int, err error) {
+func (x *VideoModel) fastReadField5(buf []byte, _type int8) (offset int, err error) {
 	x.Title, offset, err = fastpb.ReadString(buf, _type)
 	return offset, err
 }
@@ -819,7 +856,7 @@ func (x *VideoModelQueryAuthorWorkCountResponse) fastWriteField3(buf []byte) (of
 	return offset
 }
 
-func (x *VideoModelQueryAuthorVideoListRequest) FastWrite(buf []byte) (offset int) {
+func (x *VideoModelQueryAuthorVideoIdListRequest) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
@@ -827,7 +864,7 @@ func (x *VideoModelQueryAuthorVideoListRequest) FastWrite(buf []byte) (offset in
 	return offset
 }
 
-func (x *VideoModelQueryAuthorVideoListRequest) fastWriteField1(buf []byte) (offset int) {
+func (x *VideoModelQueryAuthorVideoIdListRequest) fastWriteField1(buf []byte) (offset int) {
 	if x.AuthorId == 0 {
 		return offset
 	}
@@ -835,7 +872,7 @@ func (x *VideoModelQueryAuthorVideoListRequest) fastWriteField1(buf []byte) (off
 	return offset
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) FastWrite(buf []byte) (offset int) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
@@ -845,7 +882,7 @@ func (x *VideoModelQueryAuthorVideoListResponse) FastWrite(buf []byte) (offset i
 	return offset
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) fastWriteField1(buf []byte) (offset int) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) fastWriteField1(buf []byte) (offset int) {
 	if x.StatusCode == 0 {
 		return offset
 	}
@@ -853,7 +890,7 @@ func (x *VideoModelQueryAuthorVideoListResponse) fastWriteField1(buf []byte) (of
 	return offset
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) fastWriteField2(buf []byte) (offset int) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) fastWriteField2(buf []byte) (offset int) {
 	if x.StatusMsg == nil {
 		return offset
 	}
@@ -861,13 +898,16 @@ func (x *VideoModelQueryAuthorVideoListResponse) fastWriteField2(buf []byte) (of
 	return offset
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) fastWriteField3(buf []byte) (offset int) {
-	if x.VideoBaseInfo == nil {
+func (x *VideoModelQueryAuthorVideoIdListResponse) fastWriteField3(buf []byte) (offset int) {
+	if len(x.VideoIdList) == 0 {
 		return offset
 	}
-	for i := range x.GetVideoBaseInfo() {
-		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoBaseInfo()[i])
-	}
+	offset += fastpb.WriteListPacked(buf[offset:], 3, len(x.GetVideoIdList()),
+		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
+			offset := 0
+			offset += fastpb.WriteInt64(buf[offset:], numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
+			return offset
+		})
 	return offset
 }
 
@@ -919,11 +959,11 @@ func (x *VideoModelQueryVideoListResponse) fastWriteField2(buf []byte) (offset i
 }
 
 func (x *VideoModelQueryVideoListResponse) fastWriteField3(buf []byte) (offset int) {
-	if x.VideoBaseInfoList == nil {
+	if x.VideoModelList == nil {
 		return offset
 	}
-	for i := range x.GetVideoBaseInfoList() {
-		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoBaseInfoList()[i])
+	for i := range x.GetVideoModelList() {
+		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoModelList()[i])
 	}
 	return offset
 }
@@ -971,10 +1011,10 @@ func (x *VideoModelQueryVideoResponse) fastWriteField2(buf []byte) (offset int) 
 }
 
 func (x *VideoModelQueryVideoResponse) fastWriteField3(buf []byte) (offset int) {
-	if x.VideoBaseInfo == nil {
+	if x.VideoModel == nil {
 		return offset
 	}
-	offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoBaseInfo())
+	offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoModel())
 	return offset
 }
 
@@ -983,6 +1023,7 @@ func (x *VideoModelQueryVideoFeedRequest) FastWrite(buf []byte) (offset int) {
 		return offset
 	}
 	offset += x.fastWriteField1(buf[offset:])
+	offset += x.fastWriteField2(buf[offset:])
 	return offset
 }
 
@@ -994,6 +1035,14 @@ func (x *VideoModelQueryVideoFeedRequest) fastWriteField1(buf []byte) (offset in
 	return offset
 }
 
+func (x *VideoModelQueryVideoFeedRequest) fastWriteField2(buf []byte) (offset int) {
+	if x.Limit == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 2, x.GetLimit())
+	return offset
+}
+
 func (x *VideoModelQueryVideoFeedResponse) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
@@ -1001,6 +1050,7 @@ func (x *VideoModelQueryVideoFeedResponse) FastWrite(buf []byte) (offset int) {
 	offset += x.fastWriteField1(buf[offset:])
 	offset += x.fastWriteField2(buf[offset:])
 	offset += x.fastWriteField3(buf[offset:])
+	offset += x.fastWriteField4(buf[offset:])
 	return offset
 }
 
@@ -1021,16 +1071,32 @@ func (x *VideoModelQueryVideoFeedResponse) fastWriteField2(buf []byte) (offset i
 }
 
 func (x *VideoModelQueryVideoFeedResponse) fastWriteField3(buf []byte) (offset int) {
-	if x.VideoBaseInfoList == nil {
+	if len(x.VideoIdList) == 0 {
 		return offset
 	}
-	for i := range x.GetVideoBaseInfoList() {
-		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoBaseInfoList()[i])
-	}
+	offset += fastpb.WriteListPacked(buf[offset:], 3, len(x.GetVideoIdList()),
+		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
+			offset := 0
+			offset += fastpb.WriteInt64(buf[offset:], numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
+			return offset
+		})
 	return offset
 }
 
-func (x *VideoBaseInfo) FastWrite(buf []byte) (offset int) {
+func (x *VideoModelQueryVideoFeedResponse) fastWriteField4(buf []byte) (offset int) {
+	if len(x.CreateTimeList) == 0 {
+		return offset
+	}
+	offset += fastpb.WriteListPacked(buf[offset:], 4, len(x.GetCreateTimeList()),
+		func(buf []byte, numTagOrKey, numIdxOrVal int32) int {
+			offset := 0
+			offset += fastpb.WriteInt64(buf[offset:], numTagOrKey, x.GetCreateTimeList()[numIdxOrVal])
+			return offset
+		})
+	return offset
+}
+
+func (x *VideoModel) FastWrite(buf []byte) (offset int) {
 	if x == nil {
 		return offset
 	}
@@ -1042,7 +1108,7 @@ func (x *VideoBaseInfo) FastWrite(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *VideoBaseInfo) fastWriteField1(buf []byte) (offset int) {
+func (x *VideoModel) fastWriteField1(buf []byte) (offset int) {
 	if x.VideoId == 0 {
 		return offset
 	}
@@ -1050,7 +1116,7 @@ func (x *VideoBaseInfo) fastWriteField1(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *VideoBaseInfo) fastWriteField2(buf []byte) (offset int) {
+func (x *VideoModel) fastWriteField2(buf []byte) (offset int) {
 	if x.AuthorId == 0 {
 		return offset
 	}
@@ -1058,7 +1124,7 @@ func (x *VideoBaseInfo) fastWriteField2(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *VideoBaseInfo) fastWriteField3(buf []byte) (offset int) {
+func (x *VideoModel) fastWriteField3(buf []byte) (offset int) {
 	if x.PlayUrl == "" {
 		return offset
 	}
@@ -1066,7 +1132,7 @@ func (x *VideoBaseInfo) fastWriteField3(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *VideoBaseInfo) fastWriteField4(buf []byte) (offset int) {
+func (x *VideoModel) fastWriteField4(buf []byte) (offset int) {
 	if x.CoverUrl == "" {
 		return offset
 	}
@@ -1074,7 +1140,7 @@ func (x *VideoBaseInfo) fastWriteField4(buf []byte) (offset int) {
 	return offset
 }
 
-func (x *VideoBaseInfo) fastWriteField5(buf []byte) (offset int) {
+func (x *VideoModel) fastWriteField5(buf []byte) (offset int) {
 	if x.Title == "" {
 		return offset
 	}
@@ -1260,7 +1326,7 @@ func (x *VideoModelQueryAuthorWorkCountResponse) sizeField3() (n int) {
 	return n
 }
 
-func (x *VideoModelQueryAuthorVideoListRequest) Size() (n int) {
+func (x *VideoModelQueryAuthorVideoIdListRequest) Size() (n int) {
 	if x == nil {
 		return n
 	}
@@ -1268,7 +1334,7 @@ func (x *VideoModelQueryAuthorVideoListRequest) Size() (n int) {
 	return n
 }
 
-func (x *VideoModelQueryAuthorVideoListRequest) sizeField1() (n int) {
+func (x *VideoModelQueryAuthorVideoIdListRequest) sizeField1() (n int) {
 	if x.AuthorId == 0 {
 		return n
 	}
@@ -1276,7 +1342,7 @@ func (x *VideoModelQueryAuthorVideoListRequest) sizeField1() (n int) {
 	return n
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) Size() (n int) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) Size() (n int) {
 	if x == nil {
 		return n
 	}
@@ -1286,7 +1352,7 @@ func (x *VideoModelQueryAuthorVideoListResponse) Size() (n int) {
 	return n
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) sizeField1() (n int) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) sizeField1() (n int) {
 	if x.StatusCode == 0 {
 		return n
 	}
@@ -1294,7 +1360,7 @@ func (x *VideoModelQueryAuthorVideoListResponse) sizeField1() (n int) {
 	return n
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) sizeField2() (n int) {
+func (x *VideoModelQueryAuthorVideoIdListResponse) sizeField2() (n int) {
 	if x.StatusMsg == nil {
 		return n
 	}
@@ -1302,13 +1368,16 @@ func (x *VideoModelQueryAuthorVideoListResponse) sizeField2() (n int) {
 	return n
 }
 
-func (x *VideoModelQueryAuthorVideoListResponse) sizeField3() (n int) {
-	if x.VideoBaseInfo == nil {
+func (x *VideoModelQueryAuthorVideoIdListResponse) sizeField3() (n int) {
+	if len(x.VideoIdList) == 0 {
 		return n
 	}
-	for i := range x.GetVideoBaseInfo() {
-		n += fastpb.SizeMessage(3, x.GetVideoBaseInfo()[i])
-	}
+	n += fastpb.SizeListPacked(3, len(x.GetVideoIdList()),
+		func(numTagOrKey, numIdxOrVal int32) int {
+			n := 0
+			n += fastpb.SizeInt64(numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
+			return n
+		})
 	return n
 }
 
@@ -1360,11 +1429,11 @@ func (x *VideoModelQueryVideoListResponse) sizeField2() (n int) {
 }
 
 func (x *VideoModelQueryVideoListResponse) sizeField3() (n int) {
-	if x.VideoBaseInfoList == nil {
+	if x.VideoModelList == nil {
 		return n
 	}
-	for i := range x.GetVideoBaseInfoList() {
-		n += fastpb.SizeMessage(3, x.GetVideoBaseInfoList()[i])
+	for i := range x.GetVideoModelList() {
+		n += fastpb.SizeMessage(3, x.GetVideoModelList()[i])
 	}
 	return n
 }
@@ -1412,10 +1481,10 @@ func (x *VideoModelQueryVideoResponse) sizeField2() (n int) {
 }
 
 func (x *VideoModelQueryVideoResponse) sizeField3() (n int) {
-	if x.VideoBaseInfo == nil {
+	if x.VideoModel == nil {
 		return n
 	}
-	n += fastpb.SizeMessage(3, x.GetVideoBaseInfo())
+	n += fastpb.SizeMessage(3, x.GetVideoModel())
 	return n
 }
 
@@ -1424,6 +1493,7 @@ func (x *VideoModelQueryVideoFeedRequest) Size() (n int) {
 		return n
 	}
 	n += x.sizeField1()
+	n += x.sizeField2()
 	return n
 }
 
@@ -1435,6 +1505,14 @@ func (x *VideoModelQueryVideoFeedRequest) sizeField1() (n int) {
 	return n
 }
 
+func (x *VideoModelQueryVideoFeedRequest) sizeField2() (n int) {
+	if x.Limit == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(2, x.GetLimit())
+	return n
+}
+
 func (x *VideoModelQueryVideoFeedResponse) Size() (n int) {
 	if x == nil {
 		return n
@@ -1442,6 +1520,7 @@ func (x *VideoModelQueryVideoFeedResponse) Size() (n int) {
 	n += x.sizeField1()
 	n += x.sizeField2()
 	n += x.sizeField3()
+	n += x.sizeField4()
 	return n
 }
 
@@ -1462,16 +1541,32 @@ func (x *VideoModelQueryVideoFeedResponse) sizeField2() (n int) {
 }
 
 func (x *VideoModelQueryVideoFeedResponse) sizeField3() (n int) {
-	if x.VideoBaseInfoList == nil {
+	if len(x.VideoIdList) == 0 {
 		return n
 	}
-	for i := range x.GetVideoBaseInfoList() {
-		n += fastpb.SizeMessage(3, x.GetVideoBaseInfoList()[i])
-	}
+	n += fastpb.SizeListPacked(3, len(x.GetVideoIdList()),
+		func(numTagOrKey, numIdxOrVal int32) int {
+			n := 0
+			n += fastpb.SizeInt64(numTagOrKey, x.GetVideoIdList()[numIdxOrVal])
+			return n
+		})
 	return n
 }
 
-func (x *VideoBaseInfo) Size() (n int) {
+func (x *VideoModelQueryVideoFeedResponse) sizeField4() (n int) {
+	if len(x.CreateTimeList) == 0 {
+		return n
+	}
+	n += fastpb.SizeListPacked(4, len(x.GetCreateTimeList()),
+		func(numTagOrKey, numIdxOrVal int32) int {
+			n := 0
+			n += fastpb.SizeInt64(numTagOrKey, x.GetCreateTimeList()[numIdxOrVal])
+			return n
+		})
+	return n
+}
+
+func (x *VideoModel) Size() (n int) {
 	if x == nil {
 		return n
 	}
@@ -1483,7 +1578,7 @@ func (x *VideoBaseInfo) Size() (n int) {
 	return n
 }
 
-func (x *VideoBaseInfo) sizeField1() (n int) {
+func (x *VideoModel) sizeField1() (n int) {
 	if x.VideoId == 0 {
 		return n
 	}
@@ -1491,7 +1586,7 @@ func (x *VideoBaseInfo) sizeField1() (n int) {
 	return n
 }
 
-func (x *VideoBaseInfo) sizeField2() (n int) {
+func (x *VideoModel) sizeField2() (n int) {
 	if x.AuthorId == 0 {
 		return n
 	}
@@ -1499,7 +1594,7 @@ func (x *VideoBaseInfo) sizeField2() (n int) {
 	return n
 }
 
-func (x *VideoBaseInfo) sizeField3() (n int) {
+func (x *VideoModel) sizeField3() (n int) {
 	if x.PlayUrl == "" {
 		return n
 	}
@@ -1507,7 +1602,7 @@ func (x *VideoBaseInfo) sizeField3() (n int) {
 	return n
 }
 
-func (x *VideoBaseInfo) sizeField4() (n int) {
+func (x *VideoModel) sizeField4() (n int) {
 	if x.CoverUrl == "" {
 		return n
 	}
@@ -1515,7 +1610,7 @@ func (x *VideoBaseInfo) sizeField4() (n int) {
 	return n
 }
 
-func (x *VideoBaseInfo) sizeField5() (n int) {
+func (x *VideoModel) sizeField5() (n int) {
 	if x.Title == "" {
 		return n
 	}
@@ -1555,14 +1650,14 @@ var fieldIDToName_VideoModelQueryAuthorWorkCountResponse = map[int32]string{
 	3: "WorkCount",
 }
 
-var fieldIDToName_VideoModelQueryAuthorVideoListRequest = map[int32]string{
+var fieldIDToName_VideoModelQueryAuthorVideoIdListRequest = map[int32]string{
 	1: "AuthorId",
 }
 
-var fieldIDToName_VideoModelQueryAuthorVideoListResponse = map[int32]string{
+var fieldIDToName_VideoModelQueryAuthorVideoIdListResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "VideoBaseInfo",
+	3: "VideoIdList",
 }
 
 var fieldIDToName_VideoModelQueryVideoListRequest = map[int32]string{
@@ -1572,7 +1667,7 @@ var fieldIDToName_VideoModelQueryVideoListRequest = map[int32]string{
 var fieldIDToName_VideoModelQueryVideoListResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "VideoBaseInfoList",
+	3: "VideoModelList",
 }
 
 var fieldIDToName_VideoModelQueryVideoRequest = map[int32]string{
@@ -1582,20 +1677,22 @@ var fieldIDToName_VideoModelQueryVideoRequest = map[int32]string{
 var fieldIDToName_VideoModelQueryVideoResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "VideoBaseInfo",
+	3: "VideoModel",
 }
 
 var fieldIDToName_VideoModelQueryVideoFeedRequest = map[int32]string{
 	1: "NextTime",
+	2: "Limit",
 }
 
 var fieldIDToName_VideoModelQueryVideoFeedResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "VideoBaseInfoList",
+	3: "VideoIdList",
+	4: "CreateTimeList",
 }
 
-var fieldIDToName_VideoBaseInfo = map[int32]string{
+var fieldIDToName_VideoModel = map[int32]string{
 	1: "VideoId",
 	2: "AuthorId",
 	3: "PlayUrl",
