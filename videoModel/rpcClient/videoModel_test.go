@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+/*
 func TestCreateVideo(t *testing.T) {
 	InitVideoModelRpcClient()
 
@@ -17,4 +18,14 @@ func TestCreateVideo(t *testing.T) {
 func TestQueryAuthorVideoList(t *testing.T) {
 	res, _ := QueryAuthorVideoList(1)
 	fmt.Println(res)
+}
+*/
+
+func TestQueryVideoList(t *testing.T) {
+	InitVideoModelRpcClient()
+	var list = []int64{1, -1, 123131223, 4, 5}
+	
+	res, _ := QueryVideoList(list)
+	fmt.Println(res)
+	fmt.Println(len(res))
 }

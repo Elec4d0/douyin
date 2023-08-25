@@ -1,72 +1,82 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
-	"gateway/microService/user/api"
-	"gateway/microService/user/api/userservice"
+	userService "gateway/rpcApi/userAPI"
+	userServiceApi "gateway/rpcApi/userAPI/api"
+	userInfo "gateway/rpcApi/userInfoAPI"
+	userInfoApi "gateway/rpcApi/userInfoAPI/api"
 	"gateway/tools/jwt"
-	"github.com/cloudwego/kitex/client"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-var userRpcClient userservice.Client
+func InitUseruserRpcClient() {
+	userInfo.InitUserInfoRpcClient()
+	userService.InitUserRpcClient()
 
-func InitUseruserRpcClient() userservice.Client {
-	var err error
-	userRpcClient, err = userservice.NewClient("user", client.WithHostPorts("0.0.0.0:8887"))
-	if err != nil {
-		fmt.Println("网关层Video 微服务初始化链接失败")
-		return nil
-	}
-	return userRpcClient
 }
 
 func User(ginContext *gin.Context) {
 	//———————网关统一鉴权————————
 	Token := ginContext.Query("token")
-	if jwt.ParseToken(Token) == -1 {
+	userID := jwt.ParseToken(Token)
+	if userID == -1 {
 		str := "Token验证失败，请重新登录"
-		ginContext.JSON(http.StatusOK, &api.DouyinUserResponse{
+		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
 			StatusCode: -1,
 			StatusMsg:  &str,
 			User:       nil,
 		})
+		return
 	}
 
-	userId, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
+	searchID, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
 	if err != nil {
-		fmt.Println("网关层解析userId失败")
+		errStr := "网关层解析userId失败"
+		log.Println(errStr)
+
+		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			User:       nil,
+		})
+		return
 	}
 
-	rpcReq := &api.DouyinUserRequest{
-		UserId: userId,
-		Token:  Token,
-	}
-
-	resp, err := userRpcClient.UserInfo(context.Background(), rpcReq)
-
+	resp, err := userInfo.GetFullUserInfo(userID, searchID)
 	if err != nil {
-		errStr := "Publish Action接口 RPC调用失败"
-		fmt.Println(errStr)
+		errStr := "UserInfo微服务 FullUser接口 RPC调用失败"
+		log.Println(errStr)
+		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			User:       nil,
+		})
+		return
 	}
+	log.Println(resp)
 	ginContext.JSON(http.StatusOK, resp)
 
 }
 
 func Login(ginContext *gin.Context) {
-	rpcReq := &api.DouyinUserLoginRequest{
-		Username: ginContext.Query("username"),
-		Password: ginContext.Query("password"),
-	}
+	username := ginContext.Query("username")
+	password := ginContext.Query("password")
 
-	fmt.Println(rpcReq)
-	resp, err := userRpcClient.UserLogin(context.Background(), rpcReq)
+	resp, err := userService.UserLogin(username, password)
 	if err != nil {
 		errStr := "User Login接口 RPC调用失败"
 		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &userServiceApi.DouyinUserLoginResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			UserId:     0,
+			Token:      "",
+		})
+		return
 	}
 	fmt.Println(resp)
 	ginContext.JSON(http.StatusOK, resp)
@@ -74,15 +84,20 @@ func Login(ginContext *gin.Context) {
 }
 
 func Register(ginContext *gin.Context) {
-	rpcReq := &api.DouyinUserRegisterRequest{
-		Username: ginContext.Query("username"),
-		Password: ginContext.Query("password"),
-	}
+	userName := ginContext.Query("username")
+	passWord := ginContext.Query("password")
 
-	resp, err := userRpcClient.UserRegister(context.Background(), rpcReq)
+	resp, err := userService.UserRegister(userName, passWord)
 	if err != nil {
 		errStr := "User Register接口 RPC调用失败"
 		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &userServiceApi.DouyinUserRegisterResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+			UserId:     0,
+			Token:      "",
+		})
+		return
 	}
 	ginContext.JSON(http.StatusOK, resp)
 	return

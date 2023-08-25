@@ -1,0 +1,147 @@
+syntax = "proto3";
+//package services;
+option go_package = "api";
+
+// /douyin/relation/action/ - 关系操作
+// 登录用户对其他用户进行关注或取消关注。
+// 接口类型
+// POST
+message douyin_relation_action_request {
+  int64 user_id = 1; // 用户id
+  int64 to_user_id = 2; // 对方用户id
+  int32 action_type = 3; // 1-关注，2-取消关注
+}
+
+message douyin_relation_action_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+}
+
+// /douyin/relatioin/follow/list/ - 用户关注列表
+//  登录用户关注的所有用户列表。
+//  接口类型
+//  GET
+message douyin_relation_follow_list_request {
+  int64 user_id = 1; // 用户id
+  // string token = 2; // 用户鉴权token
+}
+
+message douyin_relation_follow_list_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated User user_list = 3; // 用户信息列表
+}
+
+// /douyin/relation/follower/list/ - 用户粉丝列表
+// 所有关注登录用户的粉丝列表。
+// 接口类型
+// GET
+
+message douyin_relation_follower_list_request {
+  int64 user_id = 1; // 用户id
+  // string token = 2; // 用户鉴权token
+}
+
+message douyin_relation_follower_list_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated User user_list = 3; // 用户列表
+}
+
+
+// /douyin/relation/friend/list/ - 用户好友列表
+// 所有关注登录用户的粉丝列表。
+// 接口类型
+// GET
+message douyin_relation_friend_list_request {
+  int64 user_id = 1; // 用户id
+  // string token = 2; // 用户鉴权token
+}
+
+message douyin_relation_friend_list_response {
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated FriendUser user_list = 3; // 用户列表
+}
+
+
+message User {
+  int64 id = 1; // 用户id
+  string name = 2; // 用户名称
+  optional int64 follow_count = 3; // 关注总数
+  optional int64 follower_count = 4; // 粉丝总数
+  bool is_follow = 5; // true-已关注，false-未关注
+  optional string avatar = 6; //用户头像
+  optional string background_image = 7; //用户个人页顶部大图
+  optional string signature = 8; //个人简介
+  optional int64 total_favorited = 9; //获赞数量
+  optional int64 work_count = 10; //作品数量
+  optional int64 favorite_count = 11; //点赞数量
+}
+
+
+message FriendUser {
+  int64 id = 1; // 用户id
+  string name = 2; // 用户名称
+  optional int64 follow_count = 3; // 关注总数
+  optional int64 follower_count = 4; // 粉丝总数
+  bool is_follow = 5; // true-已关注，false-未关注
+  optional string avatar = 6; //用户头像
+  optional string background_image = 7; //用户个人页顶部大图
+  optional string signature = 8; //个人简介
+  optional int64 total_favorited = 9; //获赞数量
+  optional int64 work_count = 10; //作品数量
+  optional int64 favorite_count = 11; //点赞数量
+  string message = 12; // latest chat messages with this friend
+  int64 msgType = 13; // message type，0 - Messages currently requested by the user，1 - Messages sent by the current requesting user
+}
+message douyin_relation_search_request {
+  int64 user_id = 1; // 用户id
+  int64 search_id = 2; // searchID
+}
+
+message douyin_relation_search_response {
+  bool is_follow = 1;
+  int64 fans_count = 2;
+  int64 follow_count = 3;
+  // int64 user_id = 1; // 用户id
+  // int64 search_id = 2; // searchID
+}
+
+message douyin_relation_search_list_request {
+  repeated int64 user_id_list = 1;
+  repeated int64 search_id_list = 2;
+}
+
+message douyin_relation_search_list_response {
+  repeated bool is_follow_list = 1;
+  repeated int64 fans_count_list = 2;
+  repeated int64 follow_count_list = 3;
+  // repeated int64 user_id_list = 1;
+  // repeated int64 search_id_list = 2;
+}
+
+service RelationService {
+  rpc RelationAction(douyin_relation_action_request) returns(douyin_relation_action_response) {
+    // option (api.post) = "/douyin/relation/action/";
+    // Logged-in users follow or unfollow other users.
+  }
+
+  rpc RelationFollowList(douyin_relation_follow_list_request) returns(douyin_relation_follow_list_response) {
+    // option (api.get) = "/douyin/relation/follow/list/"; // follow list
+    // Get a list of all users followed by the logged in user.
+  }
+
+  rpc RelationFollowerList(douyin_relation_follower_list_request) returns(douyin_relation_follower_list_response) {
+    // option (api.get) = "/douyin/relation/follower/list/"; // fan list
+    // Get a list of all fans following the logged in user.
+  }
+
+  rpc RelationFriendList(douyin_relation_friend_list_request) returns(douyin_relation_friend_list_response) {
+    // option (api.get) = "/douyin/relation/friend/list/";
+    // Get a list of all friends following the logged in user.(friend refers to follow each other)
+  }
+
+  rpc GetOneRelation(douyin_relation_search_request) returns(douyin_relation_search_response) {}
+  rpc GetListRelation(douyin_relation_search_list_request) returns(douyin_relation_search_list_response) {}
+}

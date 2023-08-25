@@ -2,43 +2,36 @@ package handlers
 
 import (
 	"bytes"
-	"context"
 	"fmt"
-	"gateway/microService/feed/api"
-	"gateway/microService/feed/api/feedprotobuf"
+	"gateway/rpcApi/videoInfo"
+	videoInfoApi "gateway/rpcApi/videoInfo/api"
+	"gateway/rpcApi/videoPublish"
+	videoPublishApi "gateway/rpcApi/videoPublish/api"
 	"gateway/tools/jwt"
-	"github.com/cloudwego/kitex/client"
 	"github.com/gin-gonic/gin"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 )
 
-var rpcClient feedprotobuf.Client
-
-func InitVideoRpcClient() feedprotobuf.Client {
-	var err error
-	rpcClient, err = feedprotobuf.NewClient("video", client.WithHostPorts("0.0.0.0:8888"))
-	if err != nil {
-		fmt.Println("网关层Video 微服务初始化链接失败")
-		return nil
-	}
-	return rpcClient
+func InitVideoRpcClient() {
+	videoInfo.InitVideoInfoRpcClient()
+	videoPublish.InitVideoPublishRpcClient()
 }
 
 func Action(ginContext *gin.Context) {
-	//Token := ginContext.Query("token")
+	//网关统一鉴权
 	Token := ginContext.PostForm("token")
 	userId := jwt.ParseToken(Token)
 	if userId == -1 {
 		str := "Token验证失败，请重新登录"
-		ginContext.JSON(http.StatusOK, &api.DouyinPublishListResponse{
+		ginContext.JSON(http.StatusOK, &videoPublishApi.VideoPublishActionResponse{
 			StatusCode: -1,
 			StatusMsg:  &str,
-			VideoList:  nil,
 		})
+		return
 	}
-
 	fileHeader, _ := ginContext.FormFile("data")
 	file, _ := fileHeader.Open()
 	defer file.Close()
@@ -46,22 +39,25 @@ func Action(ginContext *gin.Context) {
 	buffer := bytes.NewBuffer(nil)
 	_, err := io.Copy(buffer, file)
 	if err != nil {
-		err_str := "网关读取file对象过程中，buffer拷贝错误"
-		fmt.Println(err_str)
+		errStr := "网关读取file对象过程中，buffer拷贝错误"
+		log.Println(errStr)
+		ginContext.JSON(http.StatusOK, &videoPublishApi.VideoPublishActionResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+		})
 		return
 	}
 
-	rpcReq := &api.DouyinPublishActionRequest{
-		UserId: userId,
-		Title:  ginContext.PostForm("title"),
-		Data:   buffer.Bytes(),
-	}
-
-	resp, err := rpcClient.PublishVideo(context.Background(), rpcReq)
+	resp, err := videoPublish.PublishVideo(userId, buffer.Bytes(), ginContext.PostForm("title"))
 
 	if err != nil {
 		errStr := "Publish Action接口 RPC调用失败"
 		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &videoPublishApi.VideoPublishActionResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+		})
+		return
 	}
 
 	ginContext.JSON(http.StatusOK, resp)
@@ -70,36 +66,34 @@ func Action(ginContext *gin.Context) {
 
 func List(ginContext *gin.Context) {
 	Token := ginContext.Query("token")
-	if jwt.ParseToken(Token) == -1 {
+	userID := jwt.ParseToken(Token)
+	if userID == -1 {
 		str := "Token验证失败，请重新登录"
-		ginContext.JSON(http.StatusOK, &api.DouyinPublishListResponse{
+		ginContext.JSON(http.StatusOK, &videoInfoApi.VideoInfoGetAuthorVideoInfoListResponse{
 			StatusCode: -1,
 			StatusMsg:  &str,
 			VideoList:  nil,
 		})
+		return
 	}
 
-	userId, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
+	authorID, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
 	if err != nil {
 		errStr := "Publish List接口 User_id 字符串解析int64失败"
 		fmt.Println(errStr)
-		ginContext.JSON(http.StatusOK, &api.DouyinPublishListResponse{
+		ginContext.JSON(http.StatusOK, &videoInfoApi.VideoInfoGetAuthorVideoInfoListResponse{
 			StatusCode: -1,
 			StatusMsg:  &errStr,
 			VideoList:  nil,
 		})
 		return
 	}
-	rpcReq := &api.DouyinPublishListRequest{
-		UserId: userId,
-	}
 
-	resp, err := rpcClient.GetAuthorVideoList(context.Background(), rpcReq)
-
+	resp, err := videoInfo.GetAuthorVideoInfoList(authorID, userID)
 	if err != nil {
 		errStr := "Publish List接口 RPC调用失败"
 		fmt.Println(errStr)
-		ginContext.JSON(http.StatusOK, &api.DouyinPublishListResponse{
+		ginContext.JSON(http.StatusOK, &videoInfoApi.VideoInfoGetAuthorVideoInfoListResponse{
 			StatusCode: -2,
 			StatusMsg:  &errStr,
 			VideoList:  nil,
@@ -128,39 +122,33 @@ func Feed(ginContext *gin.Context) {
 			return
 		}
 	*/
-	var lateestTimeStr string = ginContext.Query("latest_time")
+	var latestTimeStr = ginContext.Query("latest_time")
 	var lastTime int64
-	if lateestTimeStr == "" {
+	if latestTimeStr == "" {
 		lastTime = -1
 	} else {
-		parseTime, err := strconv.ParseInt(lateestTimeStr, 10, 64)
+		parseTime, err := strconv.ParseInt(latestTimeStr, 10, 64)
 		if err != nil {
-			fmt.Println("Feed接口 lastestTime 字符串解析int64失败")
+			fmt.Println("Feed接口 latestTime 字符串解析int64失败")
 			lastTime = -1
+		} else {
+			lastTime = parseTime
 		}
-		lastTime = parseTime
+
 	}
 
-	rpcReq := &api.DouyinFeedRequest{
-		LatestTime: &lastTime,
-		UserId:     userId,
-	}
-
-	resp, err := rpcClient.GetFeed(context.Background(), rpcReq)
+	resp, err := videoInfo.GetFeed(userId, lastTime)
 
 	if err != nil {
-		fmt.Println("Rpc接口调用失败")
+		errStr := "GetFeed Rpc接口调用失败"
+		log.Println(errStr)
+		ginContext.JSON(http.StatusOK, &videoInfoApi.VideoInfoGetFeedResponse{
+			StatusCode: -2,
+			StatusMsg:  &errStr,
+			VideoList:  nil,
+		})
 	}
-	/*
-		httpResp := &api.DouyinFeedResponse{
-			StatusCode: resp.StatusCode,
-			StatusMsg:  resp.StatusMsg,
-			VideoList:  resp.VideoList,
-			NextTime:   resp.NextTime,
-		}
-	*/
 
 	fmt.Println(resp)
-
 	ginContext.JSON(http.StatusOK, resp)
 }

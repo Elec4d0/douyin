@@ -1,0 +1,18 @@
+syntax = "proto3";
+package core;
+option go_package = "api";
+
+service videoPublishService{
+  rpc publishVideo(video_publish_action_request) returns (video_publish_action_response);
+}
+
+message video_publish_action_request{
+  int64 userId = 1; // 用户ID
+  bytes data = 2; // 视频数据
+  string title = 3; // 视频标题
+}
+
+message video_publish_action_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+}

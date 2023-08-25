@@ -8,12 +8,16 @@ import (
 	"net"
 	"videoInfo/core"
 	api "videoInfo/core/kitex_gen/api/videoinfoservice"
-	videoModel "videoInfo/rpcApi/videoModel"
+	"videoInfo/rpcApi"
+	"videoInfo/tools/redis"
 )
 
 func main() {
 	//初始化rpcApi链接
-	videoModel.InitVideoModelRpcClient()
+	rpcApi.InitRpcClient()
+
+	//初始化redis链接
+	redis.InitRedis()
 
 	//etcd 链接
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"}) // r should not be reused.
@@ -22,7 +26,7 @@ func main() {
 	}
 
 	//指定IP，对外服务并在ETCD注册
-	addr, _ := net.ResolveTCPAddr("tpc", "127.0.0.1:13100")
+	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:13100")
 	server := api.NewServer(new(core.VideoInfoServiceImpl), server.WithServiceAddr(addr), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "videoInfo"}), server.WithRegistry(r))
 
 	err = server.Run()
