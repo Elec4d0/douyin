@@ -1,134 +1,110 @@
 package query
 
 import (
+	"log"
+	"time"
 	"videoInfo/core/kitex_gen/api"
 	"videoInfo/rpcApi"
 	"videoInfo/tools/redis"
-	"videoInfo/tools/videoconv"
 )
 
-func CacheVideoList(videoList []*api.Video) {
-	for _, apiVideo := range videoList {
-		CacheVideo(apiVideo)
+func GetVideoInfoList(userID int64, videoIDList []int64) []*api.Video {
+	//检查每一个视频的缓存情况
+	isVideoListCache, cacheType := redis.CheckAllVideoCache(videoIDList)
+
+	var queryOK bool
+	var videoList []*api.Video
+
+	if cacheType == 1 {
+		//所有视频均在缓存，仅查redis
+		videoList, queryOK = RedisQueryVideoList(userID, videoIDList)
+	} else if cacheType == 0 {
+		//部分视频缓存，混合查询
+		videoList, queryOK = MixQueryVideoList(userID, videoIDList, isVideoListCache)
 	}
+
+	if queryOK {
+		return videoList
+	}
+
+	//所有视频均未缓存, cacheType = -1
+	//上面的两个if查询错误均回落于此
+	videoList = RpcQueryVideoList(userID, videoIDList)
+	return videoList
 }
 
-func CacheVideo(apiVideo *api.Video) {
-	redisVideo := &redis.Video{
-		VideoID:       apiVideo.Id,
-		AuthorID:      apiVideo.Author.Id,
-		PlayUrl:       &apiVideo.PlayUrl,
-		CoverUrl:      &apiVideo.CoverUrl,
-		FavoriteCount: apiVideo.FavoriteCount,
-		CommentCount:  apiVideo.CommentCount,
-		Title:         &apiVideo.Title,
-	}
-	redis.CreateVideoObjectCache(redisVideo)
-}
-
-func MixQueryVideoList(userID int64, videoIDList []int64, isVideoListCache []bool) (videoList []*api.Video, ok bool) {
-	//通过是否缓存信息，构造查询chache与 查询Model层的videoIDList
-	var cacheVideoIDList, modelVideoIDList []int64
-	for i, isCache := range isVideoListCache {
-		if isCache {
-			cacheVideoIDList = append(cacheVideoIDList, videoIDList[i])
-		} else {
-			modelVideoIDList = append(modelVideoIDList, videoIDList[i])
+func GetAuthorVideoInfoList(userID int64, authorID int64) []*api.Video {
+	//redis 是否缓存过用户作品列表的videoID
+	var videoIDList []int64
+	if redis.CheckAuthorVideoIDListExists(authorID) {
+		//从redis中拿出缓存的用户作品列表，因Check过，故视频列表一定存在
+		videoIDList = redis.QueryAuthorVideoIDList(authorID)
+	} else {
+		//从Model层拿出作者作品列表
+		videoIDList = rpcApi.QueryAuthorVideoIDList(authorID)
+		//Model层查询Author作品列表失败
+		if videoIDList == nil {
+			return nil
 		}
+		redis.CacheAuthorVideoIDList(authorID, videoIDList)
+	}
+	log.Println("需要查询的VideoID:", videoIDList)
+
+	//获取作者UserInfo
+	author := rpcApi.GetUserById(userID, authorID)
+	//检查每一个视频的缓存情况
+	isVideoListCache, cacheType := redis.CheckAllVideoCache(videoIDList)
+	//log.Println(isVideoListCache)
+	//log.Println(cacheType)
+	var queryOK bool
+	var videoList []*api.Video
+
+	if cacheType == 1 {
+		//所有视频均在缓存，仅查redis
+		videoList, queryOK = CacheQueryAuthorVideoList(userID, author, videoIDList)
+	} else if cacheType == 0 {
+		//部分视频缓存，混合查询
+		videoList, queryOK = MixQueryAuthorVideoList(userID, author, videoIDList, isVideoListCache)
 	}
 
-	//这里做异步并发
-	//查redis
-	cacheVideoList, ok := RedisQueryVideoList(userID, cacheVideoIDList)
-	//查model层
-	modelVideoList := RpcQueryVideoList(userID, modelVideoIDList)
-
-	if !ok {
-		return nil, false
+	if queryOK {
+		return videoList
 	}
-	videoList = make([]*api.Video, len(videoIDList))
-	modelIdx := 0
-	cacheIdx := 0
-	for i, videoID := range videoIDList {
-		if videoID == cacheVideoIDList[i] {
-			//来源于缓存
-			videoList[i] = cacheVideoList[cacheIdx]
-			cacheIdx++
-		} else if videoID == modelVideoIDList[i] {
-			//来源于Model层
-			videoList[i] = modelVideoList[modelIdx]
-			modelIdx++
-		} else {
-			//异常情况，建议改写map以增强健壮性
-			continue
+
+	//所有视频均未缓存, cacheType = -1
+	//上面的两个if查询错误均回落于此
+	videoList = ModelQueryAuthorVideoList(userID, author, videoIDList)
+	return videoList
+}
+
+func GetFeed(userID int64, queryMaxTime int64) (videoList []*api.Video, nextQueryTime int64) {
+	log.Println("APP提供的查询时间：", queryMaxTime)
+	var videoIDList []int64
+	var createTimeList []int64
+	var limit int64 = 2
+
+	//Feed列表是否在缓存中, 且剩余Feed流足够
+	if redis.CheckFeedExists() && redis.CheckFeedCountEnough(queryMaxTime, limit) {
+		//通过redis获取Feed流ID列表
+		videoIDList, createTimeList = redis.QueryFeedIDList(queryMaxTime, limit)
+		if videoIDList == nil || createTimeList == nil {
+			return nil, time.Now().Unix()
 		}
-	}
-	return
-}
-
-func RedisQueryVideo(userID, videoID int64) (apiVideo *api.Video, ok bool) {
-	if redis.CheckVideoExists(videoID) {
-		//这里写异步并发
-		redisVideo := redis.QueryVideoObjectCache(videoID)
-		rpcUser := rpcApi.GetUserById(userID, redisVideo.AuthorID)
-		isFavorite := rpcApi.GetIsFavortite(userID, redisVideo.AuthorID)
-
-		apiVideo = videoconv.Redis2Api(redisVideo, isFavorite, rpcUser)
-		return apiVideo, true
+		//Feed流此时一定有limit个， 直接查询返回即可
+		log.Println("Redis后端返回的查询时间：", createTimeList[len(createTimeList)-1])
+		return GetVideoInfoList(userID, videoIDList), createTimeList[len(createTimeList)-1]
 	}
 
-	return nil, false
-}
+	//通过rpc获取Feed流ID列表
+	videoIDList, createTimeList = rpcApi.QueryFeedVideoIDList(queryMaxTime, limit)
 
-func RedisQueryVideoList(userID int64, videoIDList []int64) (videoList []*api.Video, ok bool) {
-	videoList = make([]*api.Video, len(videoIDList))
-	for i, videoID := range videoIDList {
-		videoList[i], ok = RedisQueryVideo(userID, videoID)
-		if !ok {
-			return nil, false
-		}
+	//Feed流结束，往下刷不出视频了
+	if videoIDList == nil || createTimeList == nil {
+		return nil, time.Now().Unix() * 1000
 	}
-	return
-}
-
-func RpcQueryVideo(userID, videoID int64) *api.Video {
-	//这里做异步并发
-	rpcVideoModel := rpcApi.QueryVideo(videoID)
-	favoriteCount := rpcApi.GetFavoriteCount(videoID)
-	commentCount := rpcApi.GetCommentCount(videoID)
-
-	//这里做异步并发
-	rpcUser := rpcApi.GetUserById(userID, rpcVideoModel.AuthorId)
-	isFavorite := rpcApi.GetIsFavortite(videoID, rpcVideoModel.AuthorId)
-
-	video := videoconv.Rpc2Api(rpcVideoModel, rpcUser, favoriteCount, commentCount, isFavorite)
-
-	//CacheVideoToRedis，这里做defer
-	CacheVideo(video)
-	return video
-}
-
-func RpcQueryVideoList(userID int64, videoIDList []int64) (videoList []*api.Video) {
-	//这里做异步并发
-	//获取Video基本模型
-	rpcVideoModel := rpcApi.QueryVideoList(videoIDList)
-	//获取用户与视频的喜好关系
-	isFavoriteList := rpcApi.GetIsFavoriteList(userID, videoIDList)
-	//获取视频点赞数
-	FavoriteCountList := rpcApi.GetFavouriteCountList(videoIDList)
-	//获取视频评论数
-	CommentCountList := rpcApi.GetCommentCountList(videoIDList)
-
-	//非异步项，异步后同步项：获取video作者UserInfo
-	var authorIDList []int64
-	for _, video := range rpcVideoModel {
-		authorIDList = append(authorIDList, video.AuthorId)
-	}
-	authorList := rpcApi.GetAuthorList(userID, authorIDList)
-
-	videoList = videoconv.BatchRpc2Api(rpcVideoModel, authorList, FavoriteCountList, CommentCountList, isFavoriteList)
-
-	CacheVideoList(videoList)
-
-	return
+	//缓存
+	redis.CacheFeed(videoIDList, createTimeList)
+	//Model层正常查询返回
+	log.Println("Model后端返回的查询时间：", createTimeList[len(createTimeList)-1])
+	return GetVideoInfoList(userID, videoIDList), createTimeList[len(createTimeList)-1]
 }

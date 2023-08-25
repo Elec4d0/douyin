@@ -245,6 +245,11 @@ func (x *VideoInfoGetFeedResponse) FastRead(buf []byte, _type int8, number int32
 		if err != nil {
 			goto ReadFieldError
 		}
+	case 4:
+		offset, err = x.fastReadField4(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
 	default:
 		offset, err = fastpb.Skip(buf, _type, number)
 		if err != nil {
@@ -270,6 +275,11 @@ func (x *VideoInfoGetFeedResponse) fastReadField2(buf []byte, _type int8) (offse
 }
 
 func (x *VideoInfoGetFeedResponse) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.NextTime, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
+func (x *VideoInfoGetFeedResponse) fastReadField4(buf []byte, _type int8) (offset int, err error) {
 	var v Video
 	offset, err = fastpb.ReadMessage(buf, _type, &v)
 	if err != nil {
@@ -755,6 +765,7 @@ func (x *VideoInfoGetFeedResponse) FastWrite(buf []byte) (offset int) {
 	offset += x.fastWriteField1(buf[offset:])
 	offset += x.fastWriteField2(buf[offset:])
 	offset += x.fastWriteField3(buf[offset:])
+	offset += x.fastWriteField4(buf[offset:])
 	return offset
 }
 
@@ -775,11 +786,19 @@ func (x *VideoInfoGetFeedResponse) fastWriteField2(buf []byte) (offset int) {
 }
 
 func (x *VideoInfoGetFeedResponse) fastWriteField3(buf []byte) (offset int) {
+	if x.NextTime == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 3, x.GetNextTime())
+	return offset
+}
+
+func (x *VideoInfoGetFeedResponse) fastWriteField4(buf []byte) (offset int) {
 	if x.VideoList == nil {
 		return offset
 	}
 	for i := range x.GetVideoList() {
-		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetVideoList()[i])
+		offset += fastpb.WriteMessage(buf[offset:], 4, x.GetVideoList()[i])
 	}
 	return offset
 }
@@ -1187,6 +1206,7 @@ func (x *VideoInfoGetFeedResponse) Size() (n int) {
 	n += x.sizeField1()
 	n += x.sizeField2()
 	n += x.sizeField3()
+	n += x.sizeField4()
 	return n
 }
 
@@ -1207,11 +1227,19 @@ func (x *VideoInfoGetFeedResponse) sizeField2() (n int) {
 }
 
 func (x *VideoInfoGetFeedResponse) sizeField3() (n int) {
+	if x.NextTime == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(3, x.GetNextTime())
+	return n
+}
+
+func (x *VideoInfoGetFeedResponse) sizeField4() (n int) {
 	if x.VideoList == nil {
 		return n
 	}
 	for i := range x.GetVideoList() {
-		n += fastpb.SizeMessage(3, x.GetVideoList()[i])
+		n += fastpb.SizeMessage(4, x.GetVideoList()[i])
 	}
 	return n
 }
@@ -1492,7 +1520,8 @@ var fieldIDToName_VideoInfoGetFeedRequest = map[int32]string{
 var fieldIDToName_VideoInfoGetFeedResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "VideoList",
+	3: "NextTime",
+	4: "VideoList",
 }
 
 var fieldIDToName_VideoInfoGetAuthorVideoInfoListRequest = map[int32]string{

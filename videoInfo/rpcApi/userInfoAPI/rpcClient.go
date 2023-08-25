@@ -33,7 +33,6 @@ func GetFullUserInfo(user_id int64, search_id int64) (*api.FullUser, error) {
 		UserId:   user_id,
 		SearchId: search_id,
 	}
-	fmt.Println(rpcReq)
 	resp, err := userInfoRpcClient.GetFullUserInfo(context.Background(), rpcReq)
 
 	if err != nil {
@@ -49,7 +48,6 @@ func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, err
 		UserId:   user_id,
 		SearchId: search_id,
 	}
-	fmt.Println(rpcReq)
 	resp, err := userInfoRpcClient.GetFullUserInfoList(context.Background(), rpcReq)
 
 	if err != nil {

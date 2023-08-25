@@ -3,7 +3,10 @@ package redis
 import (
 	"context"
 	"github.com/redis/go-redis/v9"
+	"log"
+	"math/rand"
 	"strconv"
+	"time"
 )
 
 type Video struct {
@@ -15,6 +18,9 @@ type Video struct {
 	CommentCount  int64   `json:"comment_count"`
 	Title         *string `json:"title"`
 }
+
+const expirationTime = time.Minute * 5
+const existTTL = time.Second * 10
 
 var redisClient *redis.Client
 var redisClient2 *redis.Client
@@ -54,7 +60,7 @@ func InitRedis() {
 func CreateVideoObjectCache(video *Video) {
 	redisClient.HSet(
 		ctx,
-		strconv.FormatInt(video.VideoID, 10),
+		int642string(video.VideoID),
 		"id", video.VideoID,
 		"author_id", video.AuthorID,
 		"play_url", *video.PlayUrl,
@@ -63,6 +69,7 @@ func CreateVideoObjectCache(video *Video) {
 		"comment_count", video.CommentCount,
 		"title", *video.Title,
 	)
+	redisClient.Expire(ctx, int642string(video.VideoID), getExpirationTime())
 }
 
 func QueryVideoObjectCache(videoID int64) *Video {
@@ -84,26 +91,55 @@ func QueryVideoObjectCache(videoID int64) *Video {
 	return video
 }
 
-func CacheFeed(videoIDList []int64) {
-	for _, videoID := range videoIDList {
-		redisClient2.RPush(ctx, "feed", videoID)
+func QueryVideoList(videoIDList []int64) ([]*Video, bool) {
+	var videoList = make([]*Video, len(videoIDList))
+	for i, videoID := range videoIDList {
+		videoList[i] = QueryVideoObjectCache(videoID)
 	}
+	return videoList, true
+}
+
+func CacheFeed(videoIDList []int64, createTimeList []int64) {
+	var redisZGroup = make([]redis.Z, len(videoIDList))
+	for i, videoID := range videoIDList {
+		redisZGroup[i] = redis.Z{
+			Score:  float64(createTimeList[i]),
+			Member: videoID,
+		}
+	}
+	cnt, err := redisClient2.ZAdd(ctx, "feed", redisZGroup...).Result()
+	if err != nil {
+		log.Println(cnt)
+	}
+	redisClient2.Expire(ctx, "feed", getExpirationTime())
 }
 
 func CacheAuthorVideoIDList(authorID int64, videoIDList []int64) {
 	for _, videoID := range videoIDList {
 		redisClient2.RPush(ctx, int642string(authorID), videoID)
+		redisClient2.Expire(ctx, int642string(authorID), getExpirationTime())
 	}
 }
 
-func QueryFeedIDList() []int64 {
-	redidRes := redisClient2.LRange(ctx, "feed", 0, -1).Val()
-
-	feedIDList := make([]int64, len(redidRes))
-	for i, str := range redidRes {
-		feedIDList[i] = str2ing64(str)
+func QueryFeedIDList(timeUnix int64, limit int64) (videoIDList []int64, createTimeList []int64) {
+	opt := &redis.ZRangeBy{
+		Min:    "-inf",
+		Max:    int642string(timeUnix - 1),
+		Count:  limit,
+		Offset: 0,
 	}
-	return feedIDList
+	zGroup, _ := redisClient2.ZRevRangeByScoreWithScores(ctx, "feed", opt).Result()
+	//redis 查询从小到大输出，而业务需求为从大到小
+	n := len(zGroup)
+	videoIDList = make([]int64, n)
+	createTimeList = make([]int64, n)
+	for i, z := range zGroup {
+		videoID := str2ing64(z.Member.(string))
+		log.Println(videoID)
+		videoIDList[i] = videoID
+		createTimeList[i] = int64(z.Score)
+	}
+	return videoIDList, createTimeList
 }
 
 func QueryAuthorVideoIDList(authorID int64) []int64 {
@@ -146,7 +182,29 @@ func CheckFeedExists() bool {
 	if err != nil {
 		return false
 	}
-	return count > 0
+	if count == 0 {
+		return false
+	}
+	//检查过期时间
+	ttl, err := redisClient2.TTL(ctx, "feed").Result()
+	if err != nil {
+		return false
+	}
+	if ttl < existTTL {
+		return false
+	}
+	return true
+}
+
+func CheckFeedCountEnough(timeUnix int64, limit int64) bool {
+	maxTime := int642string(timeUnix - 1)
+	log.Println("check Feed timeUnix", maxTime)
+	count, err := redisClient2.ZCount(ctx, "feed", "-inf", maxTime).Result()
+	if err != nil {
+		return false
+	}
+	log.Println("check Feed count:", count)
+	return count >= limit
 }
 
 func CheckAuthorVideoIDListExists(authorID int64) bool {
@@ -154,7 +212,18 @@ func CheckAuthorVideoIDListExists(authorID int64) bool {
 	if err != nil {
 		return false
 	}
-	return count > 0
+	if count == 0 {
+		return false
+	}
+	//检查过期时间
+	ttl, err := redisClient2.TTL(ctx, int642string(authorID)).Result()
+	if err != nil {
+		return false
+	}
+	if ttl < existTTL {
+		return false
+	}
+	return true
 }
 
 func CheckVideoExists(videoID int64) bool {
@@ -162,7 +231,18 @@ func CheckVideoExists(videoID int64) bool {
 	if err != nil {
 		return false
 	}
-	return isVideoExist
+	if isVideoExist == false {
+		return false
+	}
+	//检查过期时间
+	ttl, err := redisClient.TTL(ctx, int642string(videoID)).Result()
+	if err != nil {
+		return false
+	}
+	if ttl < existTTL {
+		return false
+	}
+	return true
 }
 
 func int642string(num int64) string {
@@ -173,4 +253,8 @@ func int642string(num int64) string {
 func str2ing64(str string) int64 {
 	num, _ := strconv.ParseInt(str, 10, 64)
 	return num
+}
+
+func getExpirationTime() time.Duration {
+	return expirationTime + time.Second*time.Duration(rand.Int31n(120))
 }

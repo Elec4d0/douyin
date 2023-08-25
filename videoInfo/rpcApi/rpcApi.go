@@ -13,28 +13,28 @@ func InitRpcClient() {
 	userInfo.InitUserInfoRpcClient()
 }
 
-func QueryVideoList(videoIDs []int64) []*videoModelApi.VideoBaseInfo {
+func QueryVideoList(videoIDs []int64) []*videoModelApi.VideoModel {
 	videoList, err := videoModel.QueryVideoList(videoIDs)
 	if err != nil {
 		n := len(videoIDs)
-		return make([]*videoModelApi.VideoBaseInfo, n, n)
+		return make([]*videoModelApi.VideoModel, n, n)
 	}
 	return videoList
 }
 
-func QueryVideo(videoID int64) *videoModelApi.VideoBaseInfo {
+func QueryVideo(videoID int64) *videoModelApi.VideoModel {
 	video, _ := videoModel.QueryVideo(videoID)
 	return video
 }
 
-func QueryVideoFeed(nextTime int64) []*videoModelApi.VideoBaseInfo {
-	videos, _ := videoModel.QueryVideoFeed(nextTime)
-	return videos
+func QueryFeedVideoIDList(nextTime int64, limit int64) (videoIDList []int64, createTimeList []int64) {
+	videoIDList, createTimeList, _ = videoModel.QueryVideoFeed(nextTime, limit)
+	return videoIDList, createTimeList
 }
 
-func QueryAuthorVideoList(AuthorId int64) []*videoModelApi.VideoBaseInfo {
-	videos, _ := videoModel.QueryAuthorVideoList(AuthorId)
-	return videos
+func QueryAuthorVideoIDList(AuthorId int64) []int64 {
+	videoIDList, _ := videoModel.QueryAuthorVideoIDList(AuthorId)
+	return videoIDList
 }
 
 func GetUserById(uid int64, aid int64) *userInfoApi.FullUser {
@@ -122,7 +122,7 @@ func GetAuthorList(userID int64, authorIDList []int64) []*userInfoApi.FullUser {
 	return rpcAuthorList
 }
 
-func BuildVideoList(videoBaseInfoList []*videoModelApi.VideoBaseInfo, AuthorList []*api.User, isFavoriteList []bool, favoriteCountList []int64, commentCountList []int64) []*api.Video {
+func BuildVideoList(videoBaseInfoList []*videoModelApi.VideoModel, AuthorList []*api.User, isFavoriteList []bool, favoriteCountList []int64, commentCountList []int64) []*api.Video {
 	var videoList []*api.Video
 
 	for i, videoBaseInfo := range videoBaseInfoList {

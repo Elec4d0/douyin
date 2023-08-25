@@ -20,43 +20,12 @@ func InitVideoInfoRpcClient() videoinfoservice.Client {
 	videoInfoRpcClient, err = videoinfoservice.NewClient("videoInfo", client.WithResolver(r))
 
 	if err != nil {
-		log.Fatal("VideoInfo 微服务初始化链接失败")
+		log.Fatal("网关层Video 微服务初始化链接失败")
 		log.Fatal(err)
 		return nil
 	}
-	fmt.Println("VideoInfo 微服务：初始化链接成功")
+	fmt.Println("Video 微服务：初始化链接User微服务成功")
 	return videoInfoRpcClient
-}
-
-func GetVideoInfoList(videoIDList []int64) ([]*api.Video, error) {
-	rpcReq := &api.VideoInfoGetVideoInfoListRequest{
-		VideoIdList: videoIDList,
-	}
-
-	resp, err := videoInfoRpcClient.GetVideoInfoList(context.Background(), rpcReq)
-
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-
-	return resp.VideoList, nil
-}
-
-func GetVideoInfo(videoID int64) (*api.Video, error) {
-	rpcReq := &api.VideoInfoGetVideoInfoRequest{
-		VideoId: videoID,
-	}
-
-	resp, err := videoInfoRpcClient.GetVideoInfo(context.Background(), rpcReq)
-
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-
-	return resp.Video, nil
-
 }
 
 func GetFeed(userID int64, nextTime int64) (*api.VideoInfoGetFeedResponse, error) {
