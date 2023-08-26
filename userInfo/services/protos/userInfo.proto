@@ -16,7 +16,7 @@ message douyin_user_get_full_user_info_request {
 message douyin_user_get_full_user_info_response {
   int32 status_code = 1; // 状态码，0-成功，其他值-失败
   optional string status_msg = 2; // 返回状态描述
-  FullUser full_user = 3;
+  FullUser user = 3;
 }
 
 message douyin_user_get_full_user_info_list_request {
@@ -27,7 +27,7 @@ message douyin_user_get_full_user_info_list_request {
 message douyin_user_get_full_user_info_list_response {
   int32 status_code = 1; // 状态码，0-成功，其他值-失败
   optional string status_msg = 2; // 返回状态描述
-  repeated FullUser full_user = 3;
+  repeated FullUser user = 3;
 }
 
 message FullUser {

@@ -7,6 +7,7 @@ import (
 	"userModel/model"
 	api "userModel/services/protos/kitex_gen/api"
 	"userModel/utils"
+	"userModel/utils/idGeneration"
 )
 
 // UserModelServiceImpl implements the last service interface defined in the IDL.
@@ -20,7 +21,21 @@ func (s *UserModelServiceImpl) CreateBaseUser(ctx context.Context, req *api.Douy
 	name := req.Username
 	password := req.Password
 
+	id, err := idGeneration.GeneratelID()
+	if err != nil {
+		resp.StatusCode = 1
+
+		statusMsg := "model层：用户创建失败, id生成失败！"
+		resp.StatusMsg = &statusMsg
+
+		resp.UserId = -1
+
+		log.Fatal(err)
+		return
+	}
+
 	user := &model.User{
+		ID:              id,
 		Name:            name,
 		Password:        utils.SHA256(password),
 		Avatar:          "",
@@ -30,7 +45,7 @@ func (s *UserModelServiceImpl) CreateBaseUser(ctx context.Context, req *api.Douy
 		UpdatedAt:       time.Now(),
 	}
 
-	id, err := model.CreateUser(user)
+	id, err = model.CreateUser(user)
 
 	if err != nil {
 		resp.StatusCode = 1
