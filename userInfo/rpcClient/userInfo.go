@@ -41,7 +41,7 @@ func GetFullUserInfo(user_id int64, search_id int64) (*api.FullUser, error) {
 		log.Println(err)
 		return nil, err
 	}
-	return resp.FullUser, nil
+	return resp.User, nil
 }
 
 func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, error) {
@@ -57,5 +57,5 @@ func GetFullUserInfoList(user_id int64, search_id []int64) ([]*api.FullUser, err
 		log.Println(err)
 		return make([]*api.FullUser, len(search_id)), err
 	}
-	return resp.FullUser, nil
+	return resp.User, nil
 }
