@@ -62,22 +62,22 @@ func QueryAuthorWorkCount(AuthorId int64) (int32, error) {
 	return resp.WorkCount, nil
 }
 
-func QueryAuthorVideoList(AuthorId int64) ([]*api.VideoBaseInfo, error) {
-	rpcReq := &api.VideoModelQueryAuthorVideoListRequest{
+func QueryAuthorVideoIDList(AuthorId int64) ([]int64, error) {
+	rpcReq := &api.VideoModelQueryAuthorVideoIdListRequest{
 		AuthorId: AuthorId,
 	}
 
-	resp, err := videoModelRpcClient.QueryAuthorVideoList(context.Background(), rpcReq)
+	resp, err := videoModelRpcClient.QueryAuthorVideoIDList(context.Background(), rpcReq)
 
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	return resp.VideoBaseInfo, nil
+	return resp.VideoIdList, nil
 }
 
-func QueryVideoList(videoIDs []int64) ([]*api.VideoBaseInfo, error) {
+func QueryVideoList(videoIDs []int64) ([]*api.VideoModel, error) {
 	rpcReq := &api.VideoModelQueryVideoListRequest{
 		VideoIdList: videoIDs,
 	}
@@ -86,13 +86,13 @@ func QueryVideoList(videoIDs []int64) ([]*api.VideoBaseInfo, error) {
 
 	if err != nil {
 		log.Println(err)
-		return make([]*api.VideoBaseInfo, len(videoIDs)), err
+		return make([]*api.VideoModel, len(videoIDs)), err
 	}
 
-	return resp.VideoBaseInfoList, nil
+	return resp.VideoModelList, nil
 }
 
-func QueryVideo(videoID int64) (*api.VideoBaseInfo, error) {
+func QueryVideo(videoID int64) (*api.VideoModel, error) {
 	rpcReq := &api.VideoModelQueryVideoRequest{
 		VideoId: videoID,
 	}
@@ -104,22 +104,23 @@ func QueryVideo(videoID int64) (*api.VideoBaseInfo, error) {
 		return nil, err
 	}
 
-	return resp.VideoBaseInfo, nil
+	return resp.VideoModel, nil
 }
 
-func QueryVideoFeed(nextTime int64) ([]*api.VideoBaseInfo, error) {
+func QueryVideoFeed(nextTime int64, limit int64) (videoIDList []int64, createTimeList []int64, err error) {
 	rpcReq := &api.VideoModelQueryVideoFeedRequest{
 		NextTime: nextTime,
+		Limit:    limit,
 	}
 
 	resp, err := videoModelRpcClient.QueryVideoFeed(context.Background(), rpcReq)
 
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	return resp.VideoBaseInfoList, nil
+	return resp.VideoIdList, resp.CreateTimeList, nil
 }
 
 func QueryAuthorWorkCountList(authorIDList []int64) ([]int32, error) {

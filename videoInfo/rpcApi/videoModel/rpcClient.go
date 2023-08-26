@@ -15,16 +15,16 @@ var videoModelRpcClient videomodelservice.Client
 func InitVideoModelRpcClient() videomodelservice.Client {
 	r, err := etcd.NewEtcdResolver([]string{"127.0.0.1:2379"})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	videoModelRpcClient, err = videomodelservice.NewClient("videoModel", client.WithResolver(r))
 
 	if err != nil {
-		log.Fatal("网关层Video 微服务初始化链接失败")
-		log.Fatal(err)
+		log.Println("videoModel微服务rpcClient初始化链接失败")
+		log.Println(err)
 		return nil
 	}
-	fmt.Println("Video 微服务：初始化链接User微服务成功")
+	fmt.Println("videoModel微服务rpcClient初始化链接成功")
 	return videoModelRpcClient
 }
 
@@ -35,18 +35,19 @@ func CreateVideo(AuthorId int64, PlayUrl string, CoverUrl string, Title string) 
 		CoverUrl: CoverUrl,
 		Title:    Title,
 	}
-	fmt.Println(rpcReq)
+
 	resp, err := videoModelRpcClient.CreateVideo(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
-		log.Fatal(resp)
+		log.Println(err)
+		log.Println(rpcReq)
+		log.Println(resp)
 		return err
 	}
 	return nil
 }
 
-func QueryAuthorWorkCount(AuthorId int64) (int64, error) {
+func QueryAuthorWorkCount(AuthorId int64) (int32, error) {
 	rpcReq := &api.VideoModelQueryAuthorWorkCountRequest{
 		AuthorId: AuthorId,
 	}
@@ -54,29 +55,29 @@ func QueryAuthorWorkCount(AuthorId int64) (int64, error) {
 	resp, err := videoModelRpcClient.QueryAuthorWorkCount(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return 0, err
 	}
 
-	return int64(resp.WorkCount), nil
+	return resp.WorkCount, nil
 }
 
-func QueryAuthorVideoList(AuthorId int64) ([]*api.VideoBaseInfo, error) {
-	rpcReq := &api.VideoModelQueryAuthorVideoListRequest{
+func QueryAuthorVideoIDList(AuthorId int64) ([]int64, error) {
+	rpcReq := &api.VideoModelQueryAuthorVideoIdListRequest{
 		AuthorId: AuthorId,
 	}
 
-	resp, err := videoModelRpcClient.QueryAuthorVideoList(context.Background(), rpcReq)
+	resp, err := videoModelRpcClient.QueryAuthorVideoIDList(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
-	return resp.VideoBaseInfo, nil
+	return resp.VideoIdList, nil
 }
 
-func QueryVideoList(videoIDs []int64) ([]*api.VideoBaseInfo, error) {
+func QueryVideoList(videoIDs []int64) ([]*api.VideoModel, error) {
 	rpcReq := &api.VideoModelQueryVideoListRequest{
 		VideoIdList: videoIDs,
 	}
@@ -84,14 +85,14 @@ func QueryVideoList(videoIDs []int64) ([]*api.VideoBaseInfo, error) {
 	resp, err := videoModelRpcClient.QueryVideoList(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
-		return nil, err
+		log.Println(err)
+		return make([]*api.VideoModel, len(videoIDs)), err
 	}
 
-	return resp.VideoBaseInfoList, nil
+	return resp.VideoModelList, nil
 }
 
-func QueryVideo(videoID int64) (*api.VideoBaseInfo, error) {
+func QueryVideo(videoID int64) (*api.VideoModel, error) {
 	rpcReq := &api.VideoModelQueryVideoRequest{
 		VideoId: videoID,
 	}
@@ -99,24 +100,39 @@ func QueryVideo(videoID int64) (*api.VideoBaseInfo, error) {
 	resp, err := videoModelRpcClient.QueryVideo(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
-	return resp.VideoBaseInfo, nil
+	return resp.VideoModel, nil
 }
 
-func QueryVideoFeed(nextTime int64) ([]*api.VideoBaseInfo, error) {
+func QueryVideoFeed(nextTime int64, limit int64) (videoIDList []int64, createTimeList []int64, err error) {
 	rpcReq := &api.VideoModelQueryVideoFeedRequest{
 		NextTime: nextTime,
+		Limit:    limit,
 	}
 
 	resp, err := videoModelRpcClient.QueryVideoFeed(context.Background(), rpcReq)
 
 	if err != nil {
-		log.Fatal(err)
-		return nil, err
+		log.Println(err)
+		return nil, nil, err
 	}
 
-	return resp.VideoBaseInfoList, nil
+	return resp.VideoIdList, resp.CreateTimeList, nil
+}
+
+func QueryAuthorWorkCountList(authorIDList []int64) ([]int32, error) {
+	rpcReq := &api.VideoModelQueryAuthorWorkCountListRequest{
+		AuthorIdList: authorIDList,
+	}
+
+	resp, err := videoModelRpcClient.QueryAuthorWorkCountList(context.Background(), rpcReq)
+	if err != nil {
+		log.Println(err)
+		return make([]int32, len(authorIDList)), err
+	}
+
+	return resp.WorkCountList, nil
 }

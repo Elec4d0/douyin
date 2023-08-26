@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func InitVideoRpcClient() {
@@ -110,33 +111,21 @@ func Feed(ginContext *gin.Context) {
 	//	httpReq
 	token := ginContext.Query("token")
 	userId := jwt.ParseToken(token)
-	/*
-		if userId < 0 {
-			str := "token 过期或不正确"
-			ginContext.JSON(http.StatusOK, api.DouyinFeedResponse{
-				StatusCode: -1,
-				StatusMsg:  &str,
-				VideoList:  nil,
-				NextTime:   nil,
-			})
-			return
-		}
-	*/
+
 	var latestTimeStr = ginContext.Query("latest_time")
+	log.Println("网关获取前端提供的查询时间：", latestTimeStr)
 	var lastTime int64
 	if latestTimeStr == "" {
-		lastTime = -1
+		lastTime = time.Now().Unix() * 1000
 	} else {
 		parseTime, err := strconv.ParseInt(latestTimeStr, 10, 64)
 		if err != nil {
 			fmt.Println("Feed接口 latestTime 字符串解析int64失败")
 			lastTime = -1
-		} else {
-			lastTime = parseTime
 		}
-
+		lastTime = parseTime
 	}
-
+	log.Println("网关传递给微服务的查询时间：", lastTime)
 	resp, err := videoInfo.GetFeed(userId, lastTime)
 
 	if err != nil {
@@ -149,6 +138,6 @@ func Feed(ginContext *gin.Context) {
 		})
 	}
 
-	fmt.Println(resp)
+	//fmt.Println(resp)
 	ginContext.JSON(http.StatusOK, resp)
 }

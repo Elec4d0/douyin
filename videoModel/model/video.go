@@ -74,10 +74,10 @@ func GetVideosByIds(videoIDs []int64) ([]*Video, error) {
 	return videos, err
 }
 
-func QueryVideoFeedByLastTimeAndLimit(lastTime *string, limit int) ([]*Video, error) {
+func QueryVideoFeedByLastTimeAndLimit(lastTime *string, limit int64) ([]*Video, error) {
 	//fmt.Println(*lastTime)
 	var videos []*Video
-	err := DB.Where("created_time < ?", *lastTime).Order("created_time desc").Limit(limit).Find(&videos).Error
+	err := DB.Where("created_time < ?", *lastTime).Order("created_time desc").Limit(int(limit)).Find(&videos).Error
 	//err := DB.Where("created_time < ?", *lastTime).Find(&videos).Error
 	if err != nil {
 		return nil, err

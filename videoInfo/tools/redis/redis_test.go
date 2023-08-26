@@ -1,12 +1,11 @@
 package redis
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"testing"
 )
 
+/*
 func TestCreateVideoCache(t *testing.T) {
 	InitRedis()
 	playUrl := "http://douyin.g324.asia:9000/video/c4486d7a-66ac-4b6c-9ba8-af3eb9a80181.mp4"
@@ -48,4 +47,15 @@ func printVideo(video Video) {
 	var out bytes.Buffer
 	json.Indent(&out, bs, "", "\t")
 	fmt.Printf("video=%v\n", out.String())
+}
+
+*/
+
+func TestQueryFeedIDList(t *testing.T) {
+	InitRedis()
+	var timeUnix int64 = 1692912118000
+	var limit int64 = 2
+	idList, ctL := QueryFeedIDList(timeUnix, limit)
+	fmt.Println(idList)
+	fmt.Println(ctL)
 }

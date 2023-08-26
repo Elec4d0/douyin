@@ -22,12 +22,13 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "videoModelService"
 	handlerType := (*api.VideoModelService)(nil)
 	methods := map[string]kitex.MethodInfo{
-		"CreateVideo":          kitex.NewMethodInfo(createVideoHandler, newCreateVideoArgs, newCreateVideoResult, false),
-		"QueryAuthorWorkCount": kitex.NewMethodInfo(queryAuthorWorkCountHandler, newQueryAuthorWorkCountArgs, newQueryAuthorWorkCountResult, false),
-		"QueryAuthorVideoList": kitex.NewMethodInfo(queryAuthorVideoListHandler, newQueryAuthorVideoListArgs, newQueryAuthorVideoListResult, false),
-		"QueryVideoList":       kitex.NewMethodInfo(queryVideoListHandler, newQueryVideoListArgs, newQueryVideoListResult, false),
-		"QueryVideo":           kitex.NewMethodInfo(queryVideoHandler, newQueryVideoArgs, newQueryVideoResult, false),
-		"QueryVideoFeed":       kitex.NewMethodInfo(queryVideoFeedHandler, newQueryVideoFeedArgs, newQueryVideoFeedResult, false),
+		"CreateVideo":              kitex.NewMethodInfo(createVideoHandler, newCreateVideoArgs, newCreateVideoResult, false),
+		"QueryAuthorWorkCount":     kitex.NewMethodInfo(queryAuthorWorkCountHandler, newQueryAuthorWorkCountArgs, newQueryAuthorWorkCountResult, false),
+		"QueryAuthorVideoIDList":   kitex.NewMethodInfo(queryAuthorVideoIDListHandler, newQueryAuthorVideoIDListArgs, newQueryAuthorVideoIDListResult, false),
+		"QueryVideoList":           kitex.NewMethodInfo(queryVideoListHandler, newQueryVideoListArgs, newQueryVideoListResult, false),
+		"QueryVideo":               kitex.NewMethodInfo(queryVideoHandler, newQueryVideoArgs, newQueryVideoResult, false),
+		"QueryVideoFeed":           kitex.NewMethodInfo(queryVideoFeedHandler, newQueryVideoFeedArgs, newQueryVideoFeedResult, false),
+		"QueryAuthorWorkCountList": kitex.NewMethodInfo(queryAuthorWorkCountListHandler, newQueryAuthorWorkCountListArgs, newQueryAuthorWorkCountListResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "core",
@@ -349,73 +350,73 @@ func (p *QueryAuthorWorkCountResult) GetResult() interface{} {
 	return p.Success
 }
 
-func queryAuthorVideoListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func queryAuthorVideoIDListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(api.VideoModelQueryAuthorVideoListRequest)
+		req := new(api.VideoModelQueryAuthorVideoIdListRequest)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(api.VideoModelService).QueryAuthorVideoList(ctx, req)
+		resp, err := handler.(api.VideoModelService).QueryAuthorVideoIDList(ctx, req)
 		if err != nil {
 			return err
 		}
 		if err := st.SendMsg(resp); err != nil {
 			return err
 		}
-	case *QueryAuthorVideoListArgs:
-		success, err := handler.(api.VideoModelService).QueryAuthorVideoList(ctx, s.Req)
+	case *QueryAuthorVideoIDListArgs:
+		success, err := handler.(api.VideoModelService).QueryAuthorVideoIDList(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*QueryAuthorVideoListResult)
+		realResult := result.(*QueryAuthorVideoIDListResult)
 		realResult.Success = success
 	}
 	return nil
 }
-func newQueryAuthorVideoListArgs() interface{} {
-	return &QueryAuthorVideoListArgs{}
+func newQueryAuthorVideoIDListArgs() interface{} {
+	return &QueryAuthorVideoIDListArgs{}
 }
 
-func newQueryAuthorVideoListResult() interface{} {
-	return &QueryAuthorVideoListResult{}
+func newQueryAuthorVideoIDListResult() interface{} {
+	return &QueryAuthorVideoIDListResult{}
 }
 
-type QueryAuthorVideoListArgs struct {
-	Req *api.VideoModelQueryAuthorVideoListRequest
+type QueryAuthorVideoIDListArgs struct {
+	Req *api.VideoModelQueryAuthorVideoIdListRequest
 }
 
-func (p *QueryAuthorVideoListArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *QueryAuthorVideoIDListArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
-		p.Req = new(api.VideoModelQueryAuthorVideoListRequest)
+		p.Req = new(api.VideoModelQueryAuthorVideoIdListRequest)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
 
-func (p *QueryAuthorVideoListArgs) FastWrite(buf []byte) (n int) {
+func (p *QueryAuthorVideoIDListArgs) FastWrite(buf []byte) (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.FastWrite(buf)
 }
 
-func (p *QueryAuthorVideoListArgs) Size() (n int) {
+func (p *QueryAuthorVideoIDListArgs) Size() (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.Size()
 }
 
-func (p *QueryAuthorVideoListArgs) Marshal(out []byte) ([]byte, error) {
+func (p *QueryAuthorVideoIDListArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
-		return out, fmt.Errorf("No req in QueryAuthorVideoListArgs")
+		return out, fmt.Errorf("No req in QueryAuthorVideoIDListArgs")
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *QueryAuthorVideoListArgs) Unmarshal(in []byte) error {
-	msg := new(api.VideoModelQueryAuthorVideoListRequest)
+func (p *QueryAuthorVideoIDListArgs) Unmarshal(in []byte) error {
+	msg := new(api.VideoModelQueryAuthorVideoIdListRequest)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -423,59 +424,59 @@ func (p *QueryAuthorVideoListArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var QueryAuthorVideoListArgs_Req_DEFAULT *api.VideoModelQueryAuthorVideoListRequest
+var QueryAuthorVideoIDListArgs_Req_DEFAULT *api.VideoModelQueryAuthorVideoIdListRequest
 
-func (p *QueryAuthorVideoListArgs) GetReq() *api.VideoModelQueryAuthorVideoListRequest {
+func (p *QueryAuthorVideoIDListArgs) GetReq() *api.VideoModelQueryAuthorVideoIdListRequest {
 	if !p.IsSetReq() {
-		return QueryAuthorVideoListArgs_Req_DEFAULT
+		return QueryAuthorVideoIDListArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *QueryAuthorVideoListArgs) IsSetReq() bool {
+func (p *QueryAuthorVideoIDListArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *QueryAuthorVideoListArgs) GetFirstArgument() interface{} {
+func (p *QueryAuthorVideoIDListArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type QueryAuthorVideoListResult struct {
-	Success *api.VideoModelQueryAuthorVideoListResponse
+type QueryAuthorVideoIDListResult struct {
+	Success *api.VideoModelQueryAuthorVideoIdListResponse
 }
 
-var QueryAuthorVideoListResult_Success_DEFAULT *api.VideoModelQueryAuthorVideoListResponse
+var QueryAuthorVideoIDListResult_Success_DEFAULT *api.VideoModelQueryAuthorVideoIdListResponse
 
-func (p *QueryAuthorVideoListResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *QueryAuthorVideoIDListResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
-		p.Success = new(api.VideoModelQueryAuthorVideoListResponse)
+		p.Success = new(api.VideoModelQueryAuthorVideoIdListResponse)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
 
-func (p *QueryAuthorVideoListResult) FastWrite(buf []byte) (n int) {
+func (p *QueryAuthorVideoIDListResult) FastWrite(buf []byte) (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.FastWrite(buf)
 }
 
-func (p *QueryAuthorVideoListResult) Size() (n int) {
+func (p *QueryAuthorVideoIDListResult) Size() (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.Size()
 }
 
-func (p *QueryAuthorVideoListResult) Marshal(out []byte) ([]byte, error) {
+func (p *QueryAuthorVideoIDListResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
-		return out, fmt.Errorf("No req in QueryAuthorVideoListResult")
+		return out, fmt.Errorf("No req in QueryAuthorVideoIDListResult")
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *QueryAuthorVideoListResult) Unmarshal(in []byte) error {
-	msg := new(api.VideoModelQueryAuthorVideoListResponse)
+func (p *QueryAuthorVideoIDListResult) Unmarshal(in []byte) error {
+	msg := new(api.VideoModelQueryAuthorVideoIdListResponse)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -483,22 +484,22 @@ func (p *QueryAuthorVideoListResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *QueryAuthorVideoListResult) GetSuccess() *api.VideoModelQueryAuthorVideoListResponse {
+func (p *QueryAuthorVideoIDListResult) GetSuccess() *api.VideoModelQueryAuthorVideoIdListResponse {
 	if !p.IsSetSuccess() {
-		return QueryAuthorVideoListResult_Success_DEFAULT
+		return QueryAuthorVideoIDListResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *QueryAuthorVideoListResult) SetSuccess(x interface{}) {
-	p.Success = x.(*api.VideoModelQueryAuthorVideoListResponse)
+func (p *QueryAuthorVideoIDListResult) SetSuccess(x interface{}) {
+	p.Success = x.(*api.VideoModelQueryAuthorVideoIdListResponse)
 }
 
-func (p *QueryAuthorVideoListResult) IsSetSuccess() bool {
+func (p *QueryAuthorVideoIDListResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *QueryAuthorVideoListResult) GetResult() interface{} {
+func (p *QueryAuthorVideoIDListResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -961,6 +962,159 @@ func (p *QueryVideoFeedResult) GetResult() interface{} {
 	return p.Success
 }
 
+func queryAuthorWorkCountListHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(api.VideoModelQueryAuthorWorkCountListRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(api.VideoModelService).QueryAuthorWorkCountList(ctx, req)
+		if err != nil {
+			return err
+		}
+		if err := st.SendMsg(resp); err != nil {
+			return err
+		}
+	case *QueryAuthorWorkCountListArgs:
+		success, err := handler.(api.VideoModelService).QueryAuthorWorkCountList(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*QueryAuthorWorkCountListResult)
+		realResult.Success = success
+	}
+	return nil
+}
+func newQueryAuthorWorkCountListArgs() interface{} {
+	return &QueryAuthorWorkCountListArgs{}
+}
+
+func newQueryAuthorWorkCountListResult() interface{} {
+	return &QueryAuthorWorkCountListResult{}
+}
+
+type QueryAuthorWorkCountListArgs struct {
+	Req *api.VideoModelQueryAuthorWorkCountListRequest
+}
+
+func (p *QueryAuthorWorkCountListArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetReq() {
+		p.Req = new(api.VideoModelQueryAuthorWorkCountListRequest)
+	}
+	return p.Req.FastRead(buf, _type, number)
+}
+
+func (p *QueryAuthorWorkCountListArgs) FastWrite(buf []byte) (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.FastWrite(buf)
+}
+
+func (p *QueryAuthorWorkCountListArgs) Size() (n int) {
+	if !p.IsSetReq() {
+		return 0
+	}
+	return p.Req.Size()
+}
+
+func (p *QueryAuthorWorkCountListArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, fmt.Errorf("No req in QueryAuthorWorkCountListArgs")
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *QueryAuthorWorkCountListArgs) Unmarshal(in []byte) error {
+	msg := new(api.VideoModelQueryAuthorWorkCountListRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var QueryAuthorWorkCountListArgs_Req_DEFAULT *api.VideoModelQueryAuthorWorkCountListRequest
+
+func (p *QueryAuthorWorkCountListArgs) GetReq() *api.VideoModelQueryAuthorWorkCountListRequest {
+	if !p.IsSetReq() {
+		return QueryAuthorWorkCountListArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *QueryAuthorWorkCountListArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *QueryAuthorWorkCountListArgs) GetFirstArgument() interface{} {
+	return p.Req
+}
+
+type QueryAuthorWorkCountListResult struct {
+	Success *api.VideoModelQueryAuthorWorkCountListResponse
+}
+
+var QueryAuthorWorkCountListResult_Success_DEFAULT *api.VideoModelQueryAuthorWorkCountListResponse
+
+func (p *QueryAuthorWorkCountListResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+	if !p.IsSetSuccess() {
+		p.Success = new(api.VideoModelQueryAuthorWorkCountListResponse)
+	}
+	return p.Success.FastRead(buf, _type, number)
+}
+
+func (p *QueryAuthorWorkCountListResult) FastWrite(buf []byte) (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.FastWrite(buf)
+}
+
+func (p *QueryAuthorWorkCountListResult) Size() (n int) {
+	if !p.IsSetSuccess() {
+		return 0
+	}
+	return p.Success.Size()
+}
+
+func (p *QueryAuthorWorkCountListResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, fmt.Errorf("No req in QueryAuthorWorkCountListResult")
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *QueryAuthorWorkCountListResult) Unmarshal(in []byte) error {
+	msg := new(api.VideoModelQueryAuthorWorkCountListResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *QueryAuthorWorkCountListResult) GetSuccess() *api.VideoModelQueryAuthorWorkCountListResponse {
+	if !p.IsSetSuccess() {
+		return QueryAuthorWorkCountListResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *QueryAuthorWorkCountListResult) SetSuccess(x interface{}) {
+	p.Success = x.(*api.VideoModelQueryAuthorWorkCountListResponse)
+}
+
+func (p *QueryAuthorWorkCountListResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *QueryAuthorWorkCountListResult) GetResult() interface{} {
+	return p.Success
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -991,11 +1145,11 @@ func (p *kClient) QueryAuthorWorkCount(ctx context.Context, Req *api.VideoModelQ
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) QueryAuthorVideoList(ctx context.Context, Req *api.VideoModelQueryAuthorVideoListRequest) (r *api.VideoModelQueryAuthorVideoListResponse, err error) {
-	var _args QueryAuthorVideoListArgs
+func (p *kClient) QueryAuthorVideoIDList(ctx context.Context, Req *api.VideoModelQueryAuthorVideoIdListRequest) (r *api.VideoModelQueryAuthorVideoIdListResponse, err error) {
+	var _args QueryAuthorVideoIDListArgs
 	_args.Req = Req
-	var _result QueryAuthorVideoListResult
-	if err = p.c.Call(ctx, "QueryAuthorVideoList", &_args, &_result); err != nil {
+	var _result QueryAuthorVideoIDListResult
+	if err = p.c.Call(ctx, "QueryAuthorVideoIDList", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
@@ -1026,6 +1180,16 @@ func (p *kClient) QueryVideoFeed(ctx context.Context, Req *api.VideoModelQueryVi
 	_args.Req = Req
 	var _result QueryVideoFeedResult
 	if err = p.c.Call(ctx, "QueryVideoFeed", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) QueryAuthorWorkCountList(ctx context.Context, Req *api.VideoModelQueryAuthorWorkCountListRequest) (r *api.VideoModelQueryAuthorWorkCountListResponse, err error) {
+	var _args QueryAuthorWorkCountListArgs
+	_args.Req = Req
+	var _result QueryAuthorWorkCountListResult
+	if err = p.c.Call(ctx, "QueryAuthorWorkCountList", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
