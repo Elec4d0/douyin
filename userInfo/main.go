@@ -9,6 +9,7 @@ import (
 	"userInfo/services/protos"
 	api "userInfo/services/protos/kitex_gen/api/userinfoservice"
 	userModelServices "userInfo/userModelAPI"
+	"userInfo/utils/redis"
 	"userInfo/videoModel"
 )
 
@@ -16,6 +17,9 @@ func main() {
 	//初始化rpcApi链接
 	userModelServices.InitUserModelRpcClient()
 	videoModel.InitVideoModelRpcClient()
+
+	// 开启缓存
+	redis.Init()
 
 	//etcd 链接
 	r, err := etcd.NewEtcdRegistry([]string{"127.0.0.1:2379"}) // r should not be reused.

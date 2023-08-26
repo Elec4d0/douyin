@@ -41,6 +41,8 @@ github.com/bketelsen/crypt v0.0.3-0.20200106085610-5cbc8cc4026c/go.mod h1:MKsuJm
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/brianvoe/gofakeit/v6 v6.16.0/go.mod h1:Ow6qC71xtwm79anlwKRlWZW6zVq9D2XHE4QSSMP/rU8=
+github.com/bwmarrin/snowflake v0.3.0 h1:xm67bEhkKh6ij1790JB83OujPR5CzNe8QuQqAgISZN0=
+github.com/bwmarrin/snowflake v0.3.0/go.mod h1:NdZxfVWX+oR6y2K0o6qAYv6gIOP9rjG0/E9WsDpxqwE=
 github.com/bytedance/gopkg v0.0.0-20210705062217-74c74ebadcae/go.mod h1:birsdqRCbwnckJbdAvcSao+AzOyibVEoWB55MjpYpB8=
 github.com/bytedance/gopkg v0.0.0-20210709064845-3c00f9323f09/go.mod h1:birsdqRCbwnckJbdAvcSao+AzOyibVEoWB55MjpYpB8=
 github.com/bytedance/gopkg v0.0.0-20210716082555-acbf5a2aa7e2/go.mod h1:birsdqRCbwnckJbdAvcSao+AzOyibVEoWB55MjpYpB8=

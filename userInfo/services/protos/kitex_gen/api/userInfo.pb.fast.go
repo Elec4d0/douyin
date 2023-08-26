@@ -94,7 +94,7 @@ func (x *DouyinUserGetFullUserInfoResponse) fastReadField3(buf []byte, _type int
 	if err != nil {
 		return offset, err
 	}
-	x.FullUser = &v
+	x.User = &v
 	return offset, nil
 }
 
@@ -189,7 +189,7 @@ func (x *DouyinUserGetFullUserInfoListResponse) fastReadField3(buf []byte, _type
 	if err != nil {
 		return offset, err
 	}
-	x.FullUser = append(x.FullUser, &v)
+	x.User = append(x.User, &v)
 	return offset, nil
 }
 
@@ -378,10 +378,10 @@ func (x *DouyinUserGetFullUserInfoResponse) fastWriteField2(buf []byte) (offset 
 }
 
 func (x *DouyinUserGetFullUserInfoResponse) fastWriteField3(buf []byte) (offset int) {
-	if x.FullUser == nil {
+	if x.User == nil {
 		return offset
 	}
-	offset += fastpb.WriteMessage(buf[offset:], 3, x.GetFullUser())
+	offset += fastpb.WriteMessage(buf[offset:], 3, x.GetUser())
 	return offset
 }
 
@@ -442,11 +442,11 @@ func (x *DouyinUserGetFullUserInfoListResponse) fastWriteField2(buf []byte) (off
 }
 
 func (x *DouyinUserGetFullUserInfoListResponse) fastWriteField3(buf []byte) (offset int) {
-	if x.FullUser == nil {
+	if x.User == nil {
 		return offset
 	}
-	for i := range x.GetFullUser() {
-		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetFullUser()[i])
+	for i := range x.GetUser() {
+		offset += fastpb.WriteMessage(buf[offset:], 3, x.GetUser()[i])
 	}
 	return offset
 }
@@ -609,10 +609,10 @@ func (x *DouyinUserGetFullUserInfoResponse) sizeField2() (n int) {
 }
 
 func (x *DouyinUserGetFullUserInfoResponse) sizeField3() (n int) {
-	if x.FullUser == nil {
+	if x.User == nil {
 		return n
 	}
-	n += fastpb.SizeMessage(3, x.GetFullUser())
+	n += fastpb.SizeMessage(3, x.GetUser())
 	return n
 }
 
@@ -673,11 +673,11 @@ func (x *DouyinUserGetFullUserInfoListResponse) sizeField2() (n int) {
 }
 
 func (x *DouyinUserGetFullUserInfoListResponse) sizeField3() (n int) {
-	if x.FullUser == nil {
+	if x.User == nil {
 		return n
 	}
-	for i := range x.GetFullUser() {
-		n += fastpb.SizeMessage(3, x.GetFullUser()[i])
+	for i := range x.GetUser() {
+		n += fastpb.SizeMessage(3, x.GetUser()[i])
 	}
 	return n
 }
@@ -796,7 +796,7 @@ var fieldIDToName_DouyinUserGetFullUserInfoRequest = map[int32]string{
 var fieldIDToName_DouyinUserGetFullUserInfoResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "FullUser",
+	3: "User",
 }
 
 var fieldIDToName_DouyinUserGetFullUserInfoListRequest = map[int32]string{
@@ -807,7 +807,7 @@ var fieldIDToName_DouyinUserGetFullUserInfoListRequest = map[int32]string{
 var fieldIDToName_DouyinUserGetFullUserInfoListResponse = map[int32]string{
 	1: "StatusCode",
 	2: "StatusMsg",
-	3: "FullUser",
+	3: "User",
 }
 
 var fieldIDToName_FullUser = map[int32]string{
