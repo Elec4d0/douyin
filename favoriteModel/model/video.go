@@ -29,7 +29,7 @@ func QueryVideoFavoriteCount(videoID int64) (int64, error) {
 
 func BatchQueryVideoFavoriteCount(videoIDList []int64) ([]int64, error) {
 	var videoSet []*Video
-	err := DB.Where("video_id in (?)", videoIDList).Find(videoSet).Error
+	err := DB.Where("video_id in (?)", videoIDList).Find(&videoSet).Error
 	if err != nil {
 		return nil, err
 	}

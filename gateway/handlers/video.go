@@ -102,7 +102,6 @@ func List(ginContext *gin.Context) {
 		return
 	}
 
-	fmt.Println(resp)
 	ginContext.JSON(http.StatusOK, resp)
 	return
 }
@@ -113,7 +112,7 @@ func Feed(ginContext *gin.Context) {
 	userId := jwt.ParseToken(token)
 
 	var latestTimeStr = ginContext.Query("latest_time")
-	log.Println("网关获取前端提供的查询时间：", latestTimeStr)
+	//log.Println("网关获取前端提供的查询时间：", latestTimeStr)
 	var lastTime int64
 	if latestTimeStr == "" {
 		lastTime = time.Now().Unix() * 1000
@@ -125,7 +124,7 @@ func Feed(ginContext *gin.Context) {
 		}
 		lastTime = parseTime
 	}
-	log.Println("网关传递给微服务的查询时间：", lastTime)
+	//log.Println("网关传递给微服务的查询时间：", lastTime)
 	resp, err := videoInfo.GetFeed(userId, lastTime)
 
 	if err != nil {

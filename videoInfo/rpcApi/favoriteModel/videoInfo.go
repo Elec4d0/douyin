@@ -6,8 +6,8 @@ import (
 	"github.com/cloudwego/kitex/client"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"log"
-	"rpcApi/favoriteModel/api"
-	"rpcApi/favoriteModel/api/favoritemodelservice"
+	"videoInfo/rpcApi/favoriteModel/api"
+	"videoInfo/rpcApi/favoriteModel/api/favoritemodelservice"
 )
 
 var favoriteModelRpcClient favoritemodelservice.Client
