@@ -2,12 +2,12 @@ package videoInfo
 
 import (
 	"context"
+	"favoriteInfo/rpcApi/videoInfo/api"
+	"favoriteInfo/rpcApi/videoInfo/api/videoinfoservice"
 	"fmt"
 	"github.com/cloudwego/kitex/client"
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"log"
-	"rpcApi/videoInfo/api"
-	"rpcApi/videoInfo/api/videoinfoservice"
 )
 
 var videoInfoRpcClient videoinfoservice.Client

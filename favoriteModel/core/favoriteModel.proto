@@ -1,0 +1,100 @@
+syntax = "proto3";
+package core;
+option go_package = "api";
+
+service favoriteModelService{
+  rpc queryFavoriteList(favorite_model_query_favorite_list_request) returns(favorite_model_query_favorite_list_response);
+  rpc favoriteAction(favorite_model_favorite_action_request)  returns(favorite_model_favorite_action_response);
+  rpc queryUserFavoriteCount(favorite_model_query_user_favorite_count_request) returns(favorite_model_query_user_favorite_count_response);
+  rpc queryUserFavoriteCountList(favorite_model_query_user_favorite_count_list_request) returns(favorite_model_query_user_favorite_count_list_response);
+  rpc queryVideoFavoriteCountList(favorite_model_query_video_favorite_count_list_request) returns(favorite_model_query_video_favorite_count_list_response);
+  rpc queryVideoFavoriteCount(favorite_model_query_video_favorite_count_request)  returns(favorite_model_query_video_favorite_count_response);
+  rpc queryIsUserFavoriteList(favorite_model_query_is_user_favorite_list_request) returns(favorite_model_query_is_user_favorite_list_response);
+  rpc queryIsUserFavorite(favorite_model_query_is_user_favorite_request) returns(favorite_model_query_is_user_favorite_response);
+
+}
+
+message favorite_model_query_video_favorite_count_request{
+  int64 video_id = 1;
+}
+message favorite_model_query_video_favorite_count_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  int64 video_favorite_count = 3;
+}
+
+
+message favorite_model_query_video_favorite_count_list_request{
+  repeated int64 video_id_list = 1;
+}
+message favorite_model_query_video_favorite_count_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated int64 video_favorite_count_list = 3;
+}
+
+
+message favorite_model_query_is_user_favorite_list_request{
+  int64 user_id =1;
+  repeated int64 video_id_list = 2;
+}
+message favorite_model_query_is_user_favorite_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated bool is_user_favorite_list =  3;
+}
+
+
+message favorite_model_query_is_user_favorite_request{
+  int64 user_id = 1;
+  int64 video_id =  2;
+}
+message favorite_model_query_is_user_favorite_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  bool is_user_favorite =  3;
+}
+
+
+message favorite_model_query_user_favorite_count_list_request{
+  repeated int64 user_id_list = 1;
+
+}
+message favorite_model_query_user_favorite_count_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated int64 total_favorited_list = 3;
+  repeated int64 favorite_count_list = 4;
+}
+
+message favorite_model_query_user_favorite_count_request{
+  int64 user_id = 1;
+
+}
+message favorite_model_query_user_favorite_count_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  int64 total_favorited = 3;
+  int64 favorite_count = 4;
+}
+
+
+message favorite_model_favorite_action_request{
+  int64 user_id = 1;
+  int64 video_id = 2;
+  int64 author_id = 3;
+  int32 action_type = 4;
+}
+message favorite_model_favorite_action_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+}
+
+message favorite_model_query_favorite_list_request{
+  int64 user_id = 1;
+}
+message favorite_model_query_favorite_list_response{
+  int32 status_code = 1; // 状态码，0-成功，其他值-失败
+  optional string status_msg = 2; // 返回状态描述
+  repeated int64 video_id_list = 3;
+}

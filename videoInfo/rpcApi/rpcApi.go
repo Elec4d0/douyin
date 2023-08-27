@@ -52,7 +52,7 @@ func GetCommentCount(videoID int64) int64 {
 	return 33
 }
 func GetIsFavortite(userID int64, authorID int64) bool {
-	return true
+	return false
 }
 
 func GetCommentCountList(videoIDList []int64) []int64 {
