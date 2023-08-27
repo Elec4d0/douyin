@@ -30,7 +30,7 @@ func QueryUserFavoriteCount(userID int64) (likeCount, favoritedCount int64, err 
 
 func BatchQueryUserFavoriteCount(userIDList []int64) (likeCountList, favoritedCountList []int64, err error) {
 	var userSet []*User
-	err = DB.Where("user_id in (?)", userIDList).Find(userSet).Error
+	err = DB.Where("user_id in (?)", userIDList).Find(&userSet).Error
 	if err != nil {
 		return nil, nil, err
 	}

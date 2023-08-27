@@ -81,7 +81,7 @@ func RedisQueryVideo(userID, videoID int64) (apiVideo *api.Video, ok bool) {
 		//这里写异步并发
 		redisVideo := redis.QueryVideoObjectCache(videoID)
 		rpcUser := rpcApi.GetUserById(userID, redisVideo.AuthorID)
-		isFavorite := rpcApi.GetIsFavortite(userID, redisVideo.AuthorID)
+		isFavorite := rpcApi.GetIsFavorite(userID, videoID)
 
 		apiVideo = videoconv.Redis2Api(redisVideo, isFavorite, rpcUser)
 		return apiVideo, true
@@ -109,7 +109,7 @@ func RpcQueryVideo(userID, videoID int64) *api.Video {
 
 	//这里做异步并发
 	rpcUser := rpcApi.GetUserById(userID, rpcVideoModel.AuthorId)
-	isFavorite := rpcApi.GetIsFavortite(videoID, rpcVideoModel.AuthorId)
+	isFavorite := rpcApi.GetIsFavorite(userID, videoID)
 
 	video := videoconv.Rpc2Api(rpcVideoModel, rpcUser, favoriteCount, commentCount, isFavorite)
 

@@ -4,7 +4,7 @@ package favoritemodelservice
 
 import (
 	"context"
-	api "rpcApi/favoriteModel/api"
+	api "videoInfo/rpcApi/favoriteModel/api"
 	"fmt"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"

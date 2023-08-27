@@ -2,7 +2,7 @@
 package favoritemodelservice
 
 import (
-	api "rpcApi/favoriteModel/api"
+	api "videoInfo/rpcApi/favoriteModel/api"
 	server "github.com/cloudwego/kitex/server"
 )
 
