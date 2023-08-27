@@ -39,7 +39,7 @@ func InitRoute() *gin.Engine {
 		comment := v1.Group("/comment")
 		{
 			comment.POST("/action/", handlers.CommentAction)
-			comment.GET("/list", handlers.CommentList)
+			comment.GET("/list/", handlers.CommentList)
 		}
 	}
 	return ginRouter

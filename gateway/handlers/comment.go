@@ -36,6 +36,7 @@ func CommentAction(ginContext *gin.Context) {
 			StatusCode: -1,
 			StatusMsg:  &str,
 		})
+		return
 	}
 	videoId, _ := strconv.Atoi(ginContext.PostForm("video_id"))
 	actionType, _ := strconv.Atoi(ginContext.PostForm("action_type"))
@@ -70,23 +71,38 @@ func CommentAction(ginContext *gin.Context) {
 }
 
 func CommentList(ginContext *gin.Context) {
-	token := ginContext.PostForm("token")
-	bl, userId := Authority(token)
-	if bl == false {
-		str := "Token验证失败，请重新登录"
-		ginContext.JSON(http.StatusOK, &api.DouyinCommentListResponse{
-			StatusCode: -1,
-			StatusMsg:  &str,
-		})
+	token := ginContext.Query("token")
+	if token == "" { //用户是否登录
+		videoId, _ := strconv.Atoi(ginContext.Query("video_id"))
+		req := &api.DouyinCommentListRequest{
+			UserId:  -1,
+			VideoId: int64(videoId),
+		}
+		resp, err := commentClient.CommentList(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ginContext.JSON(http.StatusOK, resp)
+	} else {
+		bl, userId := Authority(token)
+		if bl == false {
+			str := "Token验证失败，请重新登录"
+			ginContext.JSON(http.StatusOK, &api.DouyinCommentListResponse{
+				StatusCode: -1,
+				StatusMsg:  &str,
+			})
+			return
+		}
+		videoId, _ := strconv.Atoi(ginContext.Query("video_id"))
+		req := &api.DouyinCommentListRequest{
+			UserId:  userId,
+			VideoId: int64(videoId),
+		}
+		resp, err := commentClient.CommentList(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ginContext.JSON(http.StatusOK, resp)
 	}
-	videoId, _ := strconv.Atoi(ginContext.Query("video_id"))
-	req := &api.DouyinCommentListRequest{
-		UserId:  userId,
-		VideoId: int64(videoId),
-	}
-	resq, err := commentClient.CommentList(context.Background(), req)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ginContext.JSON(http.StatusOK, resq)
+
 }

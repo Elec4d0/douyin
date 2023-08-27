@@ -19,15 +19,14 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 	videoId := req.VideoId
 	actionType := req.ActionType
 	if actionType == 1 {
-		//评论日期
-		currentDateString := time.Now().Format("01-02")
+		currentDateString := time.Now().Format("01-02") //评论日期
 		content := *req.CommentText
-		content = sensitiveWord.ToInsensitive(content)
+		content = sensitiveWord.ToInsensitive(content) //敏感词处理
 
-		if content == "" {
+		if content == "" { //评论为空
 			statusMsg := "Comment unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
-				StatusCode: 1,
+				StatusCode: -1,
 				StatusMsg:  &statusMsg,
 			}
 			return resp, nil
@@ -39,28 +38,28 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 			Create_date: currentDateString,
 			User_id:     userId,
 		}
-		err := commentsql.CreatComment(comment)
+		err := commentsql.CreatComment(comment) //数据库存评论
 		if err != nil {
 			statusMsg := "Comment unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
-				StatusCode: 1,
+				StatusCode: -1,
 				StatusMsg:  &statusMsg,
 			}
 			return resp, nil
 		}
-		commentsql.CommentCountAdd(videoId)
+		commentsql.CommentCountAdd(videoId) //计数库+1
 
-		userInfo, err := user_info.UserInfo(userId, userId)
+		userInfo, err := user_info.UserInfo(userId, userId) //获取用户信息
 		if err != nil {
 			statusMsg := "Comment unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
-				StatusCode: 1,
+				StatusCode: -1,
 				StatusMsg:  &statusMsg,
 			}
 			return resp, nil
 		}
 
-		commentData := &api.Comment{
+		commentData := &api.Comment{ //类型转换
 			Id:         videoId,
 			Content:    content,
 			CreateDate: currentDateString,
@@ -70,30 +69,29 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 		statusMsg := "Comment successful"
 		log.Println(statusMsg)
 		resp = &api.DouyinCommentActionResponse{
-			StatusCode: int32(0),
+			StatusCode: 0,
 			StatusMsg:  &statusMsg,
 			Comment:    commentData,
 		}
 		return resp, nil
 	} else if actionType == 2 {
 		commentId := *req.CommentId
-		comment, err := commentsql.FindComment(videoId, commentId)
+		comment, err := commentsql.FindComment(videoId, commentId) //先查是否存在
 		if err != nil {
 			statusMsg := "Delete comment unsuccessful"
 			resp = &api.DouyinCommentActionResponse{
-				StatusCode: 1,
+				StatusCode: -1,
 				StatusMsg:  &statusMsg,
 			}
 			return resp, nil
 		}
 		statusMsg := "Delete comment successful"
-		statusCode := 0
 		resp = &api.DouyinCommentActionResponse{
-			StatusCode: int32(statusCode),
+			StatusCode: 0,
 			StatusMsg:  &statusMsg,
 		}
-		commentsql.DeleteComment(comment)
-		commentsql.CommentCountDel(videoId)
+		commentsql.DeleteComment(comment)   //删除评论
+		commentsql.CommentCountDel(videoId) //计数库-1
 	}
 	return
 }
@@ -102,38 +100,37 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinCommentListRequest) (resp *api.DouyinCommentListResponse, err error) {
 	videoId := req.VideoId
 	userId := req.UserId
-	commentList, err := commentsql.FindCommentAll(videoId)
+	commentList, err := commentsql.FindCommentAll(videoId) //查所有评论
 	if err != nil {
 		statusMsg := "Get video comment list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
-			StatusCode: 1,
+			StatusCode: -1,
 			StatusMsg:  &statusMsg,
 		}
 		return resp, nil
 	}
-	if len(commentList) == 0 {
+	if len(commentList) == 0 { //特判，没有会出错 即查评论表长度是否为0 为0不存在
 		statusMsg := "Get video comment list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
-			StatusCode: 1,
+			StatusCode: -1,
 			StatusMsg:  &statusMsg,
 		}
 		return resp, nil
 	}
 
-	CommentList, err := user_info.UserInfoList(userId, commentList)
+	CommentList, err := user_info.UserInfoList(userId, commentList) //获取所有评论者信息
 	if err != nil {
 		statusMsg := "Get video comment list unsuccessful"
 		resp = &api.DouyinCommentListResponse{
-			StatusCode: 1,
+			StatusCode: -1,
 			StatusMsg:  &statusMsg,
 		}
 		return resp, nil
 	}
 
 	statusMsg := "Get video comment list successful"
-	statusCode := 0
 	resp = &api.DouyinCommentListResponse{
-		StatusCode:  int32(statusCode),
+		StatusCode:  0,
 		StatusMsg:   &statusMsg,
 		CommentList: CommentList,
 	}

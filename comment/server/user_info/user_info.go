@@ -5,7 +5,6 @@ import (
 	"comment/server/protos/kitex_gen/api"
 	rpcClient "comment/userInfoAPI"
 	api2 "comment/userInfoAPI/api"
-	"comment/userInfoAPI/api/userinfoservice"
 	"log"
 )
 
@@ -23,10 +22,7 @@ type User struct {
 	Favorite_count   int64
 }
 
-var userInfoRpcClient userinfoservice.Client
-
 func UserInfo(userId int64, searchId int64) (*api.User, error) {
-	rpcClient.InitUserInfoRpcClient()
 	userInfo, err := rpcClient.GetFullUserInfo(userId, searchId)
 	if err != nil {
 		log.Fatal(err)
@@ -40,7 +36,6 @@ func UserInfoList(userId int64, comment []*commentsql.Comment) ([]*api.Comment, 
 	for _, commentInfo := range comment {
 		searchId = append(searchId, commentInfo.User_id)
 	}
-	rpcClient.InitUserInfoRpcClient()
 	userInfolist, err := rpcClient.GetFullUserInfoList(userId, searchId)
 	if err != nil {
 		log.Fatal(err)
