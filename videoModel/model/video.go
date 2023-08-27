@@ -6,6 +6,7 @@ import (
 
 type Video struct {
 	VideoID     int64  `gorm:"primary_key"`
+	AuthorID    int64  `gorm:"not null"`
 	PlayUrl     string `gorm:"not null"`
 	CoverUrl    string `gorm:"not null"`
 	Title       string `gorm:"not null"`
