@@ -6,6 +6,7 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 	"log"
 	"net"
+	"userInfo/favoriteModel"
 	"userInfo/services/protos"
 	api "userInfo/services/protos/kitex_gen/api/userinfoservice"
 	userModelServices "userInfo/userModelAPI"
@@ -17,6 +18,7 @@ func main() {
 	//初始化rpcApi链接
 	userModelServices.InitUserModelRpcClient()
 	videoModel.InitVideoModelRpcClient()
+	favoriteModel.InitFavoriteModelRpcClient()
 
 	// 开启缓存
 	redis.Init()
