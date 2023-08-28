@@ -8,25 +8,6 @@ import (
 	"videoInfo/tools/videoconv"
 )
 
-func CacheVideoList(videoList []*api.Video) {
-	for _, apiVideo := range videoList {
-		CacheVideo(apiVideo)
-	}
-}
-
-func CacheVideo(apiVideo *api.Video) {
-	redisVideo := &redis.Video{
-		VideoID:       apiVideo.Id,
-		AuthorID:      apiVideo.Author.Id,
-		PlayUrl:       &apiVideo.PlayUrl,
-		CoverUrl:      &apiVideo.CoverUrl,
-		FavoriteCount: apiVideo.FavoriteCount,
-		CommentCount:  apiVideo.CommentCount,
-		Title:         &apiVideo.Title,
-	}
-	redis.CreateVideoObjectCache(redisVideo)
-}
-
 func MixQueryVideoList(userID int64, videoIDList []int64, isVideoListCache []bool) (videoList []*api.Video, ok bool) {
 	//通过是否缓存信息，构造查询chache与 查询Model层的videoIDList
 	var cacheVideoIDList, modelVideoIDList []int64
@@ -79,7 +60,7 @@ func ModelQueryVideoList(userID int64, videoIDList []int64) (videoList []*api.Vi
 func RedisQueryVideo(userID, videoID int64) (apiVideo *api.Video, ok bool) {
 	if redis.CheckVideoExists(videoID) {
 		//这里写异步并发
-		redisVideo := redis.QueryVideoObjectCache(videoID)
+		redisVideo := redis.QueryVideo(videoID)
 		rpcUser := rpcApi.GetUserById(userID, redisVideo.AuthorID)
 		isFavorite := rpcApi.GetIsFavorite(userID, videoID)
 
@@ -114,7 +95,7 @@ func RpcQueryVideo(userID, videoID int64) *api.Video {
 	video := videoconv.Rpc2Api(rpcVideoModel, rpcUser, favoriteCount, commentCount, isFavorite)
 
 	//CacheVideoToRedis，这里做defer
-	CacheVideo(video)
+	defer redis.CacheVideo(videoconv.Api2Redis(video))
 	return video
 }
 
@@ -138,7 +119,7 @@ func RpcQueryVideoList(userID int64, videoIDList []int64) (videoList []*api.Vide
 
 	videoList = videoconv.BatchRpc2Api(rpcVideoModel, authorList, FavoriteCountList, CommentCountList, isFavoriteList)
 
-	CacheVideoList(videoList)
-
+	//结构体转化并缓存
+	defer redis.CacheVideoList(videoconv.BatchApi2Redis(videoList))
 	return
 }

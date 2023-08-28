@@ -24,7 +24,6 @@ func InitRoute() *gin.Engine {
 	handlers.InitFavoriteRpcClient()
 	handlers.InitMessageRpcClient()
 
-
 	//抖音路由组
 	v1 := ginRouter.Group("/douyin")
 	{
@@ -42,7 +41,7 @@ func InitRoute() *gin.Engine {
 		comment := v1.Group("/comment")
 		{
 			comment.POST("/action/", handlers.CommentAction)
-			comment.GET("/list", handlers.CommentList)
+			comment.GET("/list/", handlers.CommentList)
 		}
 
 		favorite := v1.Group("/favorite")

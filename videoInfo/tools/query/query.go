@@ -46,7 +46,7 @@ func GetAuthorVideoInfoList(userID int64, authorID int64) []*api.Video {
 		if videoIDList == nil {
 			return nil
 		}
-		redis.CacheAuthorVideoIDList(authorID, videoIDList)
+		defer redis.CacheAuthorVideoIDList(authorID, videoIDList)
 	}
 	log.Println("需要查询的VideoID:", videoIDList)
 
@@ -103,7 +103,7 @@ func GetFeed(userID int64, queryMaxTime int64) (videoList []*api.Video, nextQuer
 		return nil, time.Now().Unix() * 1000
 	}
 	//缓存
-	redis.CacheFeed(videoIDList, createTimeList)
+	defer redis.CacheFeed(videoIDList, createTimeList)
 	//Model层正常查询返回
 	log.Println("Model后端返回的查询时间：", createTimeList[len(createTimeList)-1])
 	return GetVideoInfoList(userID, videoIDList), createTimeList[len(createTimeList)-1]

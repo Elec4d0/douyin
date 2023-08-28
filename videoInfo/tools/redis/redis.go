@@ -41,23 +41,7 @@ func InitRedis() {
 	ctx = context.Background()
 }
 
-/*
-	func CreateVideoCache(video *Video) {
-		str, _ := json.Marshal(video)
-		redisClient.HSet(ctx,
-			strconv.FormatInt(video.VideoID, 10),
-			"json", str)
-	}
-
-	func QueryVideoCache(videoID int64) *Video {
-		jsonStr, _ := redisClient.HGet(ctx,
-			strconv.FormatInt(videoID, 10), "json").Result()
-		var video *Video
-		json.Unmarshal([]byte(jsonStr), &video)
-		return video
-	}
-*/
-func CreateVideoObjectCache(video *Video) {
+func CacheVideo(video *Video) {
 	redisClient.HSet(
 		ctx,
 		int642string(video.VideoID),
@@ -72,7 +56,7 @@ func CreateVideoObjectCache(video *Video) {
 	redisClient.Expire(ctx, int642string(video.VideoID), getExpirationTime())
 }
 
-func QueryVideoObjectCache(videoID int64) *Video {
+func QueryVideo(videoID int64) *Video {
 	mp, _ := redisClient.HGetAll(ctx,
 		strconv.FormatInt(videoID, 10)).Result()
 	playUrl := mp["play_url"]
@@ -92,11 +76,74 @@ func QueryVideoObjectCache(videoID int64) *Video {
 }
 
 func QueryVideoList(videoIDList []int64) ([]*Video, bool) {
-	var videoList = make([]*Video, len(videoIDList))
-	for i, videoID := range videoIDList {
-		videoList[i] = QueryVideoObjectCache(videoID)
+	//var videoList = make([]*Video, len(videoIDList))
+	//构造管道并送入命令
+	pipeline := redisClient.Pipeline()
+	for _, videoID := range videoIDList {
+		redisClient.HGetAll(ctx, int642string(videoID)).Result()
 	}
+
+	//执行命令
+	cmders, err := pipeline.Exec(ctx)
+	if err != nil {
+		log.Println("管道执行错误", err)
+		return nil, false
+	}
+
+	var videoList []*Video
+	//批量查询执行成功，查询到系列值
+	for _, cmder := range cmders {
+		cmd := cmder.(*redis.MapStringStringCmd)
+		//解析数据
+		mp, err := cmd.Result()
+		if err != nil {
+			log.Println()
+		}
+		if len(mp) <= 1 {
+			videoList = append(videoList, nil)
+		} else {
+			playUrl := mp["play_url"]
+			coverUrl := mp["cover_url"]
+			title := mp["title"]
+			video := &Video{
+				VideoID:       str2ing64(mp["id"]),
+				AuthorID:      str2ing64(mp["author_id"]),
+				PlayUrl:       &playUrl,
+				CoverUrl:      &coverUrl,
+				FavoriteCount: str2ing64(mp["favorite_count"]),
+				CommentCount:  str2ing64(mp["comment_count"]),
+				Title:         &title,
+			}
+			videoList = append(videoList, video)
+		}
+	}
+
 	return videoList, true
+}
+
+func CacheVideoList(videoList []*Video) {
+	//构造管道并送入命令
+	pipeline := redisClient.Pipeline()
+	for _, video := range videoList {
+		pipeline.HSet(
+			ctx,
+			int642string(video.VideoID),
+			"id", video.VideoID,
+			"author_id", video.AuthorID,
+			"play_url", *video.PlayUrl,
+			"cover_url", *video.CoverUrl,
+			"favorite_count", video.FavoriteCount,
+			"comment_count", video.CommentCount,
+			"title", *video.Title,
+		)
+		pipeline.Expire(ctx, int642string(video.VideoID), getExpirationTime())
+	}
+
+	_, err := pipeline.Exec(ctx)
+	if err != nil {
+		log.Println("管道执行错误", err)
+	}
+	return
 }
 
 func CacheFeed(videoIDList []int64, createTimeList []int64) {
@@ -153,15 +200,50 @@ func QueryAuthorVideoIDList(authorID int64) []int64 {
 }
 
 func CheckAllVideoCache(videoIDList []int64) (isVideoListCache []bool, cacheType int64) {
+	//构造命令送入管道
+	pipeline := redisClient.Pipeline()
+	for _, videoID := range videoIDList {
+		pipeline.HExists(ctx, int642string(videoID), "id")
+		pipeline.TTL(ctx, int642string(videoID))
+	}
+
+	//管道执行与执行异常
+	cmders, err := pipeline.Exec(ctx)
+	if err != nil {
+		log.Println("管道执行错误", err)
+		return nil, -1
+	}
+
+	//对查询结果进行cmd解析
 	allCache := true
 	noneCache := true
 	isVideoListCache = make([]bool, len(videoIDList))
-	for i, videoID := range videoIDList {
-		isVideoListCache[i] = CheckVideoExists(videoID)
-		if isVideoListCache[i] {
-			noneCache = false
-		} else {
+	for i, cmder := range cmders {
+		if i%2 == 1 {
+			//跳过，两条cmd 读取一次
+			continue
+		}
+		index := i / 2
+		cmd := cmder.(*redis.BoolCmd)
+
+		isVideoExist, err := cmd.Result()
+		if err != nil || isVideoExist == false {
 			allCache = false
+			isVideoListCache[index] = false
+			continue
+		}
+
+		ttl, err := cmders[i+1].(*redis.DurationCmd).Result()
+		if ttl < existTTL || err != nil {
+			allCache = false
+			isVideoListCache[index] = false
+			continue
+		}
+
+		//上述检查均无异常
+		isVideoListCache[index] = isVideoExist
+		if isVideoExist {
+			noneCache = false
 		}
 	}
 

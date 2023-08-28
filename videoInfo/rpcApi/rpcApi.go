@@ -1,6 +1,7 @@
 package rpcApi
 
 import (
+	comment "videoInfo/rpcApi/comment"
 	"videoInfo/rpcApi/favoriteModel"
 	userInfo "videoInfo/rpcApi/userInfoAPI"
 	userInfoApi "videoInfo/rpcApi/userInfoAPI/api"
@@ -12,6 +13,7 @@ func InitRpcClient() {
 	videoModel.InitVideoModelRpcClient()
 	userInfo.InitUserInfoRpcClient()
 	favoriteModel.InitFavoriteModelRpcClient()
+	comment.InitCommentInfoRpcClient()
 }
 
 func QueryVideoList(videoIDs []int64) []*videoModelApi.VideoModel {
@@ -52,7 +54,8 @@ func GetFavoriteCount(videoID int64) int64 {
 }
 
 func GetCommentCount(videoID int64) int64 {
-	return 33
+	commentCount, _ := comment.GetCommentCount(videoID)
+	return commentCount
 }
 
 func GetIsFavorite(userID int64, videoID int64) bool {
@@ -61,9 +64,8 @@ func GetIsFavorite(userID int64, videoID int64) bool {
 }
 
 func GetCommentCountList(videoIDList []int64) []int64 {
-	n := len(videoIDList)
-	List := make([]int64, n, n)
-	return List
+	commentCountList, _ := comment.GetCommentAllCount(videoIDList)
+	return commentCountList
 }
 
 func GetFavouriteCountList(videoIDList []int64) []int64 {

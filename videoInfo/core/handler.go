@@ -5,6 +5,7 @@ import (
 	api "videoInfo/core/kitex_gen/api"
 	"videoInfo/tools/query"
 	"videoInfo/tools/redis"
+	"videoInfo/tools/videoconv"
 )
 
 // VideoInfoServiceImpl implements the last service interface defined in the IDL.
@@ -41,7 +42,7 @@ func (s *VideoInfoServiceImpl) GetVideoInfo(ctx context.Context, req *api.VideoI
 	video = query.RpcQueryVideo(req.UserId, req.VideoId)
 
 	//缓存该video，这里做defer
-	query.CacheVideo(video)
+	defer redis.CacheVideo(videoconv.Api2Redis(video))
 
 	resp = &api.VideoInfoGetVideoInfoResponse{Video: video}
 	return

@@ -1,18 +1,14 @@
 package handlers
 
 import (
-	"context"
+	"fmt"
 	commentInfo "gateway/rpcApi/commentInfoAPI"
 	"gateway/rpcApi/commentInfoAPI/api"
-	"gateway/rpcApi/commentInfoAPI/api/commentserver"
+	favoriteInfoApi "gateway/rpcApi/favoriteInfo/api"
 	"gateway/tools/jwt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
-	"strconv"
 )
-
-var commentClient commentserver.Client
 
 func InitCommentClient() {
 	commentInfo.InitCommentInfoRpcClient()
@@ -28,7 +24,7 @@ func Authority(Token string) (bool, int64) {
 }
 
 func CommentAction(ginContext *gin.Context) {
-	token := ginContext.PostForm("token")
+	token := ginContext.Query("token")
 	bl, userId := Authority(token)
 	if bl == false {
 		str := "Token验证失败，请重新登录"
@@ -37,40 +33,29 @@ func CommentAction(ginContext *gin.Context) {
 			StatusMsg:  &str,
 		})
 	}
-	videoId, _ := strconv.Atoi(ginContext.PostForm("video_id"))
-	actionType, _ := strconv.Atoi(ginContext.PostForm("action_type"))
-	if actionType == 1 {
-		commentText := ginContext.PostForm("content")
-		req := &api.DouyinCommentActionRequest{
-			UserId:      userId,
-			ActionType:  int32(actionType),
-			VideoId:     int64(videoId),
-			CommentText: &commentText,
-		}
-		resp, err := commentClient.CommentAction(context.Background(), req)
-		if err != nil {
-			log.Fatal(err)
-		}
-		ginContext.JSON(http.StatusOK, resp)
-	} else if actionType == 2 {
-		comment_id, _ := strconv.Atoi(ginContext.PostForm("comment_id"))
-		commentId := int64(comment_id)
-		req := &api.DouyinCommentActionRequest{
-			UserId:     userId,
-			ActionType: int32(actionType),
-			VideoId:    int64(videoId),
-			CommentId:  &commentId,
-		}
-		resp, err := commentClient.CommentAction(context.Background(), req)
-		if err != nil {
-			log.Fatal(err)
-		}
-		ginContext.JSON(http.StatusOK, resp)
+	videoId := str2int64(ginContext.Query("video_id"))
+	actionType := str2int32(ginContext.Query("action_type"))
+	commentText := ginContext.Query("comment_text")
+	commentId := str2int64(ginContext.Query("comment_id"))
+
+	resp, err := commentInfo.CommentAction(userId, videoId, actionType, commentText, commentId)
+
+	if err != nil {
+		errStr := "Comment Action接口 RPC调用失败"
+		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &favoriteInfoApi.FavoriteInfoFavoriteActionResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+		})
+		return
 	}
+
+	ginContext.JSON(http.StatusOK, resp)
+	return
 }
 
 func CommentList(ginContext *gin.Context) {
-	token := ginContext.PostForm("token")
+	token := ginContext.Query("token")
 	bl, userId := Authority(token)
 	if bl == false {
 		str := "Token验证失败，请重新登录"
@@ -78,15 +63,21 @@ func CommentList(ginContext *gin.Context) {
 			StatusCode: -1,
 			StatusMsg:  &str,
 		})
+		return
 	}
-	videoId, _ := strconv.Atoi(ginContext.Query("video_id"))
-	req := &api.DouyinCommentListRequest{
-		UserId:  userId,
-		VideoId: int64(videoId),
-	}
-	resq, err := commentClient.CommentList(context.Background(), req)
+	videoId := str2int64(ginContext.Query("video_id"))
+
+	resp, err := commentInfo.CommentList(userId, videoId)
 	if err != nil {
-		log.Fatal(err)
+		errStr := "Comment List接口 RPC调用失败"
+		fmt.Println(errStr)
+		ginContext.JSON(http.StatusOK, &api.DouyinCommentListResponse{
+			StatusCode: -1,
+			StatusMsg:  &errStr,
+		})
+		return
 	}
-	ginContext.JSON(http.StatusOK, resq)
+
+	ginContext.JSON(http.StatusOK, resp)
+	return
 }
