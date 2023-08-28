@@ -14,7 +14,7 @@ var rds redis.Conn
 // 客户端运行前初始化
 func MysqlInit() {
 	//连接数据库
-	dsn := "root:enid123456@tcp(127.0.0.1:3306)/commentMysql?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:123456@tcp(192.168.1.40:3306)/comment?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
@@ -34,7 +34,7 @@ func RedisPollInit() *redis.Pool {
 		Wait:        true,
 		IdleTimeout: time.Duration(1) * time.Second,
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", "localhost:6379")
+			c, err := redis.Dial("tcp", "192.168.1.41:6379")
 			if err != nil {
 				fmt.Println(err)
 				return nil, err

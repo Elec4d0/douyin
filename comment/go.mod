@@ -1,6 +1,6 @@
 module comment
 
-go 1.20
+go 1.19
 
 require (
 	github.com/Chain-Zhang/pinyin v0.1.3
