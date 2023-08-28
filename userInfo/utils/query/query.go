@@ -2,6 +2,7 @@ package query
 
 import (
 	"fmt"
+	"userInfo/favoriteModel"
 	"userInfo/services/protos/kitex_gen/api"
 	userModelServices "userInfo/userModelAPI"
 	"userInfo/utils/redis"
@@ -18,7 +19,11 @@ func GetWorkCount(user_id int64) int64 {
 }
 
 func GetFavoriteInfo(user_id int64) (int64, int64) {
-	return 0, 0
+	likeCount, totalFavorited, err := favoriteModel.QueryUserFavoriteCount(user_id)
+	if err != nil {
+		return 0, 0
+	}
+	return likeCount, totalFavorited
 }
 
 func GetRelationInfo(user_id int64, search_id int64) (int64, int64, bool) {
@@ -41,7 +46,9 @@ func GetWorkCountList(user_id []int64) []int64 {
 }
 
 func GetFavoriteInfoList(user_id []int64) ([]int64, []int64) {
-	return nil, nil
+	likeCount, totalFavorited, _ := favoriteModel.BatchQueryUserFavoriteCount(user_id)
+
+	return likeCount, totalFavorited
 }
 
 func GetRelationInfoList(user_id int64, search_id []int64) ([]int64, []int64, []bool) {
@@ -96,7 +103,7 @@ func QueryUserInfo(userId int64, searchId int64) (*api.FullUser, error) {
 
 	followCount, followerCount, isFollow := GetRelationInfo(userId, searchId)
 
-	totalFavorited, favoriteCount := GetFavoriteInfo(searchId)
+	favoriteCount, totalFavorited := GetFavoriteInfo(searchId)
 
 	//获取视频点赞数
 	workCount := GetWorkCount(searchId)
@@ -160,9 +167,7 @@ func QueryUserListByModel(userId int64, searchId []int64) ([]*api.FullUser, bool
 	followerCount1 := int64(0)
 
 	//获取用户与视频的喜好关系
-	// totalFavorited, favoriteCount := GetFavoriteInfoList(searchId)
-	totalFavorited1 := int64(0)
-	favoriteCount1 := int64(0)
+	favoriteCount, totalFavorited := GetFavoriteInfoList(searchId)
 
 	//获取视频点赞数
 	workCount := GetWorkCountList(searchId)
@@ -186,8 +191,8 @@ func QueryUserListByModel(userId int64, searchId []int64) ([]*api.FullUser, bool
 					BackgroundImage: baseUser[i].Avatar,
 					Signature:       baseUser[i].Avatar,
 					WorkCount:       &workCount[i],
-					TotalFavorited:  &totalFavorited1,
-					FavoriteCount:   &favoriteCount1,
+					TotalFavorited:  &totalFavorited[i],
+					FavoriteCount:   &favoriteCount[i],
 					FollowerCount:   &followerCount1,
 					FollowCount:     &followCount1,
 					IsFollow:        false,
