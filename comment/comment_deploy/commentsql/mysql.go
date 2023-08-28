@@ -1,23 +1,20 @@
 package commentsql
 
 import (
-	"fmt"
 	"gorm.io/gorm"
 	"log"
 )
 
 type Comment struct {
-	gorm.Model
+	Id          int64  `gorm:"primary_key"`
 	Video_id    int64  `gorm:"not null"`
-	Id          int64  `gorm:"not null"`
 	Content     string `gorm:"not null"`
 	User_id     int64  `gorm:"not null"`
-	Create_date string
+	Create_date string `gorm:"not null"`
 }
 
 type CommentCount struct {
-	gorm.Model
-	Video_id int64 `gorm:"not null"`
+	Video_id int64 `gorm:"primary_key"`
 	Count    int64 `gorm:"not null"`
 }
 
@@ -51,48 +48,43 @@ func FindCommentAll(videoId int64) ([]*Comment, error) {
 		RedisCommentAllSet(videoId, commentList)
 		return commentList, nil
 	}
+	log.Println(Info)
 	return Info, nil
 }
 
 func FindCommentCount(videoId int64) (int64, error) {
-	Info, err := RedisCommentCountGet(videoId)
-	if err != nil {
-		var commentCount CommentCount
-		err := DB.First(&commentCount, "Video_id=?", videoId).Error
-		if err != nil {
-			if err == gorm.ErrRecordNotFound {
-				return 0, fmt.Errorf("not found for videoId: %d", videoId)
-			}
-			return 0, err
-		}
-		RedisCommentCountSet(videoId, commentCount.Count)
-		return commentCount.Count, nil
+	var commentCount *CommentCount
+	err := DB.First(&commentCount, "Video_id=?", videoId).Error
+	if err != nil || commentCount == nil {
+		return 0, err
 	}
-	return Info, nil
+	return commentCount.Count, nil
 }
 
 func FindCommentAllCount(videoIds []int64) ([]int64, error) {
-	var commentCounts []int64
-	for _, videoId := range videoIds {
-		Info, err := RedisCommentCountGet(videoId)
-		if err != nil {
-			var count CommentCount
-			err := DB.First(&count, "Video_id = ?", videoId).Error
-			if err != nil {
-				if err == gorm.ErrRecordNotFound {
-					commentCounts = append(commentCounts, 0)
-				} else {
-					return nil, err
-				}
-			} else {
-				commentCounts = append(commentCounts, count.Count)
-				RedisCommentCountSet(videoId, count.Count)
-			}
+	var CommentCountSet []*CommentCount
+	err := DB.Where("video_id in (?)", videoIds).Find(&CommentCountSet).Error
+	if err != nil {
+		return nil, err
+	}
+
+	//mysql查询结果为无序集合，送入hashmap
+	mp := make(map[int64]int64)
+	for _, commentCount := range CommentCountSet {
+		mp[commentCount.Video_id] = commentCount.Count
+	}
+
+	//利用哈希表，按原videoID顺序返回
+	var commentCountList = make([]int64, len(videoIds))
+	for i, videoId := range videoIds {
+		if commentCount, ok := mp[videoId]; ok {
+			commentCountList[i] = commentCount
+			log.Println(videoId, commentCount)
 		} else {
-			commentCounts = append(commentCounts, Info)
+			commentCountList[i] = 0
 		}
 	}
-	return commentCounts, nil
+	return commentCountList, nil
 }
 
 func CommentCountAdd(videoId int64) {
@@ -101,16 +93,17 @@ func CommentCountAdd(videoId int64) {
 		log.Fatal(err)
 		return
 	}
-	DB.Model(&commentcount).UpdateColumn("Count", gorm.Expr("Count + ?", 1))
+	log.Println(commentcount)
+	DB.Model(&commentcount).UpdateColumn("count", gorm.Expr("count + ?", 1))
 }
 
 func CommentCountDel(videoId int64) {
 	var commentcount CommentCount
-	if err := DB.Where("Video_id=?", videoId).First(&commentcount).Error; err != nil {
+	if err := DB.Where("video_id=?", videoId).First(&commentcount).Error; err != nil {
 		log.Fatal(err)
 		return
 	}
 	if commentcount.Count > 0 {
-		DB.Model(&commentcount).UpdateColumn("Count", gorm.Expr("Count - ?", 1))
+		DB.Model(&commentcount).UpdateColumn("count", gorm.Expr("count - ?", 1))
 	}
 }

@@ -18,6 +18,7 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 	userId := req.UserId
 	videoId := req.VideoId
 	actionType := req.ActionType
+	log.Println("action")
 	if actionType == 1 {
 		//评论日期
 		currentDateString := time.Now().Format("01-02")
@@ -100,11 +101,12 @@ func (s *CommentServerImpl) CommentAction(ctx context.Context, req *api.DouyinCo
 
 // CommentList implements the CommentServerImpl interface.
 func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinCommentListRequest) (resp *api.DouyinCommentListResponse, err error) {
+	log.Println("list")
 	videoId := req.VideoId
 	userId := req.UserId
 	commentList, err := commentsql.FindCommentAll(videoId)
 	if err != nil {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "获取评论列表失败"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -112,7 +114,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		return resp, nil
 	}
 	if len(commentList) == 0 {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "此视频还没有评论哦，来留下珍贵的评论吧！"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -122,7 +124,7 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 
 	CommentList, err := user_info.UserInfoList(userId, commentList)
 	if err != nil {
-		statusMsg := "Get video comment list unsuccessful"
+		statusMsg := "获取用户信息失败"
 		resp = &api.DouyinCommentListResponse{
 			StatusCode: 1,
 			StatusMsg:  &statusMsg,
@@ -130,10 +132,10 @@ func (s *CommentServerImpl) CommentList(ctx context.Context, req *api.DouyinComm
 		return resp, nil
 	}
 
-	statusMsg := "Get video comment list successful"
-	statusCode := 0
+	statusMsg := ""
+	var statusCode int32 = 0
 	resp = &api.DouyinCommentListResponse{
-		StatusCode:  int32(statusCode),
+		StatusCode:  statusCode,
 		StatusMsg:   &statusMsg,
 		CommentList: CommentList,
 	}

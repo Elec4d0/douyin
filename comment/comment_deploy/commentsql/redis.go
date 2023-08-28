@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gomodule/redigo/redis"
 	"log"
+	"strconv"
 )
 
 func RedisCommentAllSet(videoId int64, commentList []*Comment) {
@@ -14,7 +15,7 @@ func RedisCommentAllSet(videoId int64, commentList []*Comment) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	key := "comments" + string(videoId)
+	key := int642string(videoId)
 	_, err = rds.Do("SET", key, Info, "NX", "EX", 60)
 	if err != nil {
 		log.Fatal(err)
@@ -25,7 +26,7 @@ func RedisCommentAllGet(videoId int64) ([]*Comment, error) {
 	RedisInit()
 	defer RedisClose()
 
-	key := "comments" + string(videoId)
+	key := int642string(videoId)
 
 	Info, err := redis.Bytes(rds.Do("GET", key))
 	if err != nil {
@@ -43,29 +44,6 @@ func RedisCommentAllGet(videoId int64) ([]*Comment, error) {
 	return comments, err
 }
 
-func RedisCommentCountSet(videoId int64, count int64) {
-	RedisInit()
-	defer RedisClose()
-
-	key := "count" + string(videoId)
-	_, err := rds.Do("SET", key, count, "NX", "EX", 60)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func RedisCommentCountGet(videoId int64) (int64, error) {
-	RedisInit()
-	defer RedisClose()
-
-	key := "count" + string(videoId)
-	Info, err := redis.Int64(rds.Do("GET", key))
-	if err != nil {
-		return -1, err
-	}
-	return Info, nil
-}
-
 func ToMysqlComment(comment Comment) *Comment {
 	return &Comment{
 		Video_id:    comment.Video_id,
@@ -74,4 +52,9 @@ func ToMysqlComment(comment Comment) *Comment {
 		User_id:     comment.User_id,
 		Create_date: comment.Create_date,
 	}
+}
+
+func int642string(num int64) string {
+	str := strconv.FormatInt(num, 10)
+	return str
 }

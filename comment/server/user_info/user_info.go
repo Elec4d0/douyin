@@ -37,21 +37,19 @@ func UserInfo(userId int64, searchId int64) (*api.User, error) {
 }
 func UserInfoList(userId int64, comment []*commentsql.Comment) ([]*api.Comment, error) {
 	searchId := make([]int64, len(comment))
-	for _, commentInfo := range comment {
-		searchId = append(searchId, commentInfo.User_id)
+	for i, commentInfo := range comment {
+		searchId[i] = commentInfo.User_id
 	}
 	rpcClient.InitUserInfoRpcClient()
-	userInfolist, err := rpcClient.GetFullUserInfoList(userId, searchId)
+	userInfoList, err := rpcClient.GetFullUserInfoList(userId, searchId)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
-	var CommentList []*api.Comment
-	for _, user := range userInfolist {
-		userInfo := ToApiFullUser(user)
-		for _, comment := range comment {
-			CommentList = append(CommentList, ToApiComment(comment, userInfo))
-		}
+	var CommentList = make([]*api.Comment, len(comment))
+	for i, rpcUser := range userInfoList {
+		apiUser := ToApiFullUser(rpcUser)
+		CommentList[i] = ToApiComment(comment[i], apiUser)
 	}
 	return CommentList, nil
 }
