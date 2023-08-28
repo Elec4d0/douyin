@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	//addr
 	//指定IP，对外服务并在ETCD注册
 	addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:15101")
 	server := api.NewServer(new(protos.UserServiceImpl), server.WithServiceAddr(addr), server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{ServiceName: "userService"}), server.WithRegistry(r))

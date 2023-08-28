@@ -22,6 +22,8 @@ func InitRoute() *gin.Engine {
 	handlers.InitUseruserRpcClient()
 	handlers.InitCommentClient()
 	handlers.InitFavoriteRpcClient()
+	handlers.InitMessageRpcClient()
+
 
 	//抖音路由组
 	v1 := ginRouter.Group("/douyin")
@@ -48,6 +50,13 @@ func InitRoute() *gin.Engine {
 			favorite.POST("/action/", handlers.FavoriteAction)
 			favorite.GET("/list/", handlers.FavoriteList)
 		}
+
+		message := v1.Group("/message")
+		{
+			message.POST("/action/", handlers.MessageAction)
+			message.GET("/chat", handlers.MessageChat)
+		}
+
 	}
 	return ginRouter
 }

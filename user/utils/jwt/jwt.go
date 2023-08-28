@@ -11,20 +11,24 @@ import (
 	"time"
 )
 
-const privateKey = `-----BEGIN RSA PRIVATE KEY-----
-MIIBOwIBAAJBAL00QsML/ovZle3Lq3C7QBo9s00ivsLhG2xlamhHOZDrjTGJX4OA
-H27qQbDREcYXpUt5JqOt+KzB4MA/vUKCbT0CAwEAAQJBAINbkS5RWXxGqCzcRj6S
-AkM1qxJWmRI7rwpmrqWPLYxKiS1i/i3bwSA3H+NODWIk1p2BWtycWzx5s3cNLn4b
-gIECIQD6WuNzXxZHRIxRJQDRyEeWLsrRv9nkZJXHde78DoIZuQIhAMF4ZOgQX2hV
-+y9YZmca2tW7etwGPmVjFWQd6JFtjyGlAiBFR9GZo76uijGqYusPIrVswhYuZUEP
-CybHw8MWzY0DQQIgc4DDDWCo9QtP+MYX7Lo1p6BUCwOXQMRUwv6wGBKGfxkCIQDn
-EKF3Ee6bnLT5DMfrnGY20RNg1Yes+14KkEyYsx0++Q==
------END RSA PRIVATE KEY-----`
+const privateKey = `
+-----BEGIN RSA PRIVATE KEY-----
+MIIBOwIBAAJBAPMUShKtwM+cClgVWyoc6ZxkSGy+To30QJ0nUgaSv3t/zh+NHcMq
+2qHoJhJ2rZoq1t3qCDKsf5+w47QDiMq5JX8CAwEAAQJBAOCX6Yzyn8jzKxeRu+bg
+SfTnL4fSGnDMsnrB3ucV5fhrI/8j8FyeBmMRklmXx0EZl2Hl7G84Y44W0HXuUY9X
+daECIQD79hC8T12ddLu7Zyy+wmlFvjhSaU2yV1iEapJbeWCgMQIhAPb5xspShhqI
+xnjrg/efzrAI4VVw32JXQ2EdRI0zAOSvAiBjZ7Eymh1VAbkPNqVwnULrQSD3YpRE
+yDEkDOexLzHwAQIhALiylNKronRngx3c62UdEuIc0f8mmTgfEFmpHKIH2YwrAiB5
++4m6XfYX8Qlt/aPU/2jPc6YHOPHAs7ZIDQWNOjpPzg==
+-----END RSA PRIVATE KEY-----
+`
 
-const publicKey = `-----BEGIN RSA PUBLIC KEY-----
-MEgCQQC9NELDC/6L2ZXty6twu0AaPbNNIr7C4RtsZWpoRzmQ640xiV+DgB9u6kGw
-0RHGF6VLeSajrfisweDAP71Cgm09AgMBAAE=
------END RSA PUBLIC KEY-----`
+const publicKey = `
+-----BEGIN RSA PUBLIC KEY-----
+MEgCQQDzFEoSrcDPnApYFVsqHOmcZEhsvk6N9ECdJ1IGkr97f84fjR3DKtqh6CYS
+dq2aKtbd6ggyrH+fsOO0A4jKuSV/AgMBAAE=
+-----END RSA PUBLIC KEY-----
+`
 
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -37,7 +41,7 @@ func randStr(strLen int) string {
 }
 
 type Claims struct {
-	userId           int64
+	UserID           int64
 	RegisteredClaims *jwt.RegisteredClaims
 }
 
@@ -77,15 +81,15 @@ func parsePrivateKey(buf []byte) (*rsa.PrivateKey, error) {
 func GenerateToken(userId int64, userName string) (string, error) {
 	//登录与注册传参，生成Claims对象
 	claim := Claims{
-		userId: userId,
+		UserID: userId,
 		RegisteredClaims: &jwt.RegisteredClaims{
-			Issuer:    "ApiGateWay",                                    // 签发者
-			Subject:   userName,                                        // 签发对象
-			Audience:  jwt.ClaimStrings{"Android_APP", "IOS_APP"},      //签发受众
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),   //过期时间
-			NotBefore: jwt.NewNumericDate(time.Now().Add(time.Second)), //最早使用时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),                  //签发时间
-			ID:        randStr(10),                                     // jwt ID, 类似于盐值
+			Issuer:    "ApiGateWay",                                  // 签发者
+			Subject:   userName,                                      // 签发对象
+			Audience:  jwt.ClaimStrings{"Android_APP", "IOS_APP"},    //签发受众
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)), //过期时间
+			NotBefore: jwt.NewNumericDate(time.Now()),                //最早使用时间
+			IssuedAt:  jwt.NewNumericDate(time.Now()),                //签发时间
+			ID:        randStr(10),                                   // jwt ID, 类似于盐值
 		},
 	}
 
@@ -120,7 +124,7 @@ func parsePublicKey(pubKey []byte) (*rsa.PublicKey, error) {
 	return pubRet, nil
 }
 
-func getCaims(tokenString string) (*Claims, error) {
+func GetCaims(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		pub, err := parsePublicKey([]byte(publicKey))
 		if err != nil {
@@ -152,9 +156,9 @@ func getCaims(tokenString string) (*Claims, error) {
 }
 
 func ParseToken(tokenString string) (userId int64) {
-	claims, err := getCaims(tokenString)
+	claims, err := GetCaims(tokenString)
 	if err != nil {
 		return -1
 	}
-	return claims.userId
+	return claims.UserID
 }

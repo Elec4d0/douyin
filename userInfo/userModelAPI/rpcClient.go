@@ -38,7 +38,7 @@ func CreateBaseUser(username string, password string) (int64, error) {
 	if err != nil {
 		log.Println(resp)
 		log.Println(err)
-		return 0, err
+		return -1, err
 	}
 
 	return resp.UserId, nil
@@ -84,7 +84,7 @@ func FindBaseUserList(author_id []int64) ([]*api.BaseUser, error) {
 	if err != nil {
 		log.Println(resp)
 		log.Println(err)
-		return nil, err
+		return make([]*api.BaseUser, len(author_id)), err
 	}
 	return resp.BaseUser, nil
 }

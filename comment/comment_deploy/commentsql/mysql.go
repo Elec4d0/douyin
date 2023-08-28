@@ -1,4 +1,4 @@
-package comment_mysql
+package commentsql
 
 import (
 	"fmt"
@@ -41,40 +41,55 @@ func FindComment(videoId int64, commentId int64) (*Comment, error) {
 }
 
 func FindCommentAll(videoId int64) ([]*Comment, error) {
-	var commentList []*Comment
-	err := DB.Where("video_id = ?", videoId).Find(&commentList).Error
+	Info, err := RedisCommentAllGet(videoId)
 	if err != nil {
-		return nil, err
+		var commentList []*Comment
+		err := DB.Where("video_id = ?", videoId).Find(&commentList).Error
+		if err != nil {
+			return nil, err
+		}
+		RedisCommentAllSet(videoId, commentList)
+		return commentList, nil
 	}
-	return commentList, nil
+	return Info, nil
 }
 
 func FindCommentCount(videoId int64) (int64, error) {
-	var commentCount CommentCount
-
-	err := DB.First(&commentCount, "Video_id=?", videoId).Error
+	Info, err := RedisCommentCountGet(videoId)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return 0, fmt.Errorf("not found for videoId: %d", videoId)
+		var commentCount CommentCount
+		err := DB.First(&commentCount, "Video_id=?", videoId).Error
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return 0, fmt.Errorf("not found for videoId: %d", videoId)
+			}
+			return 0, err
 		}
-		return 0, err
+		RedisCommentCountSet(videoId, commentCount.Count)
+		return commentCount.Count, nil
 	}
-	return commentCount.Count, nil
+	return Info, nil
 }
 
 func FindCommentAllCount(videoIds []int64) ([]int64, error) {
 	var commentCounts []int64
 	for _, videoId := range videoIds {
-		var count CommentCount
-		err := DB.First(&count, "Video_id = ?", videoId).Error
+		Info, err := RedisCommentCountGet(videoId)
 		if err != nil {
-			if err == gorm.ErrRecordNotFound {
-				commentCounts = append(commentCounts, 0)
+			var count CommentCount
+			err := DB.First(&count, "Video_id = ?", videoId).Error
+			if err != nil {
+				if err == gorm.ErrRecordNotFound {
+					commentCounts = append(commentCounts, 0)
+				} else {
+					return nil, err
+				}
 			} else {
-				return nil, err
+				commentCounts = append(commentCounts, count.Count)
+				RedisCommentCountSet(videoId, count.Count)
 			}
 		} else {
-			commentCounts = append(commentCounts, count.Count)
+			commentCounts = append(commentCounts, Info)
 		}
 	}
 	return commentCounts, nil

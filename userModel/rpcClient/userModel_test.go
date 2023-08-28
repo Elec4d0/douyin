@@ -3,18 +3,17 @@ package rpcClient
 import (
 	"fmt"
 	"testing"
-	"userModel/model"
 )
 
+func TestCreateBaseUser(t *testing.T) {
+	InitUserModelRpcClient()
+
+	id, _ := CreateBaseUser("hello_golang", "123456")
+
+	fmt.Println(id)
+}
+
 /*
-	func TestCreateBaseUser(t *testing.T) {
-		InitUserModelRpcClient()
-
-		id, _ := CreateBaseUser("hello_user", "123456")
-
-		fmt.Println(id)
-	}
-
 	func TestFindBaseUserByName(t *testing.T) {
 		InitUserModelRpcClient()
 		user, _ := FindBaseUserByName("测试注册")
@@ -29,7 +28,7 @@ func TestFindBaseUserById(t *testing.T) {
 
 	fmt.Println(user)
 }*/
-
+/*
 func TestFindBaseUserPassword(t *testing.T) {
 	model.Init()
 	InitUserModelRpcClient()
@@ -44,7 +43,7 @@ func TestFindIDByName(t *testing.T) {
 	id, _ := FindIDByName("lyy")
 
 	fmt.Println(id)
-}
+}*/
 
 /*
 func TestFindBaseUserList(t *testing.T) {
