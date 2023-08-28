@@ -38,7 +38,7 @@ func CreateBaseUser(username string, password string) (int64, error) {
 	if err != nil {
 		log.Println(resp)
 		log.Println(err)
-		return 0, err
+		return -1, err
 	}
 	return resp.UserId, nil
 }

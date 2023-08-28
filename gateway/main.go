@@ -21,6 +21,7 @@ func InitRoute() *gin.Engine {
 	handlers.InitVideoRpcClient()
 	handlers.InitUseruserRpcClient()
 	handlers.InitCommentClient()
+	handlers.InitMessageRpcClient()
 
 	//抖音路由组
 	v1 := ginRouter.Group("/douyin")
@@ -40,6 +41,12 @@ func InitRoute() *gin.Engine {
 		{
 			comment.POST("/action/", handlers.CommentAction)
 			comment.GET("/list", handlers.CommentList)
+		}
+
+		message := v1.Group("/message")
+		{
+			message.POST("/action/", handlers.MessageAction)
+			message.GET("/chat", handlers.MessageChat)
 		}
 	}
 	return ginRouter
