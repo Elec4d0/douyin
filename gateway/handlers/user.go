@@ -23,7 +23,7 @@ func User(ginContext *gin.Context) {
 	//———————网关统一鉴权————————
 	Token := ginContext.Query("token")
 	userID := jwt.ParseToken(Token)
-	if userID == -1 {
+	/*if userID == -1 {
 		str := "Token验证失败，请重新登录"
 		ginContext.JSON(http.StatusOK, &userInfoApi.DouyinUserGetFullUserInfoResponse{
 			StatusCode: -1,
@@ -31,7 +31,7 @@ func User(ginContext *gin.Context) {
 			User:       nil,
 		})
 		return
-	}
+	}*/
 
 	searchID, err := strconv.ParseInt(ginContext.Query("user_id"), 10, 64)
 	if err != nil {
