@@ -41,15 +41,61 @@ func GetCommentCount(video_id int64) (*api.DouyinCommentserverCommentcountRespon
 	return resp, nil
 }
 
-func GetCommentAllCount(video_ids []int64) (*api.DouyinCommentserverCommentallcountResponse, error) {
+func GetCommentAllCount(videoIds []int64) (*api.DouyinCommentserverCommentallcountResponse, error) {
 	rpcReq := &api.DouyinCommentserverCommentallcountRequest{
-		VideoIds: video_ids,
+		VideoIds: videoIds,
 	}
 	fmt.Println(rpcReq)
 	resp, err := commentInfoRpcClient.CommentAllCount(context.Background(), rpcReq)
 	if err != nil {
 		log.Println(resp)
 		log.Println(err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func CommentAction(userId, videoId int64, actionType int32, commentText string, commentId int64) (*api.DouyinCommentActionResponse, error) {
+	var resp *api.DouyinCommentActionResponse
+	var err error
+	if actionType == 1 {
+		req := &api.DouyinCommentActionRequest{
+			UserId:      userId,
+			ActionType:  int32(actionType),
+			VideoId:     int64(videoId),
+			CommentText: &commentText,
+		}
+		log.Println(req)
+		resp, err = commentInfoRpcClient.CommentAction(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if actionType == 2 {
+		req := &api.DouyinCommentActionRequest{
+			UserId:     userId,
+			ActionType: int32(actionType),
+			VideoId:    int64(videoId),
+			CommentId:  &commentId,
+		}
+		log.Println(req)
+		resp, err = commentInfoRpcClient.CommentAction(context.Background(), req)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		resp = nil
+	}
+	return resp, nil
+}
+
+func CommentList(userId, videoId int64) (*api.DouyinCommentListResponse, error) {
+	req := &api.DouyinCommentListRequest{
+		UserId:  userId,
+		VideoId: videoId,
+	}
+	resp, err := commentInfoRpcClient.CommentList(context.Background(), req)
+	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 	return resp, nil

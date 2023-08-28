@@ -95,6 +95,7 @@ func RpcQueryAuthorVideoList(userID int64, author *userApi.FullUser, videoIDList
 	CommentCountList := rpcApi.GetCommentCountList(videoIDList)
 
 	videoList := videoconv.BatchWithAuthorRpc2Api(videoModelList, author, FavoriteCountList, CommentCountList, isFavoriteList)
-	CacheVideoList(videoList)
+	//结构体转化并缓存
+	defer redis.CacheVideoList(videoconv.BatchApi2Redis(videoList))
 	return videoList
 }
