@@ -73,7 +73,7 @@ func InsertUserListRedis(userList []*api.FullUser) error {
 		)
 		rand.NewSource(time.Now().UnixNano())
 		r := rand.Intn(30)
-		_ = redisClient.Expire(ctx, strconv.FormatInt(value.Id, 10), 300*time.Second+time.Duration(r)*time.Second)
+		pipeline.Expire(ctx, strconv.FormatInt(value.Id, 10), 300*time.Second+time.Duration(r)*time.Second)
 	}
 
 	cmders, err := pipeline.Exec(ctx)
@@ -223,6 +223,8 @@ func CheckUserListExist(id []int64) ([]bool, int64) {
 			falseCnt += 1
 			isUserListExist = append(isUserListExist, false)
 			log.Println("err ", err)
+			falseCnt += 1
+			continue
 		}
 
 		ttl := cmders[index+1].(*redis.DurationCmd).Val()
