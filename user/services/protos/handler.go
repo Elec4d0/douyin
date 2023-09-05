@@ -41,6 +41,7 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *api.DouyinUserLogi
 
 		resp.UserId = -1
 		resp.Token = ""
+		err = nil
 		return
 	}
 
